@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-public class inventra {
+public class Inventra {
 
     private static List<String> fields = new ArrayList<>();
     public static void main(String[] args) {
