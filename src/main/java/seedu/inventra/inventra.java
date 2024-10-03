@@ -18,7 +18,7 @@ public class inventra {
         Scanner in = new Scanner(System.in);
         
         while (true) {
-            System.out.println("Enter a command:")
+            System.out.println("Enter a command:");
             String input = in.nextLine();
             String[] inputParts = input.split(" ", 2);
             String command = inputParts[0];
