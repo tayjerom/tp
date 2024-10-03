@@ -45,6 +45,7 @@ public class inventra {
                     System.out.println("Please input a valid command");
                     break;
             }
+        }
     }
 
     private static void handleAddMultipleFields(String fieldData) {
