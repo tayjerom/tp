@@ -27,7 +27,7 @@ public class inventra {
                 case "exit":
                     System.out.println("Program exit successfully.");
                     return;
-                
+            
                 case "add":
                     if (inputParts.length > 1 && inputParts[1].startsWith("-l")) {
                         String fieldData = inputParts[1].substring(2).trim();
@@ -36,16 +36,15 @@ public class inventra {
                         System.out.println("Please check man-page for list of possible [add] commands");
                     }
                     break;
-                
+            
                 case "view":
                     viewFields();
                     break;
-                
+            
                 default:
                     System.out.println("Please input a valid command");
                     break;
             }
-        }
     }
 
     private static void handleAddMultipleFields(String fieldData) {
