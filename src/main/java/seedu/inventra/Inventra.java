@@ -4,6 +4,8 @@ import seedu.model.Inventory;
 import seedu.parser.CommandParser;
 import seedu.ui.Ui;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Inventra {
@@ -35,14 +37,42 @@ public class Inventra {
         // Clear distinction between input and output
         System.out.println("_____________________________________________");
 
-        try {
-            // Pass inventory and ui for parsing command
-            CommandParser.parseCommand(userInput, inventory, ui);
-        } catch (Exception e) {
-            ui.printMessage("    Error: " + e.getMessage());
+        // Basic parsing for delete command and other commands
+        if (userInput.startsWith("delete")) {
+            handleDeleteCommand(userInput, inventory);
+        } else {
+            try {
+                // Pass inventory and ui for parsing command
+                CommandParser.parseCommand(userInput, inventory, ui);
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
         }
 
         // Close the output with a line for clarity
         System.out.println("_____________________________________________");
+    }
+
+    private static void handleDeleteCommand(String userInput, Inventory inventory) {
+        // Extract record number from input
+        String[] splitInput = userInput.split(" ");
+        if (splitInput.length < 2) {
+            System.out.println("Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(splitInput[1]) - 1; // 1-based index to 0-based
+            List<Map<String, String>> records = inventory.getRecords(); // Get records from Inventory
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                System.out.println("Record deleted successfully.");
+            } else {
+                System.out.println("Error: Record number out of bounds.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid record number.");
+        }
     }
 }
