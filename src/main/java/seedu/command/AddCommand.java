@@ -17,7 +17,7 @@ public class AddCommand {
 
     public void execute(String[] args) {
         if (args.length < 2) {
-            ui.printMessage("Invalid command. Use 'add -h <fields>' to add fields or 'add -l' to list fields and records or 'add -d <values>' to add records.");
+            ui.showErrorInvalidCommand();
             return;
         }
 
@@ -26,35 +26,33 @@ public class AddCommand {
         switch (flag) {
         case "-h":
             if (args.length < 3) {
-                ui.printMessage("No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+                ui.showErrorNoFields();
                 return;
             }
-            String fieldData = args[2];
-            handleAddMultipleFields(fieldData);
+            handleAddMultipleFields(args[2]);
             break;
 
         case "-l":
-            listFieldsAndRecords();
+            ui.showFieldsAndRecords(inventory);
             break;
 
         case "-d":
             if (args.length < 3) {
-                ui.printMessage("No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+                ui.showErrorNoRecords();
                 return;
             }
-            String recordData = args[2];
-            handleAddRecord(recordData);
+            handleAddRecord(args[2]);
             break;
 
         default:
-            ui.printMessage("Invalid flag. Use 'add -h <fields>' or 'add -l' to list fields and records or 'add -d <values>' to add records.");
+            ui.showErrorInvalidFlag();
             break;
         }
     }
 
     private void handleAddMultipleFields(String fieldData) {
         if (fieldData.isEmpty()) {
-            ui.printMessage("No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+            ui.showErrorNoFields();
             return;
         }
 
@@ -62,7 +60,7 @@ public class AddCommand {
         for (String field : newFields) {
             String[] parts = field.split("/");
             if (parts.length != 2) {
-                ui.printMessage("Invalid field format. Use '<type>/<field>'.");
+                ui.showErrorInvalidFieldFormat();
                 return;
             }
 
@@ -71,47 +69,19 @@ public class AddCommand {
             inventory.addField(fieldName, type);
         }
 
-        ui.printMessage("Fields added successfully.");
-        listFieldsAndRecords();  // Show fields after adding
-    }
-
-    private void listFieldsAndRecords() {
-        if (inventory.getFields().isEmpty()) {
-            ui.printMessage("No fields have been added yet.");
-        } else {
-            ui.printMessage("Fields:");
-            for (int i = 0; i < inventory.getFields().size(); i++) {
-                String field = inventory.getFields().get(i);
-                String type = inventory.getFieldTypes().get(field);
-                ui.printMessage((i + 1) + ". " + field + " (Type: " + type + ")");
-            }
-        }
-
-        if (inventory.getRecords().isEmpty()) {
-            ui.printMessage("No records have been added yet.");
-        } else {
-            ui.printMessage("Records:");
-            for (Map<String, String> record : inventory.getRecords()) {
-                StringBuilder recordStr = new StringBuilder();
-                for (String field : inventory.getFields()) {
-                    recordStr.append(field).append(": ").append(record.get(field)).append(", ");
-                }
-                // Remove the trailing comma and space
-                recordStr.setLength(recordStr.length() - 2);
-                ui.printMessage(recordStr.toString());
-            }
-        }
+        ui.showSuccessFieldsAdded();
+        ui.showFieldsAndRecords(inventory);  // Show fields after adding
     }
 
     private void handleAddRecord(String recordData) {
         if (inventory.getFields().isEmpty()) {
-            ui.printMessage("No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+            ui.showErrorNoFieldsDefined();
             return;
         }
 
         String[] values = recordData.split(",\\s*");
         if (values.length != inventory.getFields().size()) {
-            ui.printMessage("Invalid number of values. Expected " + inventory.getFields().size() + " values.");
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
             return;
         }
 
@@ -124,7 +94,7 @@ public class AddCommand {
             // Validate based on field type
             String validationMessage = validateValue(value, type, field);
             if (validationMessage != null) {
-                ui.printMessage(validationMessage);
+                ui.showValidationError(validationMessage);
                 return;
             }
 
@@ -132,7 +102,7 @@ public class AddCommand {
         }
 
         inventory.addRecord(record);
-        ui.printMessage("Record added successfully.");
+        ui.showSuccessRecordAdded();
     }
 
     private String validateValue(String value, String type, String field) {
@@ -144,39 +114,39 @@ public class AddCommand {
                 Integer.parseInt(value);
                 return null; // Valid integer
             } catch (NumberFormatException e) {
-                return "Invalid value for field '" + field + "'. Expected type: Integer (whole number), got: '" + value + "'";
+                return ui.getInvalidIntegerMessage(field, value);
             }
         case "f": // Float
             try {
                 Float.parseFloat(value);
                 return null; // Valid float
             } catch (NumberFormatException e) {
-                return "Invalid value for field '" + field + "'. Expected type: Float (decimal number), got: '" + value + "'";
+                return ui.getInvalidFloatMessage(field, value);
             }
         case "d": // Date
             // Simple date validation, assuming the format is "dd/MM/yyyy"
             String[] parts = value.split("/");
             if (parts.length != 3) {
-                return "Invalid value for field '" + field + "'. Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+                return ui.getInvalidDateMessage(field, value);
             }
             try {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
                 if (day <= 0 || month <= 0 || month > 12) {
-                    return "Invalid value for field '" + field + "'. Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+                    return ui.getInvalidDateMessage(field, value);
                 }
                 return null; // Valid date
             } catch (NumberFormatException e) {
-                return "Invalid value for field '" + field + "'. Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+                return ui.getInvalidDateMessage(field, value);
             }
         case "n": // Null
             if (!value.equalsIgnoreCase("null")) {
-                return "Invalid value for field '" + field + "'. Expected type: Null (use 'null'), got: '" + value + "'";
+                return ui.getInvalidNullMessage(field, value);
             }
             return null; // Valid null
         default:
-            return "Unknown field type for field '" + field + "'.";
+            return ui.getUnknownTypeMessage(field);
         }
     }
 }
