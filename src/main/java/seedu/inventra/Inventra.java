@@ -7,7 +7,7 @@ import seedu.ui.Ui;
 import java.util.Scanner;
 
 public class Inventra {
-    private static Inventory inventory = new Inventory(); // Make inventory a static variable
+    private static Inventory inventory = new Inventory(); // Keep inventory static
 
     public static void main(String[] args) {
         String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
@@ -15,18 +15,34 @@ public class Inventra {
                 + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
                 + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
                 + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
         System.out.println("Welcome to\n" + logo);
+        System.out.println("What would you like to do today?");
+        System.out.println("_____________________________________________");
 
         Scanner in = new Scanner(System.in);
         Ui ui = new Ui();
 
         while (true) {
+            // Print the prompt for user input
             String input = in.nextLine();
-            try {
-                CommandParser.parseCommand(input, inventory, ui); // Pass inventory and ui
-            } catch (Exception e) {
-                ui.printMessage(e.getMessage());
-            }
+            // Separate user input and output
+            printCommandOutput(input, ui, inventory);
         }
+    }
+
+    public static void printCommandOutput(String userInput, Ui ui, Inventory inventory) {
+        // Clear distinction between input and output
+        System.out.println("_____________________________________________");
+
+        try {
+            // Pass inventory and ui for parsing command
+            CommandParser.parseCommand(userInput, inventory, ui);
+        } catch (Exception e) {
+            ui.printMessage("    Error: " + e.getMessage());
+        }
+
+        // Close the output with a line for clarity
+        System.out.println("_____________________________________________");
     }
 }
