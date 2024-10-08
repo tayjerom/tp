@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Ui {
 
-    // Print a message to the user
     public void printMessage(String message) {
         System.out.println(message);
     }
@@ -65,7 +64,6 @@ public class Ui {
         }
     }
 
-    // Error and success messages remain the same
     public void showErrorInvalidCommand() {
         printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l' to list fields/records, or 'add -d <values>' to add records.");
     }

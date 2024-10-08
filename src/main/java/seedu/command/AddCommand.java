@@ -97,7 +97,6 @@ public class AddCommand {
                 ui.showValidationError(validationMessage);
                 return;
             }
-
             record.put(field, value);
         }
 
