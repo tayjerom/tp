@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class Inventra {
 
-    private static List<String> fields = new ArrayList<>();
-    private static List<Map<String, String>> records = new ArrayList<>();
+    private static final List<String> fields = new ArrayList<>();
+    private static final List<Map<String, String>> records = new ArrayList<>();
 
     public static void main(String[] args) {
         String logo = " ____        _        \n"
@@ -18,9 +18,9 @@ public class Inventra {
                 + "| |_| | |_| |   <  __/\n"
                 + "|____/ \\__,_|_|\\_\\___|\n";
         System.out.println("Welcome to\n" + logo);
-        
+
         Scanner in = new Scanner(System.in);
-        
+
         while (true) {
             System.out.println("Enter a command:");
             String input = in.nextLine();
@@ -28,31 +28,40 @@ public class Inventra {
             String command = inputParts[0];
 
             switch (command) {
-                case "exit":
-                    System.out.println("Program exit successfully.");
-                    return;
-            
-                case "add":
-                    if (inputParts.length > 1 && inputParts[1].startsWith("-l")) {
-                        String fieldData = inputParts[1].substring(2).trim();
-                        handleAddMultipleFields(fieldData);
-                    
-                    } else if (inputParts.length > 1 && inputParts[1].startsWith("-d")) {
-                        String recordData = inputParts[1].substring(2).trim();
-                        handleAddRecord(recordData);
-                    
-                    } else {
-                        System.out.println("Please check man-page for list of possible [add] commands");
-                    }                          
-                    break;
-            
-                case "view":
-                    viewRecords();
-                    break;
-            
-                default:
-                    System.out.println("Please input a valid command");
-                    break;
+            case "exit":
+                System.out.println("Program exit successfully.");
+                return;
+
+            case "add":
+                if (inputParts.length > 1 && inputParts[1].startsWith("-l")) {
+                    String fieldData = inputParts[1].substring(2).trim();
+                    handleAddMultipleFields(fieldData);
+
+                } else if (inputParts.length > 1 && inputParts[1].startsWith("-d")) {
+                    String recordData = inputParts[1].substring(2).trim();
+                    handleAddRecord(recordData);
+
+                } else {
+                    System.out.println("Please check man-page for list of possible [add] commands");
+                }
+                break;
+
+            case "view":
+                viewRecords();
+                break;
+
+            case "delete":
+                if (inputParts.length > 1) {
+                    String fieldData = inputParts[1].trim();
+                    deleteRecord(fieldData);
+                } else {
+                    System.out.println("Please check man-page for list of possible [delete] commands");
+                }
+                break;
+
+            default:
+                System.out.println("Please input a valid command");
+                break;
             }
         }
     }
@@ -62,7 +71,7 @@ public class Inventra {
             System.out.println("No fields provided. Try 'add -l field1, field2, ...' to add new fields.");
             return;
         }
-        
+
         String[] newFields = fieldData.split(",\\s");
         for (String field : newFields) {
             fields.add(field.trim());
@@ -103,7 +112,7 @@ public class Inventra {
                 for (Map.Entry<String, String> entry : records.get(i).entrySet()) {
                     System.out.println(" - " + entry.getKey() + ": " + entry.getValue());
                 }
-            } 
+            }
         }
     }
 
@@ -116,5 +125,21 @@ public class Inventra {
                 System.out.println((i + 1) + ". " + fields.get(i));
             }
         }
-    }  
+    }
+
+    private static void deleteRecord(String index) {
+        try{
+            int recordIndex = Integer.parseInt(index);
+            // Convert to 0 based index from 1 based index
+            records.remove(recordIndex-1);
+            System.out.println("Record deleted successfully");
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Please provide a valid number");
+        }
+        catch (IndexOutOfBoundsException e) {
+            System.out.println("Please provide a index within bounds");
+        }
+
+    }
 }
