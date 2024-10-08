@@ -12,7 +12,7 @@ public class Inventra {
     private static List<Map<String, String>> records = new ArrayList<>();
 
     public static void main(String[] args) {
-        String logo = " ____        _        \n"
+        String n"
                 + "|  _ \\ _   _| | _____ \n"
                 + "| | | | | | | |/ / _ \\\n"
                 + "| |_| | |_| |   <  __/\n"
