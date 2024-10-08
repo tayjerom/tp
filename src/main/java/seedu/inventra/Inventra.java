@@ -50,6 +50,15 @@ public class Inventra {
                 viewRecords();
                 break;
 
+            case "delete":
+                if (inputParts.length > 1) {
+                    String fieldData = inputParts[1].trim();
+                    deleteRecord(fieldData);
+                } else {
+                    System.out.println("Please check man-page for list of possible [delete] commands");
+                }
+                break;
+
             default:
                 System.out.println("Please input a valid command");
                 break;
@@ -116,5 +125,21 @@ public class Inventra {
                 System.out.println((i + 1) + ". " + fields.get(i));
             }
         }
+    }
+
+    private static void deleteRecord(String index) {
+        try{
+            int recordIndex = Integer.parseInt(index);
+            // Convert to 0 based index from 1 based index
+            records.remove(recordIndex-1);
+            System.out.println("Record deleted successfully");
+        }
+        catch (NumberFormatException e) {
+            System.out.println("Please provide a valid number");
+        }
+        catch (IndexOutOfBoundsException e) {
+            System.out.println("Please provide a index within bounds");
+        }
+
     }
 }
