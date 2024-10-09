@@ -16,8 +16,7 @@ public class Inventra {
 
         Ui ui = new Ui();
         ui.printMessage("Welcome to\n" + logo);
-        ui.printMessage("What would you like to do today?");
-        ui.printMessage("_____________________________________________");
+        ui.showUserManual();
 
         Scanner in = new Scanner(System.in);
         Inventory inventory = new Inventory(); // Instantiate Inventory here

@@ -7,7 +7,7 @@ import seedu.model.Inventory;
 import seedu.ui.Ui;
 
 public class CommandParser {
-    public static void parseCommand(String input, Inventory inventory, Ui ui) throws Exception {
+    public static void parseCommand(String input, Inventory inventory, Ui ui)  {
         String[] parts = input.split(" ", 3);
         String command = parts[0];
 
@@ -22,7 +22,8 @@ public class CommandParser {
             new ExitCommand(ui).execute();
             break;
         default:
-            throw new Exception("Unknown command");
+            ui.showErrorInvalidCommand();
+            break;
         }
     }
 }
