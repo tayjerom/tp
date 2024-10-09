@@ -16,29 +16,46 @@ public class Ui {
         printMessage("Inventra's User Manual:");
         printMessage("Here is the list of commands you can use:");
         printMessage("_____________________________________________");
-        printMessage("1. Add custom fields with specific types:");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
         printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
         printMessage("   - Command: add -h <type/field, type/field, ...>");
         printMessage("   - Example: add -h s/name, i/quantity, f/price");
 
         printMessage(" ");
-        printMessage("2. Dsiplay all defined fields and stored records:");
+        printMessage("3. Display all defined fields and stored records:");
         printMessage("   - Command: add -l");
 
         printMessage(" ");
-        printMessage("3. Add Records to custom fields created:");
+        printMessage("4. Add Records to custom fields created:");
         printMessage("   - Command: add -d <value1, value2, ...>");
         printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
 
         printMessage(" ");
-        printMessage("4. Delete Records:");
+        printMessage("5. Delete Records:");
         printMessage("   - Command: delete <record number>");
         printMessage("   - Example: delete 2");
 
         printMessage(" ");
-        printMessage("5. Exit program:");
+        printMessage("6. Exit program:");
         printMessage("   - Command: exit");
         printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
     }
 
     // Show fields and records in table format

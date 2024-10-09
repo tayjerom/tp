@@ -3,6 +3,7 @@ package seedu.parser;
 import seedu.command.AddCommand;
 import seedu.command.DeleteCommand;
 import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 
@@ -17,6 +18,9 @@ public class CommandParser {
             break;
         case "delete":
             DeleteCommand.execute(input, inventory);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
             break;
         case "exit":
             new ExitCommand(ui).execute();
