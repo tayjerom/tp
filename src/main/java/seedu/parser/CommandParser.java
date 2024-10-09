@@ -6,15 +6,16 @@ import seedu.command.ExitCommand;
 import seedu.command.ViewCommand;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
+import seedu.storage.Csv;
 
 public class CommandParser {
-    public static void parseCommand(String input, Inventory inventory, Ui ui)  {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
         String[] parts = input.split(" ", 3);
         String command = parts[0];
 
         switch (command) {
         case "add":
-            new AddCommand(inventory, ui).execute(parts);
+            new AddCommand(inventory, ui, csv).execute(parts);
             break;
         case "delete":
             DeleteCommand.execute(input, inventory);
