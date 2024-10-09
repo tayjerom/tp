@@ -1,6 +1,7 @@
 package seedu.ui;
 
 import seedu.model.Inventory;
+
 import java.util.Map;
 import java.util.List;
 
@@ -65,7 +66,8 @@ public class Ui {
     }
 
     public void showErrorInvalidCommand() {
-        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l' to list fields/records, or 'add -d <values>' to add records.");
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
     }
 
     public void showErrorNoFields() {
@@ -113,7 +115,8 @@ public class Ui {
     }
 
     public String getInvalidDateMessage(String field, String value) {
-        return "    Invalid value for field '" + field + "'. Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
     }
 
     public String getInvalidNullMessage(String field, String value) {
