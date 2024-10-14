@@ -1,11 +1,9 @@
 package seedu.storage;
 
 import seedu.model.Inventory;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+
+import java.io.*;
+import java.util.*;
 
 public class Csv {
 
@@ -15,25 +13,42 @@ public class Csv {
         this.csvFilePath = csvFilePath;
     }
 
-    // Initialize the CSV file or update headers when new fields are added
+    // Update the CSV file headers and keep the existing data
     public void updateCsvHeaders(Inventory inventory) {
         File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
 
         try {
-            // Ensure the storage directory exists
-            File storageDir = new File("./storage");
-            if (!storageDir.exists()) {
-                storageDir.mkdirs();
-            }
-
-            // Rewrite the header line based on the updated fields
+            // Overwrite the file with updated headers and preserve records
             try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
                 List<String> fields = inventory.getFields();
                 if (!fields.isEmpty()) {
                     writer.append(String.join(",", fields));
                     writer.append("\n");
-                    System.out.println("CSV file headers updated at: " + file.getAbsolutePath());
                 }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
             }
         } catch (IOException e) {
             System.err.println("Error updating CSV file headers: " + e.getMessage());
@@ -55,6 +70,40 @@ public class Csv {
             writer.append("\n");
         } catch (IOException e) {
             System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
         }
     }
 }

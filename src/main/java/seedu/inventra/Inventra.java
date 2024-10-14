@@ -23,6 +23,9 @@ public class Inventra {
         Inventory inventory = new Inventory(); // Instantiate Inventory here
         Csv csv = new Csv("./storage/inventory.csv");
 
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
         while (true) {
             String input = in.nextLine();
             try {
