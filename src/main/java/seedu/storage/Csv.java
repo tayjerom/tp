@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.List;
 
 public class Csv {
-    private static final String CSV_FILE_PATH = "src/main/java/seedu/storage/inventory.csv";
+    private static final String CSV_FILE_PATH = "./storage/inventory.csv";
 
     public void initializeCsvFile(Inventory inventory) {
         File file = new File(CSV_FILE_PATH);
