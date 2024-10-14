@@ -46,7 +46,7 @@ public class AddCommand {
                 return;
             }
             handleAddRecord(args[2]);
-            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1));
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
             break;
 
         default:
