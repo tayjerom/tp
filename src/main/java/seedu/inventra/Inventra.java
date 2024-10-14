@@ -3,6 +3,7 @@ package seedu.inventra;
 import seedu.model.Inventory;
 import seedu.parser.CommandParser;
 import seedu.ui.Ui;
+import seedu.storage.Csv;
 
 import java.util.Scanner;
 
@@ -16,17 +17,17 @@ public class Inventra {
 
         Ui ui = new Ui();
         ui.printMessage("Welcome to\n" + logo);
-        ui.printMessage("What would you like to do today?");
-        ui.printMessage("_____________________________________________");
+        ui.showUserManual();
 
         Scanner in = new Scanner(System.in);
         Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv();
 
         while (true) {
             String input = in.nextLine();
             try {
                 System.out.println("_____________________________________________");
-                CommandParser.parseCommand(input, inventory, ui);
+                CommandParser.parseCommand(input, inventory, ui, csv);
                 System.out.println("_____________________________________________");
             } catch (Exception e) {
                 ui.printMessage("    Error: " + e.getMessage());
