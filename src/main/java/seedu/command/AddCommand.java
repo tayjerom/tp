@@ -33,7 +33,7 @@ public class AddCommand {
                 return;
             }
             handleAddMultipleFields(args[2]);
-            csv.initializeCsvFile(inventory);
+            csv.updateCsvHeaders(inventory);
             break;
 
         case "-l":
