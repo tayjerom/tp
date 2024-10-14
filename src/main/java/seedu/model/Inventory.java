@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class Inventory {
     private List<String> fields = new ArrayList<>();
-    private Map<String, String> fieldTypes = new HashMap<>(); //map field<->type
-    private List<Map<String, String>> records = new ArrayList<>(); //list of mapped field<->record
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
 
     public void addField(String field, String type) {
         fields.add(field);
@@ -29,5 +29,10 @@ public class Inventory {
 
     public List<Map<String, String>> getRecords() {
         return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
     }
 }

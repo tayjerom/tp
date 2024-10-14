@@ -1,6 +1,7 @@
 package seedu.command;
 
 import seedu.model.Inventory;
+import seedu.storage.Csv;
 import seedu.ui.Ui;
 
 import java.util.HashMap;
@@ -9,10 +10,12 @@ import java.util.Map;
 public class AddCommand {
     private Inventory inventory;
     private Ui ui;
+    private Csv csv;
 
-    public AddCommand(Inventory inventory, Ui ui) {
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
         this.inventory = inventory;
         this.ui = ui;
+        this.csv = csv;
     }
 
     public void execute(String[] args) {
@@ -30,6 +33,7 @@ public class AddCommand {
                 return;
             }
             handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
             break;
 
         case "-l":
@@ -42,6 +46,7 @@ public class AddCommand {
                 return;
             }
             handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
             break;
 
         default:
