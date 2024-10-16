@@ -14,7 +14,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 
-
 class InventraTest {
 
     private Inventory inventory;
@@ -32,8 +31,8 @@ class InventraTest {
         testCsvFilePath = "./storage/test_inventory.csv";
         csv = new Csv(testCsvFilePath);
 
-        // Initialize the CSV file for the test
-        csv.initializeCsvFile(inventory);
+        // Load existing records from CSV for the test (if any)
+        csv.loadRecordsFromCsv(inventory);
 
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
@@ -45,7 +44,9 @@ class InventraTest {
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
         addCommand.execute(addFieldsArgs);
 
-        // Capture output of add -l
+        // Clear output before listing fields
+        outputStream.reset();
+
         addCommand.execute(new String[]{"add", "-l"});
 
         String output = outputStream.toString();
@@ -56,7 +57,7 @@ class InventraTest {
 
     @Test
     public void testAddRecord() {
-        // Setup add -h command to add fields
+        // Add fields to inventory
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
         addCommand.execute(addFieldsArgs);
@@ -68,7 +69,8 @@ class InventraTest {
         String[] addRecordArgs = {"add", "-d", "Apple, 10, 1.50"};
         addCommand.execute(addRecordArgs);
 
-        // Capture output after adding record
+        outputStream.reset();
+
         addCommand.execute(new String[]{"add", "-l"});
 
         String output = outputStream.toString();
@@ -79,7 +81,6 @@ class InventraTest {
 
     @AfterEach
     public void tearDown() {
-        // Delete the test CSV file after each test
         File testFile = new File(testCsvFilePath);
         if (testFile.exists()) {
             testFile.delete();
