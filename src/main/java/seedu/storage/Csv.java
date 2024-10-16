@@ -11,6 +11,20 @@ public class Csv {
 
     public Csv(String csvFilePath) {
         this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getAbsolutePath());
+            }
+        }
     }
 
     // Update the CSV file headers and keep the existing data
