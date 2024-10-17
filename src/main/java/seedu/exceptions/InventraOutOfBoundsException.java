@@ -13,6 +13,9 @@ public class InventraOutOfBoundsException extends InventraException {
 
     @Override
     public String getMessage() {
-        return String.format("Index %d is outside the bounds %d to %d", index, start, end);
+        if (end == 0) {
+            return "Error: The inventory is empty.";
+        }
+        return String.format("Error: Index %d is outside the bounds %d to %d", index, start, end);
     }
 }

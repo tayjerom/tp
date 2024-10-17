@@ -1,8 +1,8 @@
 package seedu.exceptions;
 
-public class InventraException extends RuntimeException {
+public class InventraException extends Exception {
     @Override
     public String getMessage() {
-        return "An error has occurred";
+        return "Error: An error has occurred";
     }
 }
