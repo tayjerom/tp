@@ -35,4 +35,8 @@ public class Inventory {
     public void setFields(List<String> fields) {
         this.fields = fields;
     }
+
+    public void setFieldTypes(Map<String, String> newFieldTypes) {
+        this.fieldTypes = newFieldTypes;
+    }
 }
