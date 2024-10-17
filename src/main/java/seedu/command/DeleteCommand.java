@@ -1,5 +1,9 @@
 package seedu.command;
 
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidNumberException;
+import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 import seedu.storage.Csv;
@@ -18,10 +22,9 @@ public class DeleteCommand {
         this.csv = csv;
     }
 
-    public void execute(String[] parts) {
+    public void execute(String[] parts) throws InventraException {
         if (parts.length < 2) {
-            ui.printMessage("    Error: No record number provided for deletion.");
-            return;
+            throw new InventraMissingArgsException("Record number");
         }
 
         try {
@@ -33,10 +36,10 @@ public class DeleteCommand {
                 csv.updateCsvAfterDeletion(inventory);
                 ui.printMessage("    Record deleted successfully.");
             } else {
-                ui.printMessage("    Error: Please provide a index within bounds");
+                throw new InventraOutOfBoundsException(recordIndex + 1, 1, records.size());
             }
         } catch (NumberFormatException e) {
-            ui.printMessage("    Error: Please provide a valid number");
+            throw new InventraInvalidNumberException(parts[1]);
         }
     }
 }
