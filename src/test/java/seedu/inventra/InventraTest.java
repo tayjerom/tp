@@ -39,7 +39,7 @@ class InventraTest {
     }
 
     @Test
-    public void testAddAndListFields() {
+    public void execute_testAddAndListFields_success() {
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
         addCommand.execute(addFieldsArgs);
@@ -56,7 +56,7 @@ class InventraTest {
     }
 
     @Test
-    public void testAddRecord() {
+    public void execute_testAddRecord_success() {
         // Add fields to inventory
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
