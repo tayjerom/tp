@@ -18,7 +18,7 @@ public class CommandParser {
             new AddCommand(inventory, ui, csv).execute(parts);
             break;
         case "delete":
-            new DeleteCommand(inventory,ui).execute(parts);
+            new DeleteCommand(inventory, ui, csv).execute(parts);
             break;
         case "view":
             new ViewCommand(inventory, ui).execute(parts);
