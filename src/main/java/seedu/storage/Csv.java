@@ -2,8 +2,16 @@ package seedu.storage;
 
 import seedu.model.Inventory;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Csv {
 
@@ -20,9 +28,9 @@ public class Csv {
         File parentDir = file.getParentFile(); // Get the parent directory
         if (parentDir != null && !parentDir.exists()) {
             if (parentDir.mkdirs()) {
-                System.out.println("Directory created: " + parentDir.getAbsolutePath());
+                System.out.println("Directory created: " + parentDir.getName());
             } else {
-                System.err.println("Failed to create directory: " + parentDir.getAbsolutePath());
+                System.err.println("Failed to create directory: " + parentDir.getName());
             }
         }
     }
