@@ -118,15 +118,18 @@ public class Ui {
     }
 
     public void showErrorNoFields() {
-        printMessage("    No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+        printMessage("    No fields provided. " +
+                "Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
     }
 
     public void showErrorNoRecords() {
-        printMessage("    No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+        printMessage("    No record data provided."
+                + "Use 'add -d <value1, value2, ...>' to add records.");
     }
 
     public void showErrorInvalidFlag() {
-        printMessage("    Invalid flag. Use 'add -h <fields>', 'add -l', or 'add -d <values>'");
+        printMessage("    Invalid flag. Use 'add -h <fields>'," +
+                " 'add -l', or 'add -d <values>'");
     }
 
     public void showErrorInvalidFieldFormat() {
@@ -134,7 +137,8 @@ public class Ui {
     }
 
     public void showErrorNoFieldsDefined() {
-        printMessage("    No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+        printMessage("    No fields defined."
+                + "Use 'add -h <fields>' to define fields before adding records.");
     }
 
     public void showErrorInvalidRecordCount(int expected) {
@@ -154,15 +158,18 @@ public class Ui {
     }
 
     public void showUnknownTypeMessage(String type) {
-        printMessage("Unknown field type: '" + type + "'. Valid types are: s (String), i (Integer), f (Float), d (Date).");
+        printMessage("Unknown field type: '" + type + "'. Valid types are:"
+                + "s (String), i (Integer), f (Float), d (Date).");
     }
 
     public String getInvalidIntegerMessage(String field, String value) {
-        return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Integer, got: '" + value + "'";
     }
 
     public String getInvalidFloatMessage(String field, String value) {
-        return "    Invalid value for field '" + field + "'. Expected type: Float, got: '" + value + "'";
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Float, got: '" + value + "'";
     }
 
     public String getInvalidDateMessage(String field, String value) {
@@ -171,7 +178,8 @@ public class Ui {
     }
 
     public String getInvalidNullMessage(String field, String value) {
-        return "    Invalid value for field '" + field + "'. Expected type: Null, got: '" + value + "'";
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Null, got: '" + value + "'";
     }
 
     public String getUnknownTypeMessage(String field) {

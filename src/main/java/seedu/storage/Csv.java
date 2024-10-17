@@ -35,6 +35,32 @@ public class Csv {
         }
     }
 
+    public void updateCsvAfterDeletion(Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, false)) {
+            // Handle headers
+            List<String> fields = inventory.getFields();
+            if (!fields.isEmpty()) {
+                writer.append(String.join(",", fields)).append("\n");
+            }
+
+            // Handle records
+            for (Map<String, String> record : inventory.getRecords()) {
+                for (int i = 0; i < fields.size(); i++) {
+                    String field = fields.get(i);
+                    String value = record.getOrDefault(field, "null");
+                    writer.append(value != null ? value : "null");
+                    if (i < fields.size() - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+            System.out.println("CSV file updated after deletion.");
+        } catch (IOException e) {
+            System.err.println("Error updating CSV after deletion: " + e.getMessage());
+        }
+    }
+
     // Update the CSV file headers and keep the existing data
     public void updateCsvHeaders(Inventory inventory) {
         File file = new File(csvFilePath);

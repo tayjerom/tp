@@ -2,6 +2,7 @@ package seedu.command;
 
 import seedu.model.Inventory;
 import seedu.ui.Ui;
+import seedu.storage.Csv;
 
 import java.util.List;
 import java.util.Map;
@@ -9,10 +10,12 @@ import java.util.Map;
 public class DeleteCommand {
     private final Inventory inventory;
     private final Ui ui;
+    private final Csv csv;
 
-    public DeleteCommand(Inventory inventory, Ui ui) {
+    public DeleteCommand(Inventory inventory, Ui ui, Csv csv) {
         this.inventory = inventory;
         this.ui = ui;
+        this.csv = csv;
     }
 
     public void execute(String[] parts) {
@@ -27,6 +30,7 @@ public class DeleteCommand {
 
             if (recordIndex >= 0 && recordIndex < records.size()) {
                 records.remove(recordIndex);
+                csv.updateCsvAfterDeletion(inventory);
                 ui.printMessage("    Record deleted successfully.");
             } else {
                 ui.printMessage("    Error: Please provide a index within bounds");
