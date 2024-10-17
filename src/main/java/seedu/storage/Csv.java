@@ -28,9 +28,9 @@ public class Csv {
         File parentDir = file.getParentFile(); // Get the parent directory
         if (parentDir != null && !parentDir.exists()) {
             if (parentDir.mkdirs()) {
-                System.out.println("Directory created: " + parentDir.getAbsolutePath());
+                System.out.println("Directory created: " + parentDir.getName());
             } else {
-                System.err.println("Failed to create directory: " + parentDir.getAbsolutePath());
+                System.err.println("Failed to create directory: " + parentDir.getName());
             }
         }
     }
