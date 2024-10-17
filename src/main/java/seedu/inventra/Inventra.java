@@ -8,7 +8,7 @@ import seedu.storage.Csv;
 import java.util.Scanner;
 
 public class Inventra {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
                 + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
                 + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
