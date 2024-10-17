@@ -8,41 +8,40 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class AddCommand {
+    private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
+
     private Inventory inventory;
     private Ui ui;
     private Csv csv;
 
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        assert inventory != null : "Inventory should not be null";
+        assert ui != null : "Ui should not be null";
+        assert csv != null : "Csv should not be null";
+
         this.inventory = inventory;
         this.ui = ui;
         this.csv = csv;
     }
 
     public void execute(String[] args) {
-        if (args.length < 2) {
-            ui.showErrorInvalidCommand();
-            return;
-        }
+        assert args != null && args.length >= 2 : "Arguments should " +
+                "contain at least a command and a flag";
 
         String flag = args[1];
 
         switch (flag) {
         case "-h":
-            if (args.length < 3) {
-                ui.showErrorNoFields();
-                return;
-            }
+            assert args.length >= 3 : "Expected additional field data for flag -h";
             handleAddMultipleFields(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
 
         case "-hu":
-            if (args.length < 3) {
-                ui.showErrorNoFields();
-                return;
-            }
+            assert args.length >= 3 : "Expected additional field data for flag -hu";
             handleUpdateFields(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
@@ -52,10 +51,7 @@ public class AddCommand {
             break;
 
         case "-d":
-            if (args.length < 3) {
-                ui.showErrorNoRecords();
-                return;
-            }
+            assert args.length >= 3 : "Expected record data for flag -d";
             handleAddRecord(args[2]);
             csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
             break;
@@ -158,6 +154,8 @@ public class AddCommand {
     }
 
     private void handleAddRecord(String recordData) {
+        LOGGER.info("Handling add record: " + recordData);
+
         if (inventory.getFields().isEmpty()) {
             ui.showErrorNoFieldsDefined();
             return;
@@ -173,14 +171,24 @@ public class AddCommand {
         for (int i = 0; i < values.length; i++) {
             String field = inventory.getFields().get(i);
             String type = inventory.getFieldTypes().get(field);
-            String value = values[i].trim();
 
-            // Validate based on field type
+            assert type != null : "Type for field '" + field + "' should not be null.";
+
+            if (type == null) {
+                LOGGER.severe("Type for field '" + field + "' is null.");
+                ui.printMessage("Error: Field '" + field + "' has no type defined.");
+                return;
+            }
+
+            String value = values[i].trim();
+            LOGGER.info("Processing field: " + field + ", Type: " + type + ", Value: " + value);
+
             String validationMessage = validateValue(value, type, field);
             if (validationMessage != null) {
                 ui.showValidationError(validationMessage);
                 return;
             }
+
             record.put(field, value);
         }
 

@@ -24,7 +24,7 @@ public class Inventra {
         Csv csv = new Csv("src/main/java/seedu/storage/inventory.csv");
 
         // Load existing records from CSV
-        csv.loadRecordsFromCsv(inventory);
+        csv.loadInventoryFromCsv(inventory);
 
         while (true) {
             String input = in.nextLine();

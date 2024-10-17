@@ -32,7 +32,7 @@ class InventraTest {
         csv = new Csv(testCsvFilePath);
 
         // Load existing records from CSV for the test (if any)
-        csv.loadRecordsFromCsv(inventory);
+        csv.loadInventoryFromCsv(inventory);
 
         outputStream = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outputStream));
