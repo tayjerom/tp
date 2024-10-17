@@ -28,8 +28,19 @@ class InventraTest {
         ui = new Ui();
 
         // Set a unique CSV file path for testing
-        testCsvFilePath = "./storage/test_inventory.csv";
+        testCsvFilePath = "./src/main/java/seedu/storage/test_inventory.csv";
         csv = new Csv(testCsvFilePath);
+
+        // Create the file if it does not exist
+        File file = new File(testCsvFilePath);
+        if (!file.exists()) {
+            try (PrintStream writer = new PrintStream(file)) {
+                writer.println("#name:s,quantity:i,price:f"); // Metadata header
+                writer.println("name,quantity,price");         // Column headers
+            } catch (Exception e) {
+                System.err.println("Error creating test CSV file: " + e.getMessage());
+            }
+        }
 
         // Load existing records from CSV for the test (if any)
         csv.loadInventoryFromCsv(inventory);
