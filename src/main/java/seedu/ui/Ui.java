@@ -153,6 +153,10 @@ public class Ui {
         printMessage(message);
     }
 
+    public void showUnknownTypeMessage(String type) {
+        printMessage("Unknown field type: '" + type + "'. Valid types are: s (String), i (Integer), f (Float), d (Date).");
+    }
+
     public String getInvalidIntegerMessage(String field, String value) {
         return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
     }
