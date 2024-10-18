@@ -14,7 +14,7 @@ public class InventraOutOfBoundsException extends InventraException {
     @Override
     public String getMessage() {
         if (end == 0) {
-            return "Error: The inventory is empty.";
+            return "Error: The inventory is empty.\nUse 'add -d <value1, value2, ...>' to add records.";
         }
         return String.format("Error: Index %d is outside the bounds %d to %d", index, start, end);
     }

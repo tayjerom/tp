@@ -1,10 +1,12 @@
 package seedu.command;
+
 import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidNumberException;
 import seedu.exceptions.InventraMissingArgsException;
 import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ public class ViewCommand {
 
         String flag = args[1].trim();
         // Try to parse it as an ID to view a specific item
-        if(flag.isEmpty()) {
+        if (flag.isEmpty()) {
             throw new InventraMissingArgsException("Item index");
         }
         if (flag.equals("-a")) {// View all items
@@ -43,7 +45,7 @@ public class ViewCommand {
 
     private void handleViewById(int id) throws InventraException {
         List<Map<String, String>> records = inventory.getRecords();
-        if(id <= 0 || id >= records.size()) {
+        if (id <= 0 || id >= records.size()) {
             throw new InventraOutOfBoundsException(id, 1, records.size());
         }
         Map<String, String> record = records.get(id - 1); // Adjust for 0-based index

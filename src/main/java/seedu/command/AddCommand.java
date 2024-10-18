@@ -1,5 +1,6 @@
 package seedu.command;
 
+import seedu.exceptions.*;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -13,9 +14,9 @@ import java.util.logging.Logger;
 public class AddCommand {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
 
-    private Inventory inventory;
-    private Ui ui;
-    private Csv csv;
+    private final Inventory inventory;
+    private final Ui ui;
+    private final Csv csv;
 
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
         assert inventory != null : "Inventory should not be null";
@@ -27,7 +28,7 @@ public class AddCommand {
         this.csv = csv;
     }
 
-    public void execute(String[] args) {
+    public void execute(String[] args) throws InventraException {
         assert args != null && args.length >= 2 : "Arguments should " +
                 "contain at least a command and a flag";
 
@@ -57,15 +58,13 @@ public class AddCommand {
             break;
 
         default:
-            ui.showErrorInvalidFlag();
-            break;
+            throw new InventraInvalidFlagException("Use 'add -h <fields>' 'add -l', or 'add -d <values>'");
         }
     }
 
-    private void handleUpdateFields(String fieldData) {
+    private void handleUpdateFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
-            ui.showErrorNoFields();
-            return;
+            throw new InventraMissingFieldsException();
         }
 
         String[] fieldsToUpdate = fieldData.split(",\\s*");
@@ -106,10 +105,9 @@ public class AddCommand {
         ui.showFieldsAndRecords(inventory);
     }
 
-    private void handleAddMultipleFields(String fieldData) {
+    private void handleAddMultipleFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
-            ui.showErrorNoFields();
-            return;
+            throw new InventraMissingFieldsException();
         }
 
         String[] newFields = fieldData.split(",\\s*");
@@ -153,12 +151,11 @@ public class AddCommand {
         ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
     }
 
-    private void handleAddRecord(String recordData) {
+    private void handleAddRecord(String recordData) throws InventraException {
         LOGGER.info("Handling add record: " + recordData);
 
         if (inventory.getFields().isEmpty()) {
-            ui.showErrorNoFieldsDefined();
-            return;
+            throw new InventraMissingFieldsException();
         }
 
         String[] values = recordData.split(",\\s*");
@@ -196,7 +193,7 @@ public class AddCommand {
         ui.showSuccessRecordAdded();
     }
 
-    private String validateValue(String value, String type, String field) {
+    private String validateValue(String value, String type, String field) throws InventraException {
         switch (type) {
         case "s": // String
             return null; // Any string is valid
@@ -205,35 +202,35 @@ public class AddCommand {
                 Integer.parseInt(value);
                 return null; // Valid integer
             } catch (NumberFormatException e) {
-                return ui.getInvalidIntegerMessage(field, value);
+                throw new InventraInvalidTypeException(field, value, type);
             }
         case "f": // Float
             try {
                 Float.parseFloat(value);
                 return null; // Valid float
             } catch (NumberFormatException e) {
-                return ui.getInvalidFloatMessage(field, value);
+                throw new InventraInvalidTypeException(field, value, type);
             }
         case "d": // Date
             // Simple date validation, assuming the format is "dd/MM/yyyy"
             String[] parts = value.split("/");
             if (parts.length != 3) {
-                return ui.getInvalidDateMessage(field, value);
+                throw new InventraInvalidTypeException(field, value, type);
             }
             try {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
                 if (day <= 0 || month <= 0 || month > 12) {
-                    return ui.getInvalidDateMessage(field, value);
+                    throw new InventraInvalidTypeException(field, value, type);
                 }
                 return null; // Valid date
             } catch (NumberFormatException e) {
-                return ui.getInvalidDateMessage(field, value);
+                throw new InventraInvalidTypeException(field, value, type);
             }
         case "n": // Null
             if (!value.equalsIgnoreCase("null")) {
-                return ui.getInvalidNullMessage(field, value);
+                throw new InventraInvalidTypeException(field, value, type);
             }
             return null; // Valid null
         default:
