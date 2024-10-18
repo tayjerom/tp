@@ -1,3 +1,5 @@
+Directory created: storage
+CSV file not found at path: src/main/java/seedu/storage/inventory.csv
 Welcome to
  ___ _   ___     _______ _   _ _____ ____      _    
 |_ _| \ | \ \   / / ____| \ | |_   _|  _ \    / \   
@@ -5,33 +7,7 @@ Welcome to
  | || |\  | \ V / | |___| |\  | | | |  _ <  / ___ \ 
 |___|_| \_|  \_/  |_____|_| \_| |_| |_| \_\/_/   \_\
 
-Inventra's User Manual:
-Here is the list of commands you can use:
-_____________________________________________
-1. View records:
-   - Command to view all items: view -a
-   - Command to view specific item by ID: view <ID>
-   - Example: view 1
-2. Add custom fields with specific types:
-Note: Types: s - String, i - Integer, f - Float, d - Date
-   - Command: add -h <type/field, type/field, ...>
-   - Example: add -h s/name, i/quantity, f/price
- 
-3. Display all defined fields and stored records:
-   - Command: add -l
- 
-4. Add Records to custom fields created:
-   - Command: add -d <value1, value2, ...>
-   - Example: add -d Apple, 100, 1.50, 01/10/2024
- 
-5. Delete Records:
-   - Command: delete <record number>
-   - Example: delete 2
- 
-6. Exit program:
-   - Command: exit
-_____________________________________________
-Directory created: storage
-CSV file not found at path: src/main/java/seedu/storage/inventory.csv
+Type help to receive manual.
 _____________________________________________
 Program exit successfully.
+_____________________________________________

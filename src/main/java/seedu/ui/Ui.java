@@ -10,8 +10,19 @@ import java.util.Scanner;
 
 public class Ui {
 
+    public void printGreeting(){
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+        printMessage("Welcome to\n" + logo);
+        printMessage("Type help to receive manual.");
+    }
+
     public void run(Inventory inventory, Csv csv) {
         Scanner in = new Scanner(System.in);
+        printGreeting();
         String input;
         do {
             input = in.nextLine();
