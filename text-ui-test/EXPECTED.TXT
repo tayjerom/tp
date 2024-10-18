@@ -32,6 +32,6 @@ Note: Types: s - String, i - Integer, f - Float, d - Date
    - Command: exit
 _____________________________________________
 Directory created: storage
-CSV file does not exist. Starting with an empty inventory.
+CSV file not found at path: src/main/java/seedu/storage/inventory.csv
 _____________________________________________
 Program exit successfully.

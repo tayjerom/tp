@@ -8,7 +8,7 @@ import java.util.Map;
 public class Inventory {
     private List<String> fields = new ArrayList<>();
     private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
-    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+    private final List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
 
     public void addField(String field, String type) {
         fields.add(field);

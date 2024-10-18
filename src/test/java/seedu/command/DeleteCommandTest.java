@@ -33,10 +33,11 @@ public class DeleteCommandTest {
         try {
             String input = "delete 1";
             String[] parts = input.split(" ");
-            new DeleteCommand(inventory,ui,csv).execute(parts);
+            new DeleteCommand(inventory, ui, csv).execute(parts);
             fail(); // the test should not reach this line
         } catch (Exception e) {
-            assertEquals("Error: The inventory is empty.", e.getMessage());
+            assertEquals("Error: The inventory is empty.\nUse 'add -d <value1, value2, ...>' to add records.",
+                    e.getMessage());
         }
     }
 
