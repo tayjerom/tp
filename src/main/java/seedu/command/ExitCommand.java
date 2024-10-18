@@ -3,7 +3,7 @@ package seedu.command;
 import seedu.ui.Ui;
 
 public class ExitCommand {
-    private Ui ui;
+    private final Ui ui;
 
     public ExitCommand(Ui ui) {
         this.ui = ui;

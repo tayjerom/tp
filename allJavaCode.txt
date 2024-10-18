@@ -1,0 +1,4275 @@
+[java/command/AddCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.storage.Csv;
+import seedu.ui.Ui;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class AddCommand {
+    private Inventory inventory;
+    private Ui ui;
+    private Csv csv;
+
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.showErrorInvalidCommand();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-h":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-l":
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        case "-d":
+            if (args.length < 3) {
+                ui.showErrorNoRecords();
+                return;
+            }
+            handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
+            break;
+
+        default:
+            ui.showErrorInvalidFlag();
+            break;
+        }
+    }
+
+    private void handleAddMultipleFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] newFields = fieldData.split(",\\s*");
+        for (String field : newFields) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                return;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+            inventory.addField(fieldName, type);
+        }
+
+        ui.showSuccessFieldsAdded();
+        ui.showFieldsAndRecords(inventory);  // Show fields after adding
+    }
+
+    private void handleAddRecord(String recordData) {
+        if (inventory.getFields().isEmpty()) {
+            ui.showErrorNoFieldsDefined();
+            return;
+        }
+
+        String[] values = recordData.split(",\\s*");
+        if (values.length != inventory.getFields().size()) {
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
+            return;
+        }
+
+        Map<String, String> record = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            String field = inventory.getFields().get(i);
+            String type = inventory.getFieldTypes().get(field);
+            String value = values[i].trim();
+
+            // Validate based on field type
+            String validationMessage = validateValue(value, type, field);
+            if (validationMessage != null) {
+                ui.showValidationError(validationMessage);
+                return;
+            }
+            record.put(field, value);
+        }
+
+        inventory.addRecord(record);
+        ui.showSuccessRecordAdded();
+    }
+
+    private String validateValue(String value, String type, String field) {
+        switch (type) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                return ui.getInvalidIntegerMessage(field, value);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                return ui.getInvalidFloatMessage(field, value);
+            }
+        case "d": // Date
+            // Simple date validation, assuming the format is "dd/MM/yyyy"
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
+                    return ui.getInvalidDateMessage(field, value);
+                }
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                return ui.getInvalidNullMessage(field, value);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
+        }
+    }
+}
+
+
+[java/command/DeleteCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import java.util.List;
+import java.util.Map;
+
+public class DeleteCommand {
+
+    public static void execute(String userInput, Inventory inventory) {
+        String[] splitInput = userInput.split(" ");
+        if (splitInput.length < 2) {
+            System.out.println("    Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(splitInput[1]) - 1; // Convert to 0 index
+            List<Map<String, String>> records = inventory.getRecords();
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                System.out.println("    Record deleted successfully.");
+            } else {
+                System.out.println("    Error: Please provide a index within bounds");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("    Error: Please provide a valid number");
+        }
+    }
+}
+
+
+[java/command/ExitCommand.java]:
+
+package seedu.command;
+
+import seedu.ui.Ui;
+
+public class ExitCommand {
+    private Ui ui;
+
+    public ExitCommand(Ui ui) {
+        this.ui = ui;
+    }
+
+    public void execute() {
+        ui.printMessage("Program exit successfully.");
+        System.exit(0);
+    }
+}
+
+
+[java/command/ViewCommand.java]:
+
+package seedu.command;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import java.util.List;
+import java.util.Map;
+
+public class ViewCommand {
+    private Inventory inventory;
+    private Ui ui;
+
+    public ViewCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.printViewHelp();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-a":
+            // View all items
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        default:
+            // Try to parse it as an ID to view a specific item
+            try {
+                int id = Integer.parseInt(flag);
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                ui.printMessage("Error: Invalid ID format. Use an integer for record ID.");
+            }
+            break;
+        }
+    }
+
+    private void handleViewById(int id) {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (id <= 0 || id > records.size()) {
+            ui.printMessage("Error: Record ID out of bounds.");
+            return;
+        }
+
+        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
+        ui.printSingleRecord(record, id);
+    }
+}
+
+
+[java/inventra/Inventra.java]:
+
+package seedu.inventra;
+
+import seedu.model.Inventory;
+import seedu.parser.CommandParser;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.Scanner;
+
+public class Inventra {
+    public static void main(String[] args) {
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
+        Ui ui = new Ui();
+        ui.printMessage("Welcome to\n" + logo);
+        ui.showUserManual();
+
+        Scanner in = new Scanner(System.in);
+        Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv("./storage/inventory.csv");
+
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
+        while (true) {
+            String input = in.nextLine();
+            try {
+                System.out.println("_____________________________________________");
+                CommandParser.parseCommand(input, inventory, ui, csv);
+                System.out.println("_____________________________________________");
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+
+[java/model/Inventory.java]:
+
+package seedu.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Inventory {
+    private List<String> fields = new ArrayList<>();
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+
+    public void addField(String field, String type) {
+        fields.add(field);
+        fieldTypes.put(field, type);
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public Map<String, String> getFieldTypes() {
+        return fieldTypes;
+    }
+
+    public void addRecord(Map<String, String> record) {
+        records.add(record);
+    }
+
+    public List<Map<String, String>> getRecords() {
+        return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+}
+
+
+[java/parser/CommandParser.java]:
+
+package seedu.parser;
+
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+public class CommandParser {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
+        String[] parts = input.split(" ", 3);
+        String command = parts[0];
+
+        switch (command) {
+        case "add":
+            new AddCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "delete":
+            DeleteCommand.execute(input, inventory);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
+            break;
+        case "exit":
+            new ExitCommand(ui).execute();
+            break;
+        default:
+            ui.showErrorInvalidCommand();
+            break;
+        }
+    }
+}
+
+
+[java/storage/Csv.java]:
+
+package seedu.storage;
+
+import seedu.model.Inventory;
+
+import java.io.*;
+import java.util.*;
+
+public class Csv {
+
+    private final String csvFilePath;
+
+    public Csv(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getAbsolutePath());
+            }
+        }
+    }
+
+    // Update the CSV file headers and keep the existing data
+    public void updateCsvHeaders(Inventory inventory) {
+        File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
+
+        try {
+            // Overwrite the file with updated headers and preserve records
+            try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
+                List<String> fields = inventory.getFields();
+                if (!fields.isEmpty()) {
+                    writer.append(String.join(",", fields));
+                    writer.append("\n");
+                }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating CSV file headers: " + e.getMessage());
+        }
+    }
+
+    // Append a record to the CSV file considering the field order
+    public void appendRecord(Map<String, String> record, Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, true)) {
+            List<String> fields = inventory.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                String field = fields.get(i);
+                String value = record.get(field);
+                writer.append(value != null ? value : "null");  // null for empty fields
+                if (i < fields.size() - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+        } catch (IOException e) {
+            System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
+        }
+    }
+}
+
+
+[java/ui/Concat.java]:
+
+package seedu.ui;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class Concat {
+
+    // Set this relative path to match your project structure
+    private static final String SOURCE_DIRECTORY = "src/main/java/seedu";
+    private static final String OUTPUT_FILE = "allJavaCode.txt";
+
+    public static void main(String[] args) {
+        System.out.println("Checking directory: " + SOURCE_DIRECTORY); // Debugging output
+        File directory = new File(SOURCE_DIRECTORY);
+
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return;
+        } else if (!directory.isDirectory()) {
+            System.out.println("Not a directory: " + directory.getAbsolutePath());
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(OUTPUT_FILE, true)) {
+            appendJavaFiles(directory, writer);
+            System.out.println("All Java code has been appended to " + OUTPUT_FILE);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    private static void appendJavaFiles(File dir, FileWriter writer) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    appendJavaFiles(file, writer); // Recursively search subdirectories
+                } else if (file.isFile() && file.getName().endsWith(".java")) {
+                    appendFileContent(file, writer);
+                }
+            }
+        }
+    }
+
+    private static void appendFileContent(File file, FileWriter writer) throws IOException {
+        String filePath = file.getPath().replace("\\", "/").replace(SOURCE_DIRECTORY, "java");
+        writer.write("[" + filePath + "]:\n\n");
+
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        for (String line : lines) {
+            writer.write(line + "\n");
+        }
+        writer.write("\n\n"); // Add space between files
+    }
+}
+
+
+[java/ui/Ui.java]:
+
+package seedu.ui;
+
+import seedu.model.Inventory;
+
+import java.util.Map;
+import java.util.List;
+
+public class Ui {
+
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+
+    // Show user manual
+    public void showUserManual() {
+        printMessage("Inventra's User Manual:");
+        printMessage("Here is the list of commands you can use:");
+        printMessage("_____________________________________________");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
+        printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
+        printMessage("   - Command: add -h <type/field, type/field, ...>");
+        printMessage("   - Example: add -h s/name, i/quantity, f/price");
+
+        printMessage(" ");
+        printMessage("3. Display all defined fields and stored records:");
+        printMessage("   - Command: add -l");
+
+        printMessage(" ");
+        printMessage("4. Add Records to custom fields created:");
+        printMessage("   - Command: add -d <value1, value2, ...>");
+        printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
+
+        printMessage(" ");
+        printMessage("5. Delete Records:");
+        printMessage("   - Command: delete <record number>");
+        printMessage("   - Example: delete 2");
+
+        printMessage(" ");
+        printMessage("6. Exit program:");
+        printMessage("   - Command: exit");
+        printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
+    }
+
+    // Show fields and records in table format
+    public void showFieldsAndRecords(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (fields.isEmpty()) {
+            printMessage("    No fields have been added yet.");
+        } else {
+            printTableHeader(fields);
+
+            if (records.isEmpty()) {
+                printMessage("    No records have been added yet.");
+            } else {
+                printTableRecords(fields, records);
+            }
+        }
+    }
+
+    // Prints table header with fields
+    private void printTableHeader(List<String> fields) {
+        StringBuilder header = new StringBuilder("    | ");
+        StringBuilder separator = new StringBuilder("    +");
+
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
+            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+        }
+
+        printMessage(separator.toString());
+        printMessage(header.toString());
+        printMessage(separator.toString());
+    }
+
+    // Prints table rows with records
+    private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
+        StringBuilder separator = new StringBuilder("    +");
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);
+            separator.append("-".repeat(columnWidth + 2)).append("+");
+        }
+
+        for (Map<String, String> record : records) {
+            StringBuilder row = new StringBuilder("    | ");
+            for (String field : fields) {
+                int columnWidth = Math.max(field.length(), 10);
+                String value = record.getOrDefault(field, "null");  // Handle missing values
+                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+            }
+            printMessage(row.toString());
+            printMessage(separator.toString());
+        }
+    }
+
+    public void showErrorInvalidCommand() {
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
+    }
+
+    public void showErrorNoFields() {
+        printMessage("    No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+    }
+
+    public void showErrorNoRecords() {
+        printMessage("    No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+    }
+
+    public void showErrorInvalidFlag() {
+        printMessage("    Invalid flag. Use 'add -h <fields>', 'add -l', or 'add -d <values>'");
+    }
+
+    public void showErrorInvalidFieldFormat() {
+        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
+    }
+
+    public void showErrorNoFieldsDefined() {
+        printMessage("    No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+    }
+
+    public void showErrorInvalidRecordCount(int expected) {
+        printMessage("    Invalid number of values. Expected " + expected + " values.");
+    }
+
+    public void showSuccessFieldsAdded() {
+        printMessage("    Fields added successfully.");
+    }
+
+    public void showSuccessRecordAdded() {
+        printMessage("    Record added successfully.");
+    }
+
+    public void showValidationError(String message) {
+        printMessage(message);
+    }
+
+    public String getInvalidIntegerMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
+    }
+
+    public String getInvalidFloatMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Float, got: '" + value + "'";
+    }
+
+    public String getInvalidDateMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+    }
+
+    public String getInvalidNullMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Null, got: '" + value + "'";
+    }
+
+    public String getUnknownTypeMessage(String field) {
+        return "    Unknown field type for field '" + field + "'.";
+    }
+}
+
+
+[java/command/AddCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.storage.Csv;
+import seedu.ui.Ui;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+
+public class AddCommand {
+    private Inventory inventory;
+    private Ui ui;
+    private Csv csv;
+
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.showErrorInvalidCommand();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-h":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-hu":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleUpdateFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-l":
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        case "-d":
+            if (args.length < 3) {
+                ui.showErrorNoRecords();
+                return;
+            }
+            handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
+            break;
+
+        default:
+            ui.showErrorInvalidFlag();
+            break;
+        }
+    }
+
+    private void handleUpdateFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] fieldsToUpdate = fieldData.split(",\\s*");
+        List<String> updatedFields = new ArrayList<>();
+        Map<String, String> updatedFieldTypes = new HashMap<>();
+
+        // Process each field in the -hu command
+        for (String field : fieldsToUpdate) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                return;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            if (inventory.getFields().contains(fieldName)) {
+                // Update existing field
+                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
+            } else {
+                // Add new field if it doesn't exist
+                ui.printMessage("    Field '" + fieldName + "' added successfully.");
+            }
+            // Add or update field in the new list of fields
+            updatedFields.add(fieldName);
+            updatedFieldTypes.put(fieldName, type);
+        }
+
+        // Replace inventory fields and types with the updated ones
+        inventory.setFields(updatedFields);
+        inventory.setFieldTypes(updatedFieldTypes);
+
+        // Update the CSV headers to match the new field list
+        csv.updateCsvHeaders(inventory);
+
+        // Display the updated fields
+        ui.showFieldsAndRecords(inventory);
+    }
+
+    private void handleAddMultipleFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] newFields = fieldData.split(",\\s*");
+        boolean success = true;
+
+        for (String field : newFields) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                success = false;
+                continue;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            // Check for valid type
+            if (!isValidFieldType(type)) {
+                ui.showUnknownTypeMessage(type);
+                success = false;
+                continue;
+            }
+
+            // Check for duplicate fields
+            if (inventory.getFields().contains(fieldName)) {
+                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
+                success = false;
+                continue;
+            }
+
+            // Add field if all checks pass
+            inventory.addField(fieldName, type);
+        }
+
+        if (success) {
+            ui.showSuccessFieldsAdded();
+        } else {
+            ui.printMessage("Failed to add one or more fields due to errors.");
+        }
+
+        ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
+    }
+
+    private void handleAddRecord(String recordData) {
+        if (inventory.getFields().isEmpty()) {
+            ui.showErrorNoFieldsDefined();
+            return;
+        }
+
+        String[] values = recordData.split(",\\s*");
+        if (values.length != inventory.getFields().size()) {
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
+            return;
+        }
+
+        Map<String, String> record = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            String field = inventory.getFields().get(i);
+            String type = inventory.getFieldTypes().get(field);
+            String value = values[i].trim();
+
+            // Validate based on field type
+            String validationMessage = validateValue(value, type, field);
+            if (validationMessage != null) {
+                ui.showValidationError(validationMessage);
+                return;
+            }
+            record.put(field, value);
+        }
+
+        inventory.addRecord(record);
+        ui.showSuccessRecordAdded();
+    }
+
+    private String validateValue(String value, String type, String field) {
+        switch (type) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                return ui.getInvalidIntegerMessage(field, value);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                return ui.getInvalidFloatMessage(field, value);
+            }
+        case "d": // Date
+            // Simple date validation, assuming the format is "dd/MM/yyyy"
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
+                    return ui.getInvalidDateMessage(field, value);
+                }
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                return ui.getInvalidNullMessage(field, value);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
+        }
+    }
+
+    private boolean isValidFieldType(String type) {
+        return type.equals("s") || type.equals("i") || type.equals("f") || type.equals("d");
+    }
+}
+
+
+[java/command/DeleteCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import java.util.List;
+import java.util.Map;
+
+public class DeleteCommand {
+
+    public static void execute(String userInput, Inventory inventory) {
+        String[] splitInput = userInput.split(" ");
+        if (splitInput.length < 2) {
+            System.out.println("    Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(splitInput[1]) - 1; // Convert to 0 index
+            List<Map<String, String>> records = inventory.getRecords();
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                System.out.println("    Record deleted successfully.");
+            } else {
+                System.out.println("    Error: Please provide a index within bounds");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("    Error: Please provide a valid number");
+        }
+    }
+}
+
+
+[java/command/ExitCommand.java]:
+
+package seedu.command;
+
+import seedu.ui.Ui;
+
+public class ExitCommand {
+    private Ui ui;
+
+    public ExitCommand(Ui ui) {
+        this.ui = ui;
+    }
+
+    public void execute() {
+        ui.printMessage("Program exit successfully.");
+        System.exit(0);
+    }
+}
+
+
+[java/command/ViewCommand.java]:
+
+package seedu.command;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import java.util.List;
+import java.util.Map;
+
+public class ViewCommand {
+    private Inventory inventory;
+    private Ui ui;
+
+    public ViewCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.printViewHelp();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-a":
+            // View all items
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        default:
+            // Try to parse it as an ID to view a specific item
+            try {
+                int id = Integer.parseInt(flag);
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                ui.printMessage("Error: Invalid ID format. Use an integer for record ID.");
+            }
+            break;
+        }
+    }
+
+    private void handleViewById(int id) {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (id <= 0 || id > records.size()) {
+            ui.printMessage("Error: Record ID out of bounds.");
+            return;
+        }
+
+        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
+        ui.printSingleRecord(record, id);
+    }
+}
+
+
+[java/inventra/Inventra.java]:
+
+package seedu.inventra;
+
+import seedu.model.Inventory;
+import seedu.parser.CommandParser;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.Scanner;
+
+public class Inventra {
+    public static void main(String[] args) {
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
+        Ui ui = new Ui();
+        ui.printMessage("Welcome to\n" + logo);
+        ui.showUserManual();
+
+        Scanner in = new Scanner(System.in);
+        Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv("./storage/inventory.csv");
+
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
+        while (true) {
+            String input = in.nextLine();
+            try {
+                System.out.println("_____________________________________________");
+                CommandParser.parseCommand(input, inventory, ui, csv);
+                System.out.println("_____________________________________________");
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+
+[java/model/Inventory.java]:
+
+package seedu.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Inventory {
+    private List<String> fields = new ArrayList<>();
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+
+    public void addField(String field, String type) {
+        fields.add(field);
+        fieldTypes.put(field, type);
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public Map<String, String> getFieldTypes() {
+        return fieldTypes;
+    }
+
+    public void addRecord(Map<String, String> record) {
+        records.add(record);
+    }
+
+    public List<Map<String, String>> getRecords() {
+        return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+
+    public void setFieldTypes(Map<String, String> newFieldTypes) {
+        this.fieldTypes = newFieldTypes;
+    }
+}
+
+
+[java/parser/CommandParser.java]:
+
+package seedu.parser;
+
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+public class CommandParser {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
+        String[] parts = input.split(" ", 3);
+        String command = parts[0];
+
+        switch (command) {
+        case "add":
+            new AddCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "delete":
+            DeleteCommand.execute(input, inventory);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
+            break;
+        case "exit":
+            new ExitCommand(ui).execute();
+            break;
+        default:
+            ui.showErrorInvalidCommand();
+            break;
+        }
+    }
+}
+
+
+[java/storage/Csv.java]:
+
+package seedu.storage;
+
+import seedu.model.Inventory;
+
+import java.io.*;
+import java.util.*;
+
+public class Csv {
+
+    private final String csvFilePath;
+
+    public Csv(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getAbsolutePath());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getAbsolutePath());
+            }
+        }
+    }
+
+    // Update the CSV file headers and keep the existing data
+    public void updateCsvHeaders(Inventory inventory) {
+        File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
+
+        try {
+            // Overwrite the file with updated headers and preserve records
+            try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
+                List<String> fields = inventory.getFields();
+                if (!fields.isEmpty()) {
+                    writer.append(String.join(",", fields));
+                    writer.append("\n");
+                }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating CSV file headers: " + e.getMessage());
+        }
+    }
+
+    // Append a record to the CSV file considering the field order
+    public void appendRecord(Map<String, String> record, Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, true)) {
+            List<String> fields = inventory.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                String field = fields.get(i);
+                String value = record.get(field);
+                writer.append(value != null ? value : "null");  // null for empty fields
+                if (i < fields.size() - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+        } catch (IOException e) {
+            System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
+        }
+    }
+}
+
+
+[java/ui/Concat.java]:
+
+package seedu.ui;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class Concat {
+
+    // Set this relative path to match your project structure
+    private static final String SOURCE_DIRECTORY = "src/main/java/seedu";
+    private static final String OUTPUT_FILE = "allJavaCode.txt";
+
+    public static void main(String[] args) {
+        System.out.println("Checking directory: " + SOURCE_DIRECTORY); // Debugging output
+        File directory = new File(SOURCE_DIRECTORY);
+
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return;
+        } else if (!directory.isDirectory()) {
+            System.out.println("Not a directory: " + directory.getAbsolutePath());
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(OUTPUT_FILE, true)) {
+            appendJavaFiles(directory, writer);
+            System.out.println("All Java code has been appended to " + OUTPUT_FILE);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    private static void appendJavaFiles(File dir, FileWriter writer) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    appendJavaFiles(file, writer); // Recursively search subdirectories
+                } else if (file.isFile() && file.getName().endsWith(".java")) {
+                    appendFileContent(file, writer);
+                }
+            }
+        }
+    }
+
+    private static void appendFileContent(File file, FileWriter writer) throws IOException {
+        String filePath = file.getPath().replace("\\", "/").replace(SOURCE_DIRECTORY, "java");
+        writer.write("[" + filePath + "]:\n\n");
+
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        for (String line : lines) {
+            writer.write(line + "\n");
+        }
+        writer.write("\n\n"); // Add space between files
+    }
+}
+
+
+[java/ui/Ui.java]:
+
+package seedu.ui;
+
+import seedu.model.Inventory;
+
+import java.util.Map;
+import java.util.List;
+
+public class Ui {
+
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+
+    // Show user manual
+    public void showUserManual() {
+        printMessage("Inventra's User Manual:");
+        printMessage("Here is the list of commands you can use:");
+        printMessage("_____________________________________________");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
+        printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
+        printMessage("   - Command: add -h <type/field, type/field, ...>");
+        printMessage("   - Example: add -h s/name, i/quantity, f/price");
+
+        printMessage(" ");
+        printMessage("3. Display all defined fields and stored records:");
+        printMessage("   - Command: add -l");
+
+        printMessage(" ");
+        printMessage("4. Add Records to custom fields created:");
+        printMessage("   - Command: add -d <value1, value2, ...>");
+        printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
+
+        printMessage(" ");
+        printMessage("5. Delete Records:");
+        printMessage("   - Command: delete <record number>");
+        printMessage("   - Example: delete 2");
+
+        printMessage(" ");
+        printMessage("6. Exit program:");
+        printMessage("   - Command: exit");
+        printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
+    }
+
+    // Show fields and records in table format
+    public void showFieldsAndRecords(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (fields.isEmpty()) {
+            printMessage("    No fields have been added yet.");
+        } else {
+            printTableHeader(fields);
+
+            if (records.isEmpty()) {
+                printMessage("    No records have been added yet.");
+            } else {
+                printTableRecords(fields, records);
+            }
+        }
+    }
+
+    // Prints table header with fields
+    private void printTableHeader(List<String> fields) {
+        StringBuilder header = new StringBuilder("    | ");
+        StringBuilder separator = new StringBuilder("    +");
+
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
+            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+        }
+
+        printMessage(separator.toString());
+        printMessage(header.toString());
+        printMessage(separator.toString());
+    }
+
+    // Prints table rows with records
+    private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
+        StringBuilder separator = new StringBuilder("    +");
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);
+            separator.append("-".repeat(columnWidth + 2)).append("+");
+        }
+
+        for (Map<String, String> record : records) {
+            StringBuilder row = new StringBuilder("    | ");
+            for (String field : fields) {
+                int columnWidth = Math.max(field.length(), 10);
+                String value = record.getOrDefault(field, "null");  // Handle missing values
+                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+            }
+            printMessage(row.toString());
+            printMessage(separator.toString());
+        }
+    }
+
+    public void showErrorInvalidCommand() {
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
+    }
+
+    public void showErrorNoFields() {
+        printMessage("    No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+    }
+
+    public void showErrorNoRecords() {
+        printMessage("    No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+    }
+
+    public void showErrorInvalidFlag() {
+        printMessage("    Invalid flag. Use 'add -h <fields>', 'add -l', or 'add -d <values>'");
+    }
+
+    public void showErrorInvalidFieldFormat() {
+        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
+    }
+
+    public void showErrorNoFieldsDefined() {
+        printMessage("    No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+    }
+
+    public void showErrorInvalidRecordCount(int expected) {
+        printMessage("    Invalid number of values. Expected " + expected + " values.");
+    }
+
+    public void showSuccessFieldsAdded() {
+        printMessage("    Fields added successfully.");
+    }
+
+    public void showSuccessRecordAdded() {
+        printMessage("    Record added successfully.");
+    }
+
+    public void showValidationError(String message) {
+        printMessage(message);
+    }
+
+    public void showUnknownTypeMessage(String type) {
+        printMessage("Unknown field type: '" + type + "'. Valid types are: s (String), i (Integer), f (Float), d (Date).");
+    }
+
+    public String getInvalidIntegerMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
+    }
+
+    public String getInvalidFloatMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Float, got: '" + value + "'";
+    }
+
+    public String getInvalidDateMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+    }
+
+    public String getInvalidNullMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Null, got: '" + value + "'";
+    }
+
+    public String getUnknownTypeMessage(String field) {
+        return "    Unknown field type for field '" + field + "'.";
+    }
+}
+
+
+[java/command/AddCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.storage.Csv;
+import seedu.ui.Ui;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+
+public class AddCommand {
+    private Inventory inventory;
+    private Ui ui;
+    private Csv csv;
+
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.showErrorInvalidCommand();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-h":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-hu":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleUpdateFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-l":
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        case "-d":
+            if (args.length < 3) {
+                ui.showErrorNoRecords();
+                return;
+            }
+            handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
+            break;
+
+        default:
+            ui.showErrorInvalidFlag();
+            break;
+        }
+    }
+
+    private void handleUpdateFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] fieldsToUpdate = fieldData.split(",\\s*");
+        List<String> updatedFields = new ArrayList<>();
+        Map<String, String> updatedFieldTypes = new HashMap<>();
+
+        // Process each field in the -hu command
+        for (String field : fieldsToUpdate) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                return;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            if (inventory.getFields().contains(fieldName)) {
+                // Update existing field
+                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
+            } else {
+                // Add new field if it doesn't exist
+                ui.printMessage("    Field '" + fieldName + "' added successfully.");
+            }
+            // Add or update field in the new list of fields
+            updatedFields.add(fieldName);
+            updatedFieldTypes.put(fieldName, type);
+        }
+
+        // Replace inventory fields and types with the updated ones
+        inventory.setFields(updatedFields);
+        inventory.setFieldTypes(updatedFieldTypes);
+
+        // Update the CSV headers to match the new field list
+        csv.updateCsvHeaders(inventory);
+
+        // Display the updated fields
+        ui.showFieldsAndRecords(inventory);
+    }
+
+    private void handleAddMultipleFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] newFields = fieldData.split(",\\s*");
+        boolean success = true;
+
+        for (String field : newFields) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                success = false;
+                continue;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            // Check for valid type
+            if (!isValidFieldType(type)) {
+                ui.showUnknownTypeMessage(type);
+                success = false;
+                continue;
+            }
+
+            // Check for duplicate fields
+            if (inventory.getFields().contains(fieldName)) {
+                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
+                success = false;
+                continue;
+            }
+
+            // Add field if all checks pass
+            inventory.addField(fieldName, type);
+        }
+
+        if (success) {
+            ui.showSuccessFieldsAdded();
+        } else {
+            ui.printMessage("Failed to add one or more fields due to errors.");
+        }
+
+        ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
+    }
+
+    private void handleAddRecord(String recordData) {
+        if (inventory.getFields().isEmpty()) {
+            ui.showErrorNoFieldsDefined();
+            return;
+        }
+
+        String[] values = recordData.split(",\\s*");
+        if (values.length != inventory.getFields().size()) {
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
+            return;
+        }
+
+        Map<String, String> record = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            String field = inventory.getFields().get(i);
+            String type = inventory.getFieldTypes().get(field);
+            String value = values[i].trim();
+
+            // Validate based on field type
+            String validationMessage = validateValue(value, type, field);
+            if (validationMessage != null) {
+                ui.showValidationError(validationMessage);
+                return;
+            }
+            record.put(field, value);
+        }
+
+        inventory.addRecord(record);
+        ui.showSuccessRecordAdded();
+    }
+
+    private String validateValue(String value, String type, String field) {
+        switch (type) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                return ui.getInvalidIntegerMessage(field, value);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                return ui.getInvalidFloatMessage(field, value);
+            }
+        case "d": // Date
+            // Simple date validation, assuming the format is "dd/MM/yyyy"
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
+                    return ui.getInvalidDateMessage(field, value);
+                }
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                return ui.getInvalidNullMessage(field, value);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
+        }
+    }
+
+    private boolean isValidFieldType(String type) {
+        return type.equals("s") || type.equals("i") || type.equals("f") || type.equals("d");
+    }
+}
+
+
+[java/command/DeleteCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+
+import java.util.List;
+import java.util.Map;
+
+public class DeleteCommand {
+    private final Inventory inventory;
+    private final Ui ui;
+
+    public DeleteCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] parts) {
+        if (parts.length < 2) {
+            ui.printMessage("    Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(parts[1]) - 1; // Convert to 0 index
+            List<Map<String, String>> records = inventory.getRecords();
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                ui.printMessage("    Record deleted successfully.");
+            } else {
+                ui.printMessage("    Error: Please provide a index within bounds");
+            }
+        } catch (NumberFormatException e) {
+            ui.printMessage("    Error: Please provide a valid number");
+        }
+    }
+}
+
+
+[java/command/ExitCommand.java]:
+
+package seedu.command;
+
+import seedu.ui.Ui;
+
+public class ExitCommand {
+    private Ui ui;
+
+    public ExitCommand(Ui ui) {
+        this.ui = ui;
+    }
+
+    public void execute() {
+        ui.printMessage("Program exit successfully.");
+        System.exit(0);
+    }
+}
+
+
+[java/command/ViewCommand.java]:
+
+package seedu.command;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import java.util.List;
+import java.util.Map;
+
+public class ViewCommand {
+    private Inventory inventory;
+    private Ui ui;
+
+    public ViewCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.printViewHelp();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-a":
+            // View all items
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        default:
+            // Try to parse it as an ID to view a specific item
+            try {
+                int id = Integer.parseInt(flag);
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                ui.printMessage("Error: Invalid ID format. Use an integer for record ID.");
+            }
+            break;
+        }
+    }
+
+    private void handleViewById(int id) {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (id <= 0 || id > records.size()) {
+            ui.printMessage("Error: Record ID out of bounds.");
+            return;
+        }
+
+        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
+        ui.printSingleRecord(record, id);
+    }
+}
+
+
+[java/inventra/Inventra.java]:
+
+package seedu.inventra;
+
+import seedu.model.Inventory;
+import seedu.parser.CommandParser;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.Scanner;
+
+public class Inventra {
+    public static void main(String[] args) {
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
+        Ui ui = new Ui();
+        ui.printMessage("Welcome to\n" + logo);
+        ui.showUserManual();
+
+        Scanner in = new Scanner(System.in);
+        Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv("./storage/inventory.csv");
+
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
+        while (true) {
+            String input = in.nextLine();
+            try {
+                System.out.println("_____________________________________________");
+                CommandParser.parseCommand(input, inventory, ui, csv);
+                System.out.println("_____________________________________________");
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+
+[java/model/Inventory.java]:
+
+package seedu.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Inventory {
+    private List<String> fields = new ArrayList<>();
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+
+    public void addField(String field, String type) {
+        fields.add(field);
+        fieldTypes.put(field, type);
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public Map<String, String> getFieldTypes() {
+        return fieldTypes;
+    }
+
+    public void addRecord(Map<String, String> record) {
+        records.add(record);
+    }
+
+    public List<Map<String, String>> getRecords() {
+        return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+
+    public void setFieldTypes(Map<String, String> newFieldTypes) {
+        this.fieldTypes = newFieldTypes;
+    }
+}
+
+
+[java/parser/CommandParser.java]:
+
+package seedu.parser;
+
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+public class CommandParser {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
+        String[] parts = input.split(" ", 3);
+        String command = parts[0];
+
+        switch (command) {
+        case "add":
+            new AddCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "delete":
+            new DeleteCommand(inventory,ui).execute(parts);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
+            break;
+        case "exit":
+            new ExitCommand(ui).execute();
+            break;
+        default:
+            ui.showErrorInvalidCommand();
+            break;
+        }
+    }
+}
+
+
+[java/storage/Csv.java]:
+
+package seedu.storage;
+
+import seedu.model.Inventory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Csv {
+
+    private final String csvFilePath;
+
+    public Csv(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getName());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getName());
+            }
+        }
+    }
+
+    // Update the CSV file headers and keep the existing data
+    public void updateCsvHeaders(Inventory inventory) {
+        File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
+
+        try {
+            // Overwrite the file with updated headers and preserve records
+            try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
+                List<String> fields = inventory.getFields();
+                if (!fields.isEmpty()) {
+                    writer.append(String.join(",", fields));
+                    writer.append("\n");
+                }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating CSV file headers: " + e.getMessage());
+        }
+    }
+
+    // Append a record to the CSV file considering the field order
+    public void appendRecord(Map<String, String> record, Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, true)) {
+            List<String> fields = inventory.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                String field = fields.get(i);
+                String value = record.get(field);
+                writer.append(value != null ? value : "null");  // null for empty fields
+                if (i < fields.size() - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+        } catch (IOException e) {
+            System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
+        }
+    }
+}
+
+
+[java/ui/Concat.java]:
+
+package seedu.ui;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class Concat {
+
+    // Set this relative path to match your project structure
+    private static final String SOURCE_DIRECTORY = "src/main/java/seedu";
+    private static final String OUTPUT_FILE = "allJavaCode.txt";
+
+    public static void main(String[] args) {
+        System.out.println("Checking directory: " + SOURCE_DIRECTORY); // Debugging output
+        File directory = new File(SOURCE_DIRECTORY);
+
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return;
+        } else if (!directory.isDirectory()) {
+            System.out.println("Not a directory: " + directory.getAbsolutePath());
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(OUTPUT_FILE, true)) {
+            appendJavaFiles(directory, writer);
+            System.out.println("All Java code has been appended to " + OUTPUT_FILE);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    private static void appendJavaFiles(File dir, FileWriter writer) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    appendJavaFiles(file, writer); // Recursively search subdirectories
+                } else if (file.isFile() && file.getName().endsWith(".java")) {
+                    appendFileContent(file, writer);
+                }
+            }
+        }
+    }
+
+    private static void appendFileContent(File file, FileWriter writer) throws IOException {
+        String filePath = file.getPath().replace("\\", "/").replace(SOURCE_DIRECTORY, "java");
+        writer.write("[" + filePath + "]:\n\n");
+
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        for (String line : lines) {
+            writer.write(line + "\n");
+        }
+        writer.write("\n\n"); // Add space between files
+    }
+}
+
+
+[java/ui/Ui.java]:
+
+package seedu.ui;
+
+import seedu.model.Inventory;
+
+import java.util.Map;
+import java.util.List;
+
+public class Ui {
+
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+
+    // Show user manual
+    public void showUserManual() {
+        printMessage("Inventra's User Manual:");
+        printMessage("Here is the list of commands you can use:");
+        printMessage("_____________________________________________");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
+        printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
+        printMessage("   - Command: add -h <type/field, type/field, ...>");
+        printMessage("   - Example: add -h s/name, i/quantity, f/price");
+
+        printMessage(" ");
+        printMessage("3. Display all defined fields and stored records:");
+        printMessage("   - Command: add -l");
+
+        printMessage(" ");
+        printMessage("4. Add Records to custom fields created:");
+        printMessage("   - Command: add -d <value1, value2, ...>");
+        printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
+
+        printMessage(" ");
+        printMessage("5. Delete Records:");
+        printMessage("   - Command: delete <record number>");
+        printMessage("   - Example: delete 2");
+
+        printMessage(" ");
+        printMessage("6. Exit program:");
+        printMessage("   - Command: exit");
+        printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
+    }
+
+    // Show fields and records in table format
+    public void showFieldsAndRecords(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (fields.isEmpty()) {
+            printMessage("    No fields have been added yet.");
+        } else {
+            printTableHeader(fields);
+
+            if (records.isEmpty()) {
+                printMessage("    No records have been added yet.");
+            } else {
+                printTableRecords(fields, records);
+            }
+        }
+    }
+
+    // Prints table header with fields
+    private void printTableHeader(List<String> fields) {
+        StringBuilder header = new StringBuilder("    | ");
+        StringBuilder separator = new StringBuilder("    +");
+
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
+            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+        }
+
+        printMessage(separator.toString());
+        printMessage(header.toString());
+        printMessage(separator.toString());
+    }
+
+    // Prints table rows with records
+    private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
+        StringBuilder separator = new StringBuilder("    +");
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);
+            separator.append("-".repeat(columnWidth + 2)).append("+");
+        }
+
+        for (Map<String, String> record : records) {
+            StringBuilder row = new StringBuilder("    | ");
+            for (String field : fields) {
+                int columnWidth = Math.max(field.length(), 10);
+                String value = record.getOrDefault(field, "null");  // Handle missing values
+                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+            }
+            printMessage(row.toString());
+            printMessage(separator.toString());
+        }
+    }
+
+    public void showErrorInvalidCommand() {
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
+    }
+
+    public void showErrorNoFields() {
+        printMessage("    No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+    }
+
+    public void showErrorNoRecords() {
+        printMessage("    No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+    }
+
+    public void showErrorInvalidFlag() {
+        printMessage("    Invalid flag. Use 'add -h <fields>', 'add -l', or 'add -d <values>'");
+    }
+
+    public void showErrorInvalidFieldFormat() {
+        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
+    }
+
+    public void showErrorNoFieldsDefined() {
+        printMessage("    No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+    }
+
+    public void showErrorInvalidRecordCount(int expected) {
+        printMessage("    Invalid number of values. Expected " + expected + " values.");
+    }
+
+    public void showSuccessFieldsAdded() {
+        printMessage("    Fields added successfully.");
+    }
+
+    public void showSuccessRecordAdded() {
+        printMessage("    Record added successfully.");
+    }
+
+    public void showValidationError(String message) {
+        printMessage(message);
+    }
+
+    public void showUnknownTypeMessage(String type) {
+        printMessage("Unknown field type: '" + type + "'. Valid types are: s (String), i (Integer), f (Float), d (Date).");
+    }
+
+    public String getInvalidIntegerMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
+    }
+
+    public String getInvalidFloatMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Float, got: '" + value + "'";
+    }
+
+    public String getInvalidDateMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+    }
+
+    public String getInvalidNullMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Null, got: '" + value + "'";
+    }
+
+    public String getUnknownTypeMessage(String field) {
+        return "    Unknown field type for field '" + field + "'.";
+    }
+}
+
+
+[java/command/AddCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.storage.Csv;
+import seedu.ui.Ui;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+
+public class AddCommand {
+    private Inventory inventory;
+    private Ui ui;
+    private Csv csv;
+
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.showErrorInvalidCommand();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-h":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-hu":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleUpdateFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-l":
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        case "-d":
+            if (args.length < 3) {
+                ui.showErrorNoRecords();
+                return;
+            }
+            handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
+            break;
+
+        default:
+            ui.showErrorInvalidFlag();
+            break;
+        }
+    }
+
+    private void handleUpdateFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] fieldsToUpdate = fieldData.split(",\\s*");
+        List<String> updatedFields = new ArrayList<>();
+        Map<String, String> updatedFieldTypes = new HashMap<>();
+
+        // Process each field in the -hu command
+        for (String field : fieldsToUpdate) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                return;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            if (inventory.getFields().contains(fieldName)) {
+                // Update existing field
+                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
+            } else {
+                // Add new field if it doesn't exist
+                ui.printMessage("    Field '" + fieldName + "' added successfully.");
+            }
+            // Add or update field in the new list of fields
+            updatedFields.add(fieldName);
+            updatedFieldTypes.put(fieldName, type);
+        }
+
+        // Replace inventory fields and types with the updated ones
+        inventory.setFields(updatedFields);
+        inventory.setFieldTypes(updatedFieldTypes);
+
+        // Update the CSV headers to match the new field list
+        csv.updateCsvHeaders(inventory);
+
+        // Display the updated fields
+        ui.showFieldsAndRecords(inventory);
+    }
+
+    private void handleAddMultipleFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] newFields = fieldData.split(",\\s*");
+        boolean success = true;
+
+        for (String field : newFields) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                success = false;
+                continue;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            // Check for valid type
+            if (!isValidFieldType(type)) {
+                ui.showUnknownTypeMessage(type);
+                success = false;
+                continue;
+            }
+
+            // Check for duplicate fields
+            if (inventory.getFields().contains(fieldName)) {
+                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
+                success = false;
+                continue;
+            }
+
+            // Add field if all checks pass
+            inventory.addField(fieldName, type);
+        }
+
+        if (success) {
+            ui.showSuccessFieldsAdded();
+        } else {
+            ui.printMessage("Failed to add one or more fields due to errors.");
+        }
+
+        ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
+    }
+
+    private void handleAddRecord(String recordData) {
+        if (inventory.getFields().isEmpty()) {
+            ui.showErrorNoFieldsDefined();
+            return;
+        }
+
+        String[] values = recordData.split(",\\s*");
+        if (values.length != inventory.getFields().size()) {
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
+            return;
+        }
+
+        Map<String, String> record = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            String field = inventory.getFields().get(i);
+            String type = inventory.getFieldTypes().get(field);
+            String value = values[i].trim();
+
+            // Validate based on field type
+            String validationMessage = validateValue(value, type, field);
+            if (validationMessage != null) {
+                ui.showValidationError(validationMessage);
+                return;
+            }
+            record.put(field, value);
+        }
+
+        inventory.addRecord(record);
+        ui.showSuccessRecordAdded();
+    }
+
+    private String validateValue(String value, String type, String field) {
+        switch (type) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                return ui.getInvalidIntegerMessage(field, value);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                return ui.getInvalidFloatMessage(field, value);
+            }
+        case "d": // Date
+            // Simple date validation, assuming the format is "dd/MM/yyyy"
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
+                    return ui.getInvalidDateMessage(field, value);
+                }
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                return ui.getInvalidNullMessage(field, value);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
+        }
+    }
+
+    private boolean isValidFieldType(String type) {
+        return type.equals("s") || type.equals("i") || type.equals("f") || type.equals("d");
+    }
+}
+
+
+[java/command/DeleteCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+
+import java.util.List;
+import java.util.Map;
+
+public class DeleteCommand {
+    private final Inventory inventory;
+    private final Ui ui;
+
+    public DeleteCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] parts) {
+        if (parts.length < 2) {
+            ui.printMessage("    Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(parts[1]) - 1; // Convert to 0 index
+            List<Map<String, String>> records = inventory.getRecords();
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                ui.printMessage("    Record deleted successfully.");
+            } else {
+                ui.printMessage("    Error: Please provide a index within bounds");
+            }
+        } catch (NumberFormatException e) {
+            ui.printMessage("    Error: Please provide a valid number");
+        }
+    }
+}
+
+
+[java/command/ExitCommand.java]:
+
+package seedu.command;
+
+import seedu.ui.Ui;
+
+public class ExitCommand {
+    private Ui ui;
+
+    public ExitCommand(Ui ui) {
+        this.ui = ui;
+    }
+
+    public void execute() {
+        ui.printMessage("Program exit successfully.");
+        System.exit(0);
+    }
+}
+
+
+[java/command/ViewCommand.java]:
+
+package seedu.command;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import java.util.List;
+import java.util.Map;
+
+public class ViewCommand {
+    private Inventory inventory;
+    private Ui ui;
+
+    public ViewCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.printViewHelp();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-a":
+            // View all items
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        default:
+            // Try to parse it as an ID to view a specific item
+            try {
+                int id = Integer.parseInt(flag);
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                ui.printMessage("Error: Invalid ID format. Use an integer for record ID.");
+            }
+            break;
+        }
+    }
+
+    private void handleViewById(int id) {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (id <= 0 || id > records.size()) {
+            ui.printMessage("Error: Record ID out of bounds.");
+            return;
+        }
+
+        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
+        ui.printSingleRecord(record, id);
+    }
+}
+
+
+[java/inventra/Inventra.java]:
+
+package seedu.inventra;
+
+import seedu.model.Inventory;
+import seedu.parser.CommandParser;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.Scanner;
+
+public class Inventra {
+    public static void main(String[] args) {
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
+        Ui ui = new Ui();
+        ui.printMessage("Welcome to\n" + logo);
+        ui.showUserManual();
+
+        Scanner in = new Scanner(System.in);
+        Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv("src/main/java/seedu/storage/inventory.csv");
+
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
+        while (true) {
+            String input = in.nextLine();
+            try {
+                System.out.println("_____________________________________________");
+                CommandParser.parseCommand(input, inventory, ui, csv);
+                System.out.println("_____________________________________________");
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+
+[java/model/Inventory.java]:
+
+package seedu.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Inventory {
+    private List<String> fields = new ArrayList<>();
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+
+    public void addField(String field, String type) {
+        fields.add(field);
+        fieldTypes.put(field, type);
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public Map<String, String> getFieldTypes() {
+        return fieldTypes;
+    }
+
+    public void addRecord(Map<String, String> record) {
+        records.add(record);
+    }
+
+    public List<Map<String, String>> getRecords() {
+        return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+
+    public void setFieldTypes(Map<String, String> newFieldTypes) {
+        this.fieldTypes = newFieldTypes;
+    }
+}
+
+
+[java/parser/CommandParser.java]:
+
+package seedu.parser;
+
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+public class CommandParser {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
+        String[] parts = input.split(" ", 3);
+        String command = parts[0];
+
+        switch (command) {
+        case "add":
+            new AddCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "delete":
+            new DeleteCommand(inventory,ui).execute(parts);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
+            break;
+        case "exit":
+            new ExitCommand(ui).execute();
+            break;
+        default:
+            ui.showErrorInvalidCommand();
+            break;
+        }
+    }
+}
+
+
+[java/storage/Csv.java]:
+
+package seedu.storage;
+
+import seedu.model.Inventory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Csv {
+
+    private final String csvFilePath;
+
+    public Csv(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getName());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getName());
+            }
+        }
+    }
+
+    // Update the CSV file headers and keep the existing data
+    public void updateCsvHeaders(Inventory inventory) {
+        File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
+
+        try {
+            // Overwrite the file with updated headers and preserve records
+            try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
+                List<String> fields = inventory.getFields();
+                if (!fields.isEmpty()) {
+                    writer.append(String.join(",", fields));
+                    writer.append("\n");
+                }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating CSV file headers: " + e.getMessage());
+        }
+    }
+
+    // Append a record to the CSV file considering the field order
+    public void appendRecord(Map<String, String> record, Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, true)) {
+            List<String> fields = inventory.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                String field = fields.get(i);
+                String value = record.get(field);
+                writer.append(value != null ? value : "null");  // null for empty fields
+                if (i < fields.size() - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+        } catch (IOException e) {
+            System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
+        }
+    }
+}
+
+
+[java/ui/Concat.java]:
+
+package seedu.ui;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class Concat {
+
+    // Set this relative path to match your project structure
+    private static final String SOURCE_DIRECTORY = "src/main/java/seedu";
+    private static final String OUTPUT_FILE = "allJavaCode.txt";
+
+    public static void main(String[] args) {
+        System.out.println("Checking directory: " + SOURCE_DIRECTORY); // Debugging output
+        File directory = new File(SOURCE_DIRECTORY);
+
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return;
+        } else if (!directory.isDirectory()) {
+            System.out.println("Not a directory: " + directory.getAbsolutePath());
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(OUTPUT_FILE, true)) {
+            appendJavaFiles(directory, writer);
+            System.out.println("All Java code has been appended to " + OUTPUT_FILE);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    private static void appendJavaFiles(File dir, FileWriter writer) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    appendJavaFiles(file, writer); // Recursively search subdirectories
+                } else if (file.isFile() && file.getName().endsWith(".java")) {
+                    appendFileContent(file, writer);
+                }
+            }
+        }
+    }
+
+    private static void appendFileContent(File file, FileWriter writer) throws IOException {
+        String filePath = file.getPath().replace("\\", "/").replace(SOURCE_DIRECTORY, "java");
+        writer.write("[" + filePath + "]:\n\n");
+
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        for (String line : lines) {
+            writer.write(line + "\n");
+        }
+        writer.write("\n\n"); // Add space between files
+    }
+}
+
+
+[java/ui/Ui.java]:
+
+package seedu.ui;
+
+import seedu.model.Inventory;
+
+import java.util.Map;
+import java.util.List;
+
+public class Ui {
+
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+
+    // Show user manual
+    public void showUserManual() {
+        printMessage("Inventra's User Manual:");
+        printMessage("Here is the list of commands you can use:");
+        printMessage("_____________________________________________");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
+        printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
+        printMessage("   - Command: add -h <type/field, type/field, ...>");
+        printMessage("   - Example: add -h s/name, i/quantity, f/price");
+
+        printMessage(" ");
+        printMessage("3. Display all defined fields and stored records:");
+        printMessage("   - Command: add -l");
+
+        printMessage(" ");
+        printMessage("4. Add Records to custom fields created:");
+        printMessage("   - Command: add -d <value1, value2, ...>");
+        printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
+
+        printMessage(" ");
+        printMessage("5. Delete Records:");
+        printMessage("   - Command: delete <record number>");
+        printMessage("   - Example: delete 2");
+
+        printMessage(" ");
+        printMessage("6. Exit program:");
+        printMessage("   - Command: exit");
+        printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
+    }
+
+    // Show fields and records in table format
+    public void showFieldsAndRecords(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (fields.isEmpty()) {
+            printMessage("    No fields have been added yet.");
+        } else {
+            printTableHeader(fields);
+
+            if (records.isEmpty()) {
+                printMessage("    No records have been added yet.");
+            } else {
+                printTableRecords(fields, records);
+            }
+        }
+    }
+
+    // Prints table header with fields
+    private void printTableHeader(List<String> fields) {
+        StringBuilder header = new StringBuilder("    | ");
+        StringBuilder separator = new StringBuilder("    +");
+
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
+            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+        }
+
+        printMessage(separator.toString());
+        printMessage(header.toString());
+        printMessage(separator.toString());
+    }
+
+    // Prints table rows with records
+    private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
+        StringBuilder separator = new StringBuilder("    +");
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);
+            separator.append("-".repeat(columnWidth + 2)).append("+");
+        }
+
+        for (Map<String, String> record : records) {
+            StringBuilder row = new StringBuilder("    | ");
+            for (String field : fields) {
+                int columnWidth = Math.max(field.length(), 10);
+                String value = record.getOrDefault(field, "null");  // Handle missing values
+                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+            }
+            printMessage(row.toString());
+            printMessage(separator.toString());
+        }
+    }
+
+    public void showErrorInvalidCommand() {
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
+    }
+
+    public void showErrorNoFields() {
+        printMessage("    No fields provided. Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+    }
+
+    public void showErrorNoRecords() {
+        printMessage("    No record data provided. Use 'add -d <value1, value2, ...>' to add records.");
+    }
+
+    public void showErrorInvalidFlag() {
+        printMessage("    Invalid flag. Use 'add -h <fields>', 'add -l', or 'add -d <values>'");
+    }
+
+    public void showErrorInvalidFieldFormat() {
+        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
+    }
+
+    public void showErrorNoFieldsDefined() {
+        printMessage("    No fields defined. Use 'add -h <fields>' to define fields before adding records.");
+    }
+
+    public void showErrorInvalidRecordCount(int expected) {
+        printMessage("    Invalid number of values. Expected " + expected + " values.");
+    }
+
+    public void showSuccessFieldsAdded() {
+        printMessage("    Fields added successfully.");
+    }
+
+    public void showSuccessRecordAdded() {
+        printMessage("    Record added successfully.");
+    }
+
+    public void showValidationError(String message) {
+        printMessage(message);
+    }
+
+    public void showUnknownTypeMessage(String type) {
+        printMessage("Unknown field type: '" + type + "'. Valid types are: s (String), i (Integer), f (Float), d (Date).");
+    }
+
+    public String getInvalidIntegerMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Integer, got: '" + value + "'";
+    }
+
+    public String getInvalidFloatMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Float, got: '" + value + "'";
+    }
+
+    public String getInvalidDateMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+    }
+
+    public String getInvalidNullMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. Expected type: Null, got: '" + value + "'";
+    }
+
+    public String getUnknownTypeMessage(String field) {
+        return "    Unknown field type for field '" + field + "'.";
+    }
+}
+
+
+[java/command/AddCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.storage.Csv;
+import seedu.ui.Ui;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+
+public class AddCommand {
+    private Inventory inventory;
+    private Ui ui;
+    private Csv csv;
+
+    public AddCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.showErrorInvalidCommand();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-h":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleAddMultipleFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-hu":
+            if (args.length < 3) {
+                ui.showErrorNoFields();
+                return;
+            }
+            handleUpdateFields(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+
+        case "-l":
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        case "-d":
+            if (args.length < 3) {
+                ui.showErrorNoRecords();
+                return;
+            }
+            handleAddRecord(args[2]);
+            csv.appendRecord(inventory.getRecords().get(inventory.getRecords().size() - 1), inventory);
+            break;
+
+        default:
+            ui.showErrorInvalidFlag();
+            break;
+        }
+    }
+
+    private void handleUpdateFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] fieldsToUpdate = fieldData.split(",\\s*");
+        List<String> updatedFields = new ArrayList<>();
+        Map<String, String> updatedFieldTypes = new HashMap<>();
+
+        // Process each field in the -hu command
+        for (String field : fieldsToUpdate) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                return;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            if (inventory.getFields().contains(fieldName)) {
+                // Update existing field
+                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
+            } else {
+                // Add new field if it doesn't exist
+                ui.printMessage("    Field '" + fieldName + "' added successfully.");
+            }
+            // Add or update field in the new list of fields
+            updatedFields.add(fieldName);
+            updatedFieldTypes.put(fieldName, type);
+        }
+
+        // Replace inventory fields and types with the updated ones
+        inventory.setFields(updatedFields);
+        inventory.setFieldTypes(updatedFieldTypes);
+
+        // Update the CSV headers to match the new field list
+        csv.updateCsvHeaders(inventory);
+
+        // Display the updated fields
+        ui.showFieldsAndRecords(inventory);
+    }
+
+    private void handleAddMultipleFields(String fieldData) {
+        if (fieldData.isEmpty()) {
+            ui.showErrorNoFields();
+            return;
+        }
+
+        String[] newFields = fieldData.split(",\\s*");
+        boolean success = true;
+
+        for (String field : newFields) {
+            String[] parts = field.split("/");
+            if (parts.length != 2) {
+                ui.showErrorInvalidFieldFormat();
+                success = false;
+                continue;
+            }
+
+            String type = parts[0].trim();
+            String fieldName = parts[1].trim();
+
+            // Check for valid type
+            if (!isValidFieldType(type)) {
+                ui.showUnknownTypeMessage(type);
+                success = false;
+                continue;
+            }
+
+            // Check for duplicate fields
+            if (inventory.getFields().contains(fieldName)) {
+                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
+                success = false;
+                continue;
+            }
+
+            // Add field if all checks pass
+            inventory.addField(fieldName, type);
+        }
+
+        if (success) {
+            ui.showSuccessFieldsAdded();
+        } else {
+            ui.printMessage("Failed to add one or more fields due to errors.");
+        }
+
+        ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
+    }
+
+    private void handleAddRecord(String recordData) {
+        if (inventory.getFields().isEmpty()) {
+            ui.showErrorNoFieldsDefined();
+            return;
+        }
+
+        String[] values = recordData.split(",\\s*");
+        if (values.length != inventory.getFields().size()) {
+            ui.showErrorInvalidRecordCount(inventory.getFields().size());
+            return;
+        }
+
+        Map<String, String> record = new HashMap<>();
+        for (int i = 0; i < values.length; i++) {
+            String field = inventory.getFields().get(i);
+            String type = inventory.getFieldTypes().get(field);
+            String value = values[i].trim();
+
+            // Validate based on field type
+            String validationMessage = validateValue(value, type, field);
+            if (validationMessage != null) {
+                ui.showValidationError(validationMessage);
+                return;
+            }
+            record.put(field, value);
+        }
+
+        inventory.addRecord(record);
+        ui.showSuccessRecordAdded();
+    }
+
+    private String validateValue(String value, String type, String field) {
+        switch (type) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                return ui.getInvalidIntegerMessage(field, value);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                return ui.getInvalidFloatMessage(field, value);
+            }
+        case "d": // Date
+            // Simple date validation, assuming the format is "dd/MM/yyyy"
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
+                    return ui.getInvalidDateMessage(field, value);
+                }
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                return ui.getInvalidDateMessage(field, value);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                return ui.getInvalidNullMessage(field, value);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
+        }
+    }
+
+    private boolean isValidFieldType(String type) {
+        return type.equals("s") || type.equals("i") || type.equals("f") || type.equals("d");
+    }
+}
+
+
+[java/command/DeleteCommand.java]:
+
+package seedu.command;
+
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.List;
+import java.util.Map;
+
+public class DeleteCommand {
+    private final Inventory inventory;
+    private final Ui ui;
+    private final Csv csv;
+
+    public DeleteCommand(Inventory inventory, Ui ui, Csv csv) {
+        this.inventory = inventory;
+        this.ui = ui;
+        this.csv = csv;
+    }
+
+    public void execute(String[] parts) {
+        if (parts.length < 2) {
+            ui.printMessage("    Error: No record number provided for deletion.");
+            return;
+        }
+
+        try {
+            int recordIndex = Integer.parseInt(parts[1]) - 1; // Convert to 0 index
+            List<Map<String, String>> records = inventory.getRecords();
+
+            if (recordIndex >= 0 && recordIndex < records.size()) {
+                records.remove(recordIndex);
+                csv.updateCsvAfterDeletion(inventory);
+                ui.printMessage("    Record deleted successfully.");
+            } else {
+                ui.printMessage("    Error: Please provide a index within bounds");
+            }
+        } catch (NumberFormatException e) {
+            ui.printMessage("    Error: Please provide a valid number");
+        }
+    }
+}
+
+
+[java/command/ExitCommand.java]:
+
+package seedu.command;
+
+import seedu.ui.Ui;
+
+public class ExitCommand {
+    private Ui ui;
+
+    public ExitCommand(Ui ui) {
+        this.ui = ui;
+    }
+
+    public void execute() {
+        ui.printMessage("Program exit successfully.");
+        System.exit(0);
+    }
+}
+
+
+[java/command/ViewCommand.java]:
+
+package seedu.command;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import java.util.List;
+import java.util.Map;
+
+public class ViewCommand {
+    private Inventory inventory;
+    private Ui ui;
+
+    public ViewCommand(Inventory inventory, Ui ui) {
+        this.inventory = inventory;
+        this.ui = ui;
+    }
+
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            ui.printViewHelp();
+            return;
+        }
+
+        String flag = args[1];
+
+        switch (flag) {
+        case "-a":
+            // View all items
+            ui.showFieldsAndRecords(inventory);
+            break;
+
+        default:
+            // Try to parse it as an ID to view a specific item
+            try {
+                int id = Integer.parseInt(flag);
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                ui.printMessage("Error: Invalid ID format. Use an integer for record ID.");
+            }
+            break;
+        }
+    }
+
+    private void handleViewById(int id) {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (id <= 0 || id > records.size()) {
+            ui.printMessage("Error: Record ID out of bounds.");
+            return;
+        }
+
+        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
+        ui.printSingleRecord(record, id);
+    }
+}
+
+
+[java/inventra/Inventra.java]:
+
+package seedu.inventra;
+
+import seedu.model.Inventory;
+import seedu.parser.CommandParser;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+import java.util.Scanner;
+
+public class Inventra {
+    public static void main(String[] args) {
+        String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
+                + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
+                + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
+                + " | || |\\  | \\ V / | |___| |\\  | | | |  _ <  / ___ \\ \n"
+                + "|___|_| \\_|  \\_/  |_____|_| \\_| |_| |_| \\_\\/_/   \\_\\\n";
+
+        Ui ui = new Ui();
+        ui.printMessage("Welcome to\n" + logo);
+        ui.showUserManual();
+
+        Scanner in = new Scanner(System.in);
+        Inventory inventory = new Inventory(); // Instantiate Inventory here
+        Csv csv = new Csv("src/main/java/seedu/storage/inventory.csv");
+
+        // Load existing records from CSV
+        csv.loadRecordsFromCsv(inventory);
+
+        while (true) {
+            String input = in.nextLine();
+            try {
+                System.out.println("_____________________________________________");
+                CommandParser.parseCommand(input, inventory, ui, csv);
+                System.out.println("_____________________________________________");
+            } catch (Exception e) {
+                ui.printMessage("    Error: " + e.getMessage());
+            }
+        }
+    }
+}
+
+
+[java/model/Inventory.java]:
+
+package seedu.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Inventory {
+    private List<String> fields = new ArrayList<>();
+    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
+    private List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+
+    public void addField(String field, String type) {
+        fields.add(field);
+        fieldTypes.put(field, type);
+    }
+
+    public List<String> getFields() {
+        return fields;
+    }
+
+    public Map<String, String> getFieldTypes() {
+        return fieldTypes;
+    }
+
+    public void addRecord(Map<String, String> record) {
+        records.add(record);
+    }
+
+    public List<Map<String, String>> getRecords() {
+        return records;
+    }
+
+    // Method to set fields (for loading from CSV)
+    public void setFields(List<String> fields) {
+        this.fields = fields;
+    }
+
+    public void setFieldTypes(Map<String, String> newFieldTypes) {
+        this.fieldTypes = newFieldTypes;
+    }
+}
+
+
+[java/parser/CommandParser.java]:
+
+package seedu.parser;
+
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.ExitCommand;
+import seedu.command.ViewCommand;
+import seedu.model.Inventory;
+import seedu.ui.Ui;
+import seedu.storage.Csv;
+
+public class CommandParser {
+    public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv)  {
+        String[] parts = input.split(" ", 3);
+        String command = parts[0];
+
+        switch (command) {
+        case "add":
+            new AddCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "delete":
+            new DeleteCommand(inventory, ui, csv).execute(parts);
+            break;
+        case "view":
+            new ViewCommand(inventory, ui).execute(parts);
+            break;
+        case "exit":
+            new ExitCommand(ui).execute();
+            break;
+        default:
+            ui.showErrorInvalidCommand();
+            break;
+        }
+    }
+}
+
+
+[java/storage/Csv.java]:
+
+package seedu.storage;
+
+import seedu.model.Inventory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Csv {
+
+    private final String csvFilePath;
+
+    public Csv(String csvFilePath) {
+        this.csvFilePath = csvFilePath;
+        ensureDirectoryExists(); // Ensure the directory exists
+    }
+
+    // Ensure the directory exists
+    private void ensureDirectoryExists() {
+        File file = new File(csvFilePath);
+        File parentDir = file.getParentFile(); // Get the parent directory
+        if (parentDir != null && !parentDir.exists()) {
+            if (parentDir.mkdirs()) {
+                System.out.println("Directory created: " + parentDir.getName());
+            } else {
+                System.err.println("Failed to create directory: " + parentDir.getName());
+            }
+        }
+    }
+
+    public void updateCsvAfterDeletion(Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, false)) {
+            // Handle headers
+            List<String> fields = inventory.getFields();
+            if (!fields.isEmpty()) {
+                writer.append(String.join(",", fields)).append("\n");
+            }
+
+            // Handle records
+            for (Map<String, String> record : inventory.getRecords()) {
+                for (int i = 0; i < fields.size(); i++) {
+                    String field = fields.get(i);
+                    String value = record.getOrDefault(field, "null");
+                    writer.append(value != null ? value : "null");
+                    if (i < fields.size() - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+            System.out.println("CSV file updated after deletion.");
+        } catch (IOException e) {
+            System.err.println("Error updating CSV after deletion: " + e.getMessage());
+        }
+    }
+
+    // Update the CSV file headers and keep the existing data
+    public void updateCsvHeaders(Inventory inventory) {
+        File file = new File(csvFilePath);
+        List<String> existingRecords = new ArrayList<>();
+
+        // Read existing data, if any
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                // Skip the old header
+                reader.readLine();
+                // Read the existing records
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    existingRecords.add(line);
+                }
+            } catch (IOException e) {
+                System.err.println("Error reading existing CSV file: " + e.getMessage());
+            }
+        }
+
+        try {
+            // Overwrite the file with updated headers and preserve records
+            try (FileWriter writer = new FileWriter(file, false)) {
+                // Write updated headers
+                List<String> fields = inventory.getFields();
+                if (!fields.isEmpty()) {
+                    writer.append(String.join(",", fields));
+                    writer.append("\n");
+                }
+
+                // Write back the existing records
+                for (String record : existingRecords) {
+                    writer.append(record).append("\n");
+                }
+
+                System.out.println("CSV file headers updated with existing records preserved.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating CSV file headers: " + e.getMessage());
+        }
+    }
+
+    // Append a record to the CSV file considering the field order
+    public void appendRecord(Map<String, String> record, Inventory inventory) {
+        try (FileWriter writer = new FileWriter(csvFilePath, true)) {
+            List<String> fields = inventory.getFields();
+            for (int i = 0; i < fields.size(); i++) {
+                String field = fields.get(i);
+                String value = record.get(field);
+                writer.append(value != null ? value : "null");  // null for empty fields
+                if (i < fields.size() - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+        } catch (IOException e) {
+            System.err.println("Error appending record to CSV file: " + e.getMessage());
+        }
+    }
+
+    // Load records from the CSV file into the Inventory
+    public void loadRecordsFromCsv(Inventory inventory) {
+        File file = new File(csvFilePath);
+        if (!file.exists()) {
+            System.out.println("CSV file does not exist. Starting with an empty inventory.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            // Read header
+            String headerLine = reader.readLine();
+            if (headerLine == null) {
+                System.out.println("CSV file is empty. No records to load.");
+                return;
+            }
+            List<String> fields = Arrays.asList(headerLine.split(","));
+            inventory.setFields(fields);
+
+            // Read each record and add to the Inventory
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] values = line.split(",");
+                Map<String, String> record = new HashMap<>();
+                for (int i = 0; i < fields.size(); i++) {
+                    record.put(fields.get(i), i < values.length ? values[i].trim() : null);
+                }
+                inventory.addRecord(record);  // Add record to inventory
+            }
+            System.out.println("Records loaded from CSV file.");
+        } catch (IOException e) {
+            System.err.println("Error loading records from CSV file: " + e.getMessage());
+        }
+    }
+}
+
+
+[java/ui/Concat.java]:
+
+package seedu.ui;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
+public class Concat {
+
+    // Set this relative path to match your project structure
+    private static final String SOURCE_DIRECTORY = "src/main/java/seedu";
+    private static final String OUTPUT_FILE = "allJavaCode.txt";
+
+    public static void main(String[] args) {
+        System.out.println("Checking directory: " + SOURCE_DIRECTORY); // Debugging output
+        File directory = new File(SOURCE_DIRECTORY);
+
+        if (!directory.exists()) {
+            System.out.println("Directory does not exist: " + directory.getAbsolutePath());
+            return;
+        } else if (!directory.isDirectory()) {
+            System.out.println("Not a directory: " + directory.getAbsolutePath());
+            return;
+        }
+
+        try (FileWriter writer = new FileWriter(OUTPUT_FILE, true)) {
+            appendJavaFiles(directory, writer);
+            System.out.println("All Java code has been appended to " + OUTPUT_FILE);
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+    private static void appendJavaFiles(File dir, FileWriter writer) throws IOException {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    appendJavaFiles(file, writer); // Recursively search subdirectories
+                } else if (file.isFile() && file.getName().endsWith(".java")) {
+                    appendFileContent(file, writer);
+                }
+            }
+        }
+    }
+
+    private static void appendFileContent(File file, FileWriter writer) throws IOException {
+        String filePath = file.getPath().replace("\\", "/").replace(SOURCE_DIRECTORY, "java");
+        writer.write("[" + filePath + "]:\n\n");
+
+        List<String> lines = Files.readAllLines(Paths.get(file.getPath()));
+        for (String line : lines) {
+            writer.write(line + "\n");
+        }
+        writer.write("\n\n"); // Add space between files
+    }
+}
+
+
+[java/ui/Ui.java]:
+
+package seedu.ui;
+
+import seedu.model.Inventory;
+
+import java.util.Map;
+import java.util.List;
+
+public class Ui {
+
+    public void printMessage(String message) {
+        System.out.println(message);
+    }
+
+    // Show user manual
+    public void showUserManual() {
+        printMessage("Inventra's User Manual:");
+        printMessage("Here is the list of commands you can use:");
+        printMessage("_____________________________________________");
+
+        printMessage("1. View records:");
+        printMessage("   - Command to view all items: view -a");
+        printMessage("   - Command to view specific item by ID: view <ID>");
+        printMessage("   - Example: view 1");
+
+        printMessage("2. Add custom fields with specific types:");
+        printMessage("Note: Types: s - String, i - Integer, f - Float, d - Date");
+        printMessage("   - Command: add -h <type/field, type/field, ...>");
+        printMessage("   - Example: add -h s/name, i/quantity, f/price");
+
+        printMessage(" ");
+        printMessage("3. Display all defined fields and stored records:");
+        printMessage("   - Command: add -l");
+
+        printMessage(" ");
+        printMessage("4. Add Records to custom fields created:");
+        printMessage("   - Command: add -d <value1, value2, ...>");
+        printMessage("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
+
+        printMessage(" ");
+        printMessage("5. Delete Records:");
+        printMessage("   - Command: delete <record number>");
+        printMessage("   - Example: delete 2");
+
+        printMessage(" ");
+        printMessage("6. Exit program:");
+        printMessage("   - Command: exit");
+        printMessage("_____________________________________________");
+    }
+
+    public void printSingleRecord(Map<String, String> record, int id) {
+        printMessage("Record ID: " + id);
+        for (Map.Entry<String, String> entry : record.entrySet()) {
+            printMessage(entry.getKey() + ": " + entry.getValue());
+        }
+    }
+
+    public void printViewHelp() {
+        printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
+    }
+
+    // Show fields and records in table format
+    public void showFieldsAndRecords(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (fields.isEmpty()) {
+            printMessage("    No fields have been added yet.");
+        } else {
+            printTableHeader(fields);
+
+            if (records.isEmpty()) {
+                printMessage("    No records have been added yet.");
+            } else {
+                printTableRecords(fields, records);
+            }
+        }
+    }
+
+    // Prints table header with fields
+    private void printTableHeader(List<String> fields) {
+        StringBuilder header = new StringBuilder("    | ");
+        StringBuilder separator = new StringBuilder("    +");
+
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
+            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+        }
+
+        printMessage(separator.toString());
+        printMessage(header.toString());
+        printMessage(separator.toString());
+    }
+
+    // Prints table rows with records
+    private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
+        StringBuilder separator = new StringBuilder("    +");
+        for (String field : fields) {
+            int columnWidth = Math.max(field.length(), 10);
+            separator.append("-".repeat(columnWidth + 2)).append("+");
+        }
+
+        for (Map<String, String> record : records) {
+            StringBuilder row = new StringBuilder("    | ");
+            for (String field : fields) {
+                int columnWidth = Math.max(field.length(), 10);
+                String value = record.getOrDefault(field, "null");  // Handle missing values
+                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+            }
+            printMessage(row.toString());
+            printMessage(separator.toString());
+        }
+    }
+
+    public void showErrorInvalidCommand() {
+        printMessage("    Invalid command. Use 'add -h <fields>' to add fields, 'add -l'" +
+                " to list fields/records, or 'add -d <values>' to add records.");
+    }
+
+    public void showErrorNoFields() {
+        printMessage("    No fields provided. " +
+                "Use 'add -h <s/pname, i/quantity, ...>' to add fields.");
+    }
+
+    public void showErrorNoRecords() {
+        printMessage("    No record data provided."
+                + "Use 'add -d <value1, value2, ...>' to add records.");
+    }
+
+    public void showErrorInvalidFlag() {
+        printMessage("    Invalid flag. Use 'add -h <fields>'," +
+                " 'add -l', or 'add -d <values>'");
+    }
+
+    public void showErrorInvalidFieldFormat() {
+        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
+    }
+
+    public void showErrorNoFieldsDefined() {
+        printMessage("    No fields defined."
+                + "Use 'add -h <fields>' to define fields before adding records.");
+    }
+
+    public void showErrorInvalidRecordCount(int expected) {
+        printMessage("    Invalid number of values. Expected " + expected + " values.");
+    }
+
+    public void showSuccessFieldsAdded() {
+        printMessage("    Fields added successfully.");
+    }
+
+    public void showSuccessRecordAdded() {
+        printMessage("    Record added successfully.");
+    }
+
+    public void showValidationError(String message) {
+        printMessage(message);
+    }
+
+    public void showUnknownTypeMessage(String type) {
+        printMessage("Unknown field type: '" + type + "'. Valid types are:"
+                + "s (String), i (Integer), f (Float), d (Date).");
+    }
+
+    public String getInvalidIntegerMessage(String field, String value) {
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Integer, got: '" + value + "'";
+    }
+
+    public String getInvalidFloatMessage(String field, String value) {
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Float, got: '" + value + "'";
+    }
+
+    public String getInvalidDateMessage(String field, String value) {
+        return "    Invalid value for field '" + field + "'. " +
+                "Expected type: Date (format: dd/MM/yyyy), got: '" + value + "'";
+    }
+
+    public String getInvalidNullMessage(String field, String value) {
+        return "    Invalid value for field '" + field +
+                "'. Expected type: Null, got: '" + value + "'";
+    }
+
+    public String getUnknownTypeMessage(String field) {
+        return "    Unknown field type for field '" + field + "'.";
+    }
+}
+
+

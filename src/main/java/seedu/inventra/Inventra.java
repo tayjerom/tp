@@ -8,7 +8,7 @@ import seedu.storage.Csv;
 import java.util.Scanner;
 
 public class Inventra {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
                 + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
                 + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"
@@ -21,10 +21,10 @@ public class Inventra {
 
         Scanner in = new Scanner(System.in);
         Inventory inventory = new Inventory(); // Instantiate Inventory here
-        Csv csv = new Csv("./storage/inventory.csv");
+        Csv csv = new Csv("src/main/java/seedu/storage/inventory.csv");
 
         // Load existing records from CSV
-        csv.loadRecordsFromCsv(inventory);
+        csv.loadInventoryFromCsv(inventory);
 
         while (true) {
             String input = in.nextLine();
