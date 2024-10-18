@@ -18,7 +18,7 @@ public class ViewCommand {
 
     public void execute(String[] args) throws InventraException {
         if (args.length > 2) {
-            throw new InventraMoreThanExpectedArgsException(2, args.length);
+            throw new InventraExcessArgsException(2, args.length);
         }
 
         String flag = args[1].trim();
