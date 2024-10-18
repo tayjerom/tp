@@ -1,6 +1,10 @@
 package seedu.command;
 
-import seedu.exceptions.*;
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidNumberException;
+import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 import seedu.storage.Csv;
@@ -42,9 +46,9 @@ public class DeleteCommand {
                 deleteAllRecords();
                 ui.printMessage("Deleted all records.");
                 break;
-            case "-h" :
+            case "-h":
                 if (args.length < 3 || args[2].trim().isEmpty()) {
-                   throw new InventraMissingArgsException("Field name");
+                    throw new InventraMissingArgsException("Field name");
                 }
                 deleteHeaderAndColumn(args[2].trim());
                 ui.printMessage("Deleted header and it's column.");
@@ -70,7 +74,7 @@ public class DeleteCommand {
     private void deleteHeaderAndColumn(String fieldName) {
         inventory.getFields().remove(fieldName);
         inventory.getFieldTypes().remove(fieldName);
-        for (Map<String,String> record:inventory.getRecords()) {
+        for (Map<String, String> record : inventory.getRecords()) {
             record.remove(fieldName);
         }
     }
