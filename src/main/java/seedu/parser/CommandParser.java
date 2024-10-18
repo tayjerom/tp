@@ -2,7 +2,7 @@ package seedu.parser;
 
 import seedu.command.AddCommand;
 import seedu.command.DeleteCommand;
-import seedu.command.ExitCommand;
+import seedu.command.HelpCommand;
 import seedu.command.ViewCommand;
 import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidCommandException;
@@ -26,8 +26,11 @@ public class CommandParser {
             case "view":
                 new ViewCommand(inventory, ui).execute(parts);
                 break;
+            case "help":
+                new HelpCommand().execute();
+                break;
             case "exit":
-                new ExitCommand(ui).execute();
+                ui.printMessage("Program exit successfully.");
                 break;
             default:
                 throw new InventraInvalidCommandException(command);
