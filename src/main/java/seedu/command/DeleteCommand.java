@@ -20,7 +20,7 @@ public class DeleteCommand {
     }
 
     public void execute(String[] args) throws InventraException {
-        if (args.length != 2) {
+        if (args.length < 2) {
             ui.printViewHelp();
             return;
         }
@@ -42,6 +42,13 @@ public class DeleteCommand {
                 deleteAllRecords();
                 ui.printMessage("Deleted all records.");
                 break;
+            case "-h" :
+                if (args.length < 3 || args[2].trim().isEmpty()) {
+                   throw new InventraMissingArgsException("Field name");
+                }
+                deleteHeaderAndColumn(args[2].trim());
+                ui.printMessage("Deleted header and it's column.");
+                break;
             default:
                 throw new InventraInvalidFlagException("use delete -a to delete all records," +
                         "delete -e to delete entire table");
@@ -58,6 +65,14 @@ public class DeleteCommand {
 
     private void deleteAllRecords() {
         inventory.getRecords().clear();
+    }
+
+    private void deleteHeaderAndColumn(String fieldName) {
+        inventory.getFields().remove(fieldName);
+        inventory.getFieldTypes().remove(fieldName);
+        for (Map<String,String> record:inventory.getRecords()) {
+            record.remove(fieldName);
+        }
     }
 
     private void parseIndex(String part) throws InventraOutOfBoundsException, InventraInvalidNumberException {
