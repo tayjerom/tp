@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.command.AddCommand;
+import seedu.exceptions.InventraException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -50,7 +51,7 @@ class InventraTest {
     }
 
     @Test
-    public void execute_testAddAndListFields_success() {
+    public void execute_testAddAndListFields_success() throws InventraException {
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
         addCommand.execute(addFieldsArgs);
@@ -67,7 +68,7 @@ class InventraTest {
     }
 
     @Test
-    public void execute_testAddRecord_success() {
+    public void execute_testAddRecord_success() throws InventraException {
         // Add fields to inventory
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv); // Pass Csv with test file path
