@@ -1,9 +1,6 @@
 package seedu.command;
 
-import seedu.exceptions.InventraException;
-import seedu.exceptions.InventraInvalidNumberException;
-import seedu.exceptions.InventraMissingArgsException;
-import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.*;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 import seedu.storage.Csv;
@@ -22,29 +19,60 @@ public class DeleteCommand {
         this.csv = csv;
     }
 
-    public void execute(String[] parts) throws InventraException {
-        if (parts.length != 2) {
+    public void execute(String[] args) throws InventraException {
+        if (args.length != 2) {
             ui.printViewHelp();
             return;
         }
 
-        try {
-            String part = parts[1].trim();
-            if (part.isEmpty()) {
-                throw new InventraMissingArgsException("Record Number");
+        String part = args[1].trim();
+        if (part.isEmpty()) {
+            throw new InventraMissingArgsException("Record Number");
+        }
+        if (!part.startsWith("-")) {
+            parseIndex(part);
+            ui.printMessage("Record deleted successfully.");
+        } else {
+            switch (part) {
+            case "-e":
+                deleteEntireTable();
+                ui.printMessage("Deleted entire table.");
+                break;
+            case "-a":
+                deleteAllRecords();
+                ui.printMessage("Deleted all records.");
+                break;
+            default:
+                throw new InventraInvalidFlagException("use delete -a to delete all records," +
+                        "delete -e to delete entire table");
             }
+        }
+
+    }
+
+    private void deleteEntireTable() {
+        inventory.getFields().clear();
+        inventory.getFieldTypes().clear();
+        deleteAllRecords();
+    }
+
+    private void deleteAllRecords() {
+        inventory.getRecords().clear();
+    }
+
+    private void parseIndex(String part) throws InventraOutOfBoundsException, InventraInvalidNumberException {
+        try {
             int recordIndex = Integer.parseInt(part) - 1; // Convert to 0 index
             List<Map<String, String>> records = inventory.getRecords();
 
             if (recordIndex >= 0 && recordIndex < records.size()) {
                 records.remove(recordIndex);
                 csv.updateCsvAfterDeletion(inventory);
-                ui.printMessage("    Record deleted successfully.");
             } else {
                 throw new InventraOutOfBoundsException(recordIndex + 1, 1, records.size());
             }
         } catch (NumberFormatException e) {
-            throw new InventraInvalidNumberException(parts[1]);
+            throw new InventraInvalidNumberException(part);
         }
     }
 }
