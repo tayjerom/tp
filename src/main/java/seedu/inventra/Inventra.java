@@ -8,7 +8,7 @@ public class Inventra {
     public static void main(String[] args){
         Ui ui = new Ui();
         Inventory inventory = new Inventory(); // Instantiate Inventory here
-        Csv csv = new Csv("src/main/java/seedu/storage/inventory.csv");
+        Csv csv = new Csv("./storage/inventory.csv");
 
         // Load existing records from CSV
         csv.loadInventoryFromCsv(inventory);

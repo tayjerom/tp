@@ -17,10 +17,23 @@ public class Csv {
 
     private final String csvFilePath;
 
-    public Csv(String csvFilePath) {
-        this.csvFilePath = csvFilePath;
+    public Csv(String relativeCsvFilePath) {
+        String basePath = System.getProperty("user.dir"); // Get the current working directory
+
+        // Check if the current directory already contains "tp"
+        if (basePath.contains("tp")) {
+            // If running from IntelliJ (usually the project root), prepend the relative path
+            this.csvFilePath = "src/main/java/seedu/storage/inventory.csv";
+        } else {
+            // If running from CMD or another external environment (like from a JAR), use just the storage folder
+            this.csvFilePath = "storage" + File.separator + "inventory.csv";
+        }
+
+        System.out.println("CSV file path used: " + this.csvFilePath);
         ensureDirectoryExists(); // Ensure the directory exists
     }
+
+
 
     // Ensure the directory exists
     private void ensureDirectoryExists() {
