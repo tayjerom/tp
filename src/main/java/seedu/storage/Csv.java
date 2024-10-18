@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,11 +17,20 @@ public class Csv {
 
     private final String csvFilePath;
 
-    public Csv(String csvFileName) {
-        // Create CSV in the current working directory with the provided file name
-        this.csvFilePath = Paths.get(System.getProperty("user.dir"), csvFileName).toString();
-        ensureDirectoryExists();
+    public Csv(String relativeCsvFilePath) {
+        String basePath = System.getProperty("user.dir"); // Get the current working directory
+
+        // Check if the current directory already contains "tp"
+        if (basePath.contains("tp")) {
+            // If running from IntelliJ (usually the project root), prepend the relative path
+            this.csvFilePath = "src/main/java/seedu/storage/inventory.csv";
+        } else {
+            // If running from CMD or another external environment (like from a JAR), use just the storage folder
+            this.csvFilePath = "storage" + File.separator + "inventory.csv";
+        }
+
         System.out.println("CSV file path used: " + this.csvFilePath);
+        ensureDirectoryExists(); // Ensure the directory exists
     }
 
 
