@@ -23,12 +23,17 @@ public class DeleteCommand {
     }
 
     public void execute(String[] parts) throws InventraException {
-        if (parts.length < 2) {
-            throw new InventraMissingArgsException("Record number");
+        if (parts.length != 2) {
+            ui.printViewHelp();
+            return;
         }
 
         try {
-            int recordIndex = Integer.parseInt(parts[1]) - 1; // Convert to 0 index
+            String part = parts[1].trim();
+            if (part.isEmpty()) {
+                throw new InventraMissingArgsException("Record Number");
+            }
+            int recordIndex = Integer.parseInt(part) - 1; // Convert to 0 index
             List<Map<String, String>> records = inventory.getRecords();
 
             if (recordIndex >= 0 && recordIndex < records.size()) {
