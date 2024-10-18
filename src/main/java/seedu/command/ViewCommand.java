@@ -1,9 +1,6 @@
 package seedu.command;
 
-import seedu.exceptions.InventraException;
-import seedu.exceptions.InventraInvalidNumberException;
-import seedu.exceptions.InventraMissingArgsException;
-import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.*;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 
@@ -20,9 +17,8 @@ public class ViewCommand {
     }
 
     public void execute(String[] args) throws InventraException {
-        if (args.length != 2) {
-            ui.printViewHelp();
-            return;
+        if (args.length > 2) {
+            throw new InventraMoreThanExpectedArgsException(2, args.length);
         }
 
         String flag = args[1].trim();
@@ -30,6 +26,7 @@ public class ViewCommand {
         if (flag.isEmpty()) {
             throw new InventraMissingArgsException("Item index");
         }
+
         if (flag.equals("-a")) {// View all items
             ui.showFieldsAndRecords(inventory);
         } else {
