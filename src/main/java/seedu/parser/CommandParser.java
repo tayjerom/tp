@@ -5,6 +5,7 @@ import seedu.command.DeleteCommand;
 import seedu.command.ExitCommand;
 import seedu.command.ViewCommand;
 import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidCommandException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 import seedu.storage.Csv;
@@ -29,8 +30,7 @@ public class CommandParser {
                 new ExitCommand(ui).execute();
                 break;
             default:
-                ui.showErrorInvalidCommand();
-                break;
+                throw new InventraInvalidCommandException(command);
             }
         } catch (InventraException e) {
             System.out.println(e.getMessage());
