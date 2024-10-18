@@ -1,6 +1,9 @@
 package seedu.command;
 
-import seedu.exceptions.*;
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidTypeException;
+import seedu.exceptions.InventraMissingFieldsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
