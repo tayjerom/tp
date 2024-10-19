@@ -26,12 +26,20 @@ public class HelpCommand {
         System.out.println("   - Example: add -d Apple, 100, 1.50, 01/10/2024");
 
         System.out.println(" ");
-        System.out.println("5. Delete Records:");
+        System.out.println("5. Delete Specific Records:");
         System.out.println("   - Command: delete <record number>");
         System.out.println("   - Example: delete 2");
 
         System.out.println(" ");
-        System.out.println("6. Exit program:");
+        System.out.println("6. Delete All Records:");
+        System.out.println("   - Command: delete -a");
+
+        System.out.println(" ");
+        System.out.println("7. Delete Entire Table:");
+        System.out.println("   - Command: delete -e");
+
+        System.out.println(" ");
+        System.out.println("8. Exit program:");
         System.out.println("   - Command: exit");
         System.out.println("_____________________________________________");
     }
