@@ -21,11 +21,15 @@ public class Csv {
         String basePath = System.getProperty("user.dir"); // Get the current working directory
 
         // Check if the current directory already contains "tp"
-        if (basePath.contains("tp")) {
+        if (basePath.contains("src")) {
+            System.out.println(basePath + " hello");
+            this.csvFilePath = "storage" + File.separator + "inventory.csv";
+        } else if (basePath.contains("tp")) {
+            System.out.println(basePath + " hello");
             // If running from IntelliJ (usually the project root), prepend the relative path
             this.csvFilePath = "src/main/java/seedu/storage/inventory.csv";
-        } else {
-            // If running from CMD or another external environment (like from a JAR), use just the storage folder
+        }
+        else{
             this.csvFilePath = "storage" + File.separator + "inventory.csv";
         }
 
@@ -51,9 +55,22 @@ public class Csv {
     }
 
     public void updateCsvAfterDeletion(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        Map<String, String> fieldTypes = inventory.getFieldTypes();
+
+        // Create the metadata line from field types
+        List<String> metadata = new ArrayList<>();
+        for (String field : fields) {
+            String type = fieldTypes.get(field);
+            metadata.add(field + ":" + type);
+        }
+        String metadataLine = "#" + String.join(",", metadata);
+
         try (FileWriter writer = new FileWriter(csvFilePath, false)) {
-            // Handle headers
-            List<String> fields = inventory.getFields();
+            // Write the metadata line first
+            writer.append(metadataLine).append("\n");
+
+            // Write field names (headers)
             if (!fields.isEmpty()) {
                 writer.append(String.join(",", fields)).append("\n");
             }
@@ -70,7 +87,7 @@ public class Csv {
                 }
                 writer.append("\n");
             }
-            System.out.println("CSV file updated after deletion.");
+            System.out.println("CSV file updated after deletion, including metadata.");
         } catch (IOException e) {
             System.err.println("Error updating CSV after deletion: " + e.getMessage());
         }

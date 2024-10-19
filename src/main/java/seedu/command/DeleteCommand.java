@@ -65,10 +65,12 @@ public class DeleteCommand {
         inventory.getFields().clear();
         inventory.getFieldTypes().clear();
         deleteAllRecords();
+        csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty table
     }
 
     private void deleteAllRecords() {
         inventory.getRecords().clear();
+        csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty records
     }
 
     private void deleteHeaderAndColumn(String fieldName) {
