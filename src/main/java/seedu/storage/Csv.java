@@ -22,10 +22,10 @@ public class Csv {
 
         // Check if the current directory already contains "tp"
         if (basePath.contains("src")) {
-            System.out.println(basePath + " hello");
+            //System.out.println(basePath + " hello");
             this.csvFilePath = "storage" + File.separator + "inventory.csv";
         } else if (basePath.contains("tp")) {
-            System.out.println(basePath + " hello");
+            //System.out.println(basePath + " hello");
             // If running from IntelliJ (usually the project root), prepend the relative path
             this.csvFilePath = "src/main/java/seedu/storage/inventory.csv";
         }
@@ -33,7 +33,7 @@ public class Csv {
             this.csvFilePath = "storage" + File.separator + "inventory.csv";
         }
 
-        System.out.println("CSV file path used: " + this.csvFilePath);
+        //System.out.println("CSV file path used: " + this.csvFilePath);
         ensureDirectoryExists(); // Ensure the directory exists
     }
 
