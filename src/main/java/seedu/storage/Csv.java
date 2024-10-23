@@ -42,8 +42,7 @@ public class Csv {
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.err.println("Failed to create file: " + e.getMessage());
         }
     }
@@ -138,7 +137,7 @@ public class Csv {
     // Load records from the CSV file into the Inventory
     public void loadInventoryFromCsv(Inventory inventory) {
         File file = new File(csvFilePath);
-        if (file.length()==0){
+        if (file.length() == 0) {
             // No data to load, fresh file
             return;
         }
@@ -154,7 +153,7 @@ public class Csv {
                 Map<String, String> fieldTypes = new HashMap<>();
 
                 for (String fieldType : fieldsWithTypes) {
-                    String[] parts = fieldType.split(":");
+                    String[] parts = fieldType.trim().split(":");
                     if (parts.length == 2) {
                         String fieldName = parts[0].trim();
                         String type = parts[1].trim();

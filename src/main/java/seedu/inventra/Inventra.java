@@ -5,7 +5,7 @@ import seedu.ui.Ui;
 import seedu.storage.Csv;
 
 public class Inventra {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Ui ui = new Ui();
         Inventory inventory = new Inventory(); // Instantiate Inventory here
         Csv csv = new Csv("data/inventory.csv");
