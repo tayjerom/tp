@@ -1,5 +1,5 @@
-Directory created: storage
-CSV file not found at path: src/main/java/seedu/storage/inventory.csv
+Directory created: data
+File created: inventory.csv
 Welcome to
  ___ _   ___     _______ _   _ _____ ____      _    
 |_ _| \ | \ \   / / ____| \ | |_   _|  _ \    / \   
