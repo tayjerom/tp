@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.command.AddCommand;
+import seedu.command.ViewCommand;
 import seedu.exceptions.InventraException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
@@ -59,7 +60,9 @@ class InventraTest {
         // Clear output before listing fields
         outputStream.reset();
 
-        addCommand.execute(new String[]{"add", "-l"});
+        // Use `view -a` instead of `add -l` to list the fields
+        ViewCommand viewCommand = new ViewCommand(inventory, ui);
+        viewCommand.execute(new String[]{"view", "-a"});
 
         String output = outputStream.toString();
 
@@ -83,7 +86,9 @@ class InventraTest {
 
         outputStream.reset();
 
-        addCommand.execute(new String[]{"add", "-l"});
+        // Use `view -a` to list the records
+        ViewCommand viewCommand = new ViewCommand(inventory, ui);
+        viewCommand.execute(new String[]{"view", "-a"});
 
         String output = outputStream.toString();
 
