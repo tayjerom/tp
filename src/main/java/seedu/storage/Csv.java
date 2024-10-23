@@ -18,35 +18,14 @@ public class Csv {
     private final String csvFilePath;
 
     public Csv(String relativeCsvFilePath) {
-        String basePath = System.getProperty("user.dir"); // Get the current working directory
-
-        if (relativeCsvFilePath.contains("test")){
-            this.csvFilePath = relativeCsvFilePath;
-        }
-        // Check if the current directory already contains "tp"
-        else if (basePath.contains("src")) {
-            //System.out.println(basePath + " hello");
-            this.csvFilePath = "storage" + File.separator + "inventory.csv";
-        } else if (basePath.contains("tp")) {
-            //System.out.println(basePath + " hello");
-            // If running from IntelliJ (usually the project root), prepend the relative path
-            this.csvFilePath = "src/main/java/seedu/storage/inventory.csv";
-        }
-        else{
-            this.csvFilePath = "storage" + File.separator + "inventory.csv";
-        }
-
-        //System.out.println("CSV file path used: " + this.csvFilePath);
-        ensureDirectoryExists(); // Ensure the directory exists
+        this.csvFilePath = relativeCsvFilePath;
+        ensureParentDirectoriesExist(); // Ensure the directory exists
+        ensureFileExists();
     }
 
-
-
     // Ensure the directory exists
-    private void ensureDirectoryExists() {
+    private void ensureParentDirectoriesExist() {
         File file = new File(csvFilePath);
-        // System.out.println("Absolute path: " + file.getAbsolutePath()); We need to replace absolute path
-
         File parentDir = file.getParentFile(); // Get the parent directory
         if (parentDir != null && !parentDir.exists()) {
             if (parentDir.mkdirs()) {
@@ -54,6 +33,18 @@ public class Csv {
             } else {
                 System.err.println("Failed to create directory: " + parentDir.getName());
             }
+        }
+    }
+
+    private void ensureFileExists() {
+        File file = new File(csvFilePath);
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+            }
+        }
+        catch (IOException e) {
+            System.err.println("Failed to create file: " + e.getMessage());
         }
     }
 
@@ -147,8 +138,8 @@ public class Csv {
     // Load records from the CSV file into the Inventory
     public void loadInventoryFromCsv(Inventory inventory) {
         File file = new File(csvFilePath);
-        if (!file.exists()) {
-            System.out.println("CSV file not found at path: " + csvFilePath);
+        if (file.length()==0){
+            // No data to load, fresh file
             return;
         }
 

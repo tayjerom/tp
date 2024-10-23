@@ -31,7 +31,7 @@ public class DeleteCommandTest {
         inventory = new Inventory();
         ui = new Ui();
         // Set a unique CSV file path for testing
-        testCsvFilePath = "./src/main/java/seedu/storage/test_inventory.csv";
+        testCsvFilePath = "data/test_inventory.csv";
         csv = new Csv(testCsvFilePath);
 
         // Create the file if it does not exist
