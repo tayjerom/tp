@@ -1,5 +1,4 @@
 #name:s,quantity:i,price:f
 name,quantity,price
-Apple,100,1.5
-Banana,300,3.5
-DragonFruit,200,5.0
+Apple,10,1.50
+Apple,10,1.50

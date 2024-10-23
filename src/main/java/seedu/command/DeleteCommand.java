@@ -25,8 +25,7 @@ public class DeleteCommand {
 
     public void execute(String[] args) throws InventraException {
         if (args.length < 2) {
-            ui.printViewHelp();
-            return;
+            throw new InventraMissingArgsException("Record Number");
         }
 
         String part = args[1].trim();
