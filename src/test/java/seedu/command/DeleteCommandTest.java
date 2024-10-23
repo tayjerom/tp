@@ -72,6 +72,20 @@ public class DeleteCommandTest {
     }
 
     @Test
+    public void execute_rangeOutOfBounds_throwsException() {
+        for (int i = 0; i <= 4; ++i) {
+            for (int j = 0; j <= 4; ++j) {
+                String input = "delete -r " + i + "-" + j;
+                String[] parts = input.split(" ", 3);
+                if (i >= j && (i == 0 || j > inventory.getRecords().size())) {
+                    assertThrows(InventraOutOfBoundsException.class,
+                            () -> new DeleteCommand(inventory, ui, csv).execute(parts));
+                }
+            }
+        }
+    }
+
+    @Test
     public void execute_invalidNumberInput_throwsException() {
         String[] nonNumberInputs = {"Test", "1022Et$"};
         for (String nonNumberInput : nonNumberInputs) {
@@ -113,6 +127,15 @@ public class DeleteCommandTest {
         assertDoesNotThrow(() -> new DeleteCommand(inventory, ui, csv).execute(parts));
         assertEquals(originalSize - 1, inventory.getRecords().size());
         assertFalse(inventory.getRecords().contains(originalRecord));
+    }
+
+    @Test
+    public void execute_deleteRangeRecords_success() {
+        int originalSize = inventory.getRecords().size();
+        String input = "delete -r 1-2";
+        String[] parts = input.split(" ", 3);
+        assertDoesNotThrow(() -> new DeleteCommand(inventory, ui, csv).execute(parts));
+        assertEquals(originalSize - 2, inventory.getRecords().size());
     }
 
     @Test

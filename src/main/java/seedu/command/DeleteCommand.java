@@ -33,7 +33,8 @@ public class DeleteCommand {
             throw new InventraMissingArgsException("Record Number");
         }
         if (!part.startsWith("-")) {
-            parseIndex(part);
+            int index = parseIndex(part);
+            deleteSingleRecord(index);
             ui.printMessage("Record deleted successfully.");
         } else {
             switch (part) {
@@ -52,6 +53,13 @@ public class DeleteCommand {
                 deleteHeaderAndColumn(args[2].trim());
                 ui.printMessage("Deleted header and it's column.");
                 break;
+            case "-r":
+                if (args.length < 3 || args[2].trim().isEmpty()) {
+                    throw new InventraMissingArgsException("Range");
+                }
+                String[] numbers = args[2].trim().split("-");
+                deleteRangeRecords(parseIndex(numbers[0]), parseIndex(numbers[1]));
+                break;
             default:
                 throw new InventraInvalidFlagException("use delete -a to delete all records," +
                         "delete -e to delete entire table");
@@ -67,6 +75,19 @@ public class DeleteCommand {
         csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty table
     }
 
+    private void deleteRangeRecords(int start, int end) throws InventraOutOfBoundsException {
+        List<Map<String, String>> records = inventory.getRecords();
+        if (!isWithinBounds(start, records.size())) {
+            throw new InventraOutOfBoundsException(start, 1, records.size());
+        }
+        if (!isWithinBounds(end, records.size())) {
+            throw new InventraOutOfBoundsException(end, 1, records.size());
+        }
+        if (end >= start) {
+            inventory.getRecords().subList(start, end + 1).clear();
+        }
+    }
+
     private void deleteAllRecords() {
         inventory.getRecords().clear();
         csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty records
@@ -80,19 +101,26 @@ public class DeleteCommand {
         }
     }
 
-    private void parseIndex(String part) throws InventraOutOfBoundsException, InventraInvalidNumberException {
+    private int parseIndex(String indexString) throws InventraInvalidNumberException {
         try {
-            int recordIndex = Integer.parseInt(part) - 1; // Convert to 0 index
-            List<Map<String, String>> records = inventory.getRecords();
-
-            if (recordIndex >= 0 && recordIndex < records.size()) {
-                records.remove(recordIndex);
-                csv.updateCsvAfterDeletion(inventory);
-            } else {
-                throw new InventraOutOfBoundsException(recordIndex + 1, 1, records.size());
-            }
+            return Integer.parseInt(indexString);
         } catch (NumberFormatException e) {
-            throw new InventraInvalidNumberException(part);
+            throw new InventraInvalidNumberException(indexString);
+        }
+    }
+
+    private boolean isWithinBounds(int index, int size) {
+        return (index > 0 && index <= size);
+    }
+
+    private void deleteSingleRecord(int recordIndex) throws InventraOutOfBoundsException {
+        List<Map<String, String>> records = inventory.getRecords();
+
+        if (isWithinBounds(recordIndex, records.size())) {
+            records.remove(recordIndex - 1); // Convert to zero based indexing
+            csv.updateCsvAfterDeletion(inventory);
+        } else {
+            throw new InventraOutOfBoundsException(recordIndex, 1, records.size());
         }
     }
 }
