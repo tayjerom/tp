@@ -130,7 +130,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_deleteRangeRecords_success(){
+    public void execute_deleteRangeRecords_success() {
         int originalSize = inventory.getRecords().size();
         String input = "delete -r 1-2";
         String[] parts = input.split(" ", 3);

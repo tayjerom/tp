@@ -75,13 +75,13 @@ public class DeleteCommand {
         csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty table
     }
 
-    private void deleteRangeRecords(int start,int end) throws InventraOutOfBoundsException {
-        List<Map<String,String>> records = inventory.getRecords();
-        if (!isWithinBounds(start,records.size())) {
-            throw new InventraOutOfBoundsException(start,1,records.size());
+    private void deleteRangeRecords(int start, int end) throws InventraOutOfBoundsException {
+        List<Map<String, String>> records = inventory.getRecords();
+        if (!isWithinBounds(start, records.size())) {
+            throw new InventraOutOfBoundsException(start, 1, records.size());
         }
-        if (!isWithinBounds(end,records.size())) {
-            throw new InventraOutOfBoundsException(end,1,records.size());
+        if (!isWithinBounds(end, records.size())) {
+            throw new InventraOutOfBoundsException(end, 1, records.size());
         }
         if (end >= start) {
             inventory.getRecords().subList(start, end + 1).clear();
@@ -101,24 +101,23 @@ public class DeleteCommand {
         }
     }
 
-    private int parseIndex (String indexString) throws InventraInvalidNumberException {
-       try {
-           return Integer.parseInt(indexString);
-       }
-       catch (NumberFormatException e) {
-           throw new InventraInvalidNumberException(indexString);
-       }
+    private int parseIndex(String indexString) throws InventraInvalidNumberException {
+        try {
+            return Integer.parseInt(indexString);
+        } catch (NumberFormatException e) {
+            throw new InventraInvalidNumberException(indexString);
+        }
     }
 
-    private boolean isWithinBounds(int index,int size){
-        return (index > 0 && index<=size);
+    private boolean isWithinBounds(int index, int size) {
+        return (index > 0 && index <= size);
     }
 
     private void deleteSingleRecord(int recordIndex) throws InventraOutOfBoundsException {
         List<Map<String, String>> records = inventory.getRecords();
 
         if (isWithinBounds(recordIndex, records.size())) {
-            records.remove(recordIndex-1); // Convert to zero based indexing
+            records.remove(recordIndex - 1); // Convert to zero based indexing
             csv.updateCsvAfterDeletion(inventory);
         } else {
             throw new InventraOutOfBoundsException(recordIndex, 1, records.size());

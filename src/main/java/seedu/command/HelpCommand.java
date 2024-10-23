@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class HelpCommand {
 
-    private final Map<String,String> helpMessages;
+    private final Map<String, String> helpMessages;
 
     public HelpCommand() {
         // Initialize the help messages map
@@ -50,8 +50,9 @@ public class HelpCommand {
                 "Exit program:\n" +
                         "   - Command: exit\n");
     }
+
     public void execute(String[] parts) {
-        if (parts.length<2){
+        if (parts.length < 2) {
             int i = 1;
             for (String command : helpMessages.keySet()) {
                 System.out.printf("%d. %s\n", i, helpMessages.get(command));
@@ -60,7 +61,7 @@ public class HelpCommand {
             return;
         }
         String command = parts[1];
-        if (parts.length>2){
+        if (parts.length > 2) {
             command += " " + parts[2];
         }
 
