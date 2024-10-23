@@ -20,8 +20,11 @@ public class Csv {
     public Csv(String relativeCsvFilePath) {
         String basePath = System.getProperty("user.dir"); // Get the current working directory
 
+        if (relativeCsvFilePath.contains("test")){
+            this.csvFilePath = relativeCsvFilePath;
+        }
         // Check if the current directory already contains "tp"
-        if (basePath.contains("src")) {
+        else if (basePath.contains("src")) {
             //System.out.println(basePath + " hello");
             this.csvFilePath = "storage" + File.separator + "inventory.csv";
         } else if (basePath.contains("tp")) {
