@@ -24,13 +24,7 @@ The 'AddCommand' is part of the `command` package, and interacts with the follow
 
 Command flow of 'AddCommand' can be visualized with the following architecture diagram:
 ![Architecture Diagram](link-to-architecture-diagram)
-```plantuml
-@startuml
-AddCommand -> Inventory: add fields and records
-AddCommand -> Csv: updateCsvHeaders(), appendRecord()
-AddCommand -> Ui: showSuccessMessage(), showErrorMessage()
-@enduml
-```
+
 
 #### Component-Level Design
 "AddCommand" Class:
@@ -47,16 +41,7 @@ AddCommand -> Ui: showSuccessMessage(), showErrorMessage()
 *Illustrates how "AddCommand" interacts with "Inventory" and "Csv" classes when adding a record:
 
 ![Sequence Diagram](link-to-sequence-diagram)
-```plantuml
-@startuml
-actor User
-User -> AddCommand: execute("-d Apple, 10, 1.50")
-AddCommand -> Inventory : addRecord(record)
-AddCommand -> Csv : appendRecord(record)
-Inventory -> Csv : updateCsvHeaders(inventory)
-AddCommand -> Ui : showSuccessRecordAdded()
-@enduml
-```
+
 
 
 #### Why Implement "AddCommand" in this way?
