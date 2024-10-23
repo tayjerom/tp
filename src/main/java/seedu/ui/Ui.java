@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Ui {
 
-    public void printGreeting(){
+    public void printGreeting() {
         String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
                 + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
                 + " | ||  \\| |\\ \\ / /|  _| |  \\| | | | | |_) |  / _ \\  \n"

@@ -12,7 +12,8 @@ import seedu.storage.Csv;
 import seedu.ui.Ui;
 
 import java.io.File;
-import java.io.PrintStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -31,24 +32,20 @@ public class DeleteCommandTest {
         inventory = new Inventory();
         ui = new Ui();
         // Set a unique CSV file path for testing
-        testCsvFilePath = "./src/main/java/seedu/storage/test_inventory.csv";
+        testCsvFilePath = "data/test_inventory.csv";
         csv = new Csv(testCsvFilePath);
 
-        // Create the file if it does not exist
         File file = new File(testCsvFilePath);
-        if (!file.exists()) {
-            try (PrintStream writer = new PrintStream(file)) {
-                writer.println("#name:s,quantity:i,price:f"); // Metadata header
-                writer.println("name,quantity,price");         // Column headers
-                writer.println("Apple,100,1.5");
-                writer.println("Banana,300,3.5");
-                writer.println("DragonFruit,200,5.0");
-            } catch (Exception e) {
-                System.err.println("Error creating test CSV file: " + e.getMessage());
-            }
+        try (FileWriter writer = new FileWriter(file)) { // Opens the file in overwrite mode by default
+            writer.write("#name:s,quantity:i,price:f\n"); // Metadata header
+            writer.write("name,quantity,price\n");         // Column headers
+            writer.write("Apple,100,1.5\n");
+            writer.write("Banana,300,3.5\n");
+            writer.write("DragonFruit,200,5.0\n");
+        } catch (IOException e) {
+            System.err.println("Error creating test CSV file: " + e.getMessage());
         }
 
-        // Load existing records from CSV for the test (if any)
         csv.loadInventoryFromCsv(inventory);
     }
 

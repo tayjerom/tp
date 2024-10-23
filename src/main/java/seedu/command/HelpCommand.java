@@ -1,7 +1,7 @@
 package seedu.command;
 
 public class HelpCommand {
-    public void execute(){
+    public void execute() {
         System.out.println("Inventra's User Manual:");
         System.out.println("Here is the list of commands you can use:");
         System.out.println("_____________________________________________");
