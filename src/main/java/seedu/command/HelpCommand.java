@@ -24,10 +24,6 @@ public class HelpCommand {
                         "   - Command: add -h <type/field, type/field, ...>\n" +
                         "   - Example: add -h s/name, i/quantity, f/price\n");
 
-        helpMessages.put("add -l",
-                "Display all defined fields and stored records:\n" +
-                        "   - Command: add -l\n");
-
         helpMessages.put("add -d",
                 "Add Records to custom fields created:\n" +
                         "   - Command: add -d <value1, value2, ...>\n" +

@@ -50,10 +50,6 @@ public class AddCommand {
             csv.updateCsvHeaders(inventory);
             break;
 
-        case "-l":
-            ui.showFieldsAndRecords(inventory);
-            break;
-
         case "-d":
             assert args.length >= 3 : "Expected record data for flag -d";
             handleAddRecord(args[2]);
