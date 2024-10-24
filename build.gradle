@@ -26,6 +26,8 @@ test {
         showStackTraces true
         showStandardStreams = false
     }
+    // Enable assertions during tests
+    jvmArgs += '-ea'
 }
 
 application {
@@ -43,4 +45,6 @@ checkstyle {
 
 run{
     standardInput = System.in
+    // Enable assertions during run-time
+    jvmArgs += '-ea'
 }

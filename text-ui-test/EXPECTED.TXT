@@ -1,3 +1,5 @@
+Directory created: data
+File created: inventory.csv
 Welcome to
  ___ _   ___     _______ _   _ _____ ____      _    
 |_ _| \ | \ \   / / ____| \ | |_   _|  _ \    / \   
@@ -5,7 +7,7 @@ Welcome to
  | || |\  | \ V / | |___| |\  | | | |  _ <  / ___ \ 
 |___|_| \_|  \_/  |_____|_| \_| |_| |_| \_\/_/   \_\
 
-What would you like to do today?
-_____________________________________________
+Type help to receive manual.
 _____________________________________________
 Program exit successfully.
+_____________________________________________
