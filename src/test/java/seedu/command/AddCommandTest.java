@@ -2,6 +2,7 @@ package seedu.command;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraMissingFieldsException;
+import seedu.exceptions.InventraInvalidRecordCountException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -60,7 +62,7 @@ public class AddCommandTest {
         assertTrue(inventory.getFields().contains("price"));
     }
 
-    /*@Test
+    @Test
     public void execute_testAddMultipleFields_invalidFieldType_throwsException() throws InventraException {
         String[] addFieldsArgs = {"add", "-h", "x/unknownField"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
@@ -68,7 +70,7 @@ public class AddCommandTest {
         assertThrows(InventraInvalidTypeException.class, () -> {
             addCommand.execute(addFieldsArgs);
         });
-    }*/
+    }
 
     @Test
     public void execute_testAddRecord_success() throws InventraException {
@@ -120,6 +122,50 @@ public class AddCommandTest {
             addCommand.execute(invalidFlagArgs);
         });
     }
+
+    @Test
+    public void execute_testUpdateFields_success() throws InventraException {
+        String[] updateFieldsArgs = {"add", "-hu", "s/name, i/quantity"};
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        addCommand.execute(updateFieldsArgs);
+
+        assertTrue(inventory.getFields().contains("name"));
+        assertTrue(inventory.getFieldTypes().get("name").equals("s"));
+        assertTrue(inventory.getFields().contains("quantity"));
+        assertTrue(inventory.getFieldTypes().get("quantity").equals("i"));
+    }
+
+    /*@Test
+    public void execute_testUpdateFields_invalidFormat_throwsException() throws InventraException {
+        String[] updateFieldsArgs = {"add", "-hu", "invalidFieldFormat"};
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+
+        // Assuming the UI method returns an error message for invalid field format
+        addCommand.execute(updateFieldsArgs);
+        String expectedOutput = "Error: Invalid field format. Expected format type/field.";
+        assertTrue(outputStream.toString().contains(expectedOutput));
+    }*/
+
+    @Test
+    public void execute_testAddRecord_mismatchedFields_throwsException() throws InventraException {
+        // Set up: add fields first
+        String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        addCommand.execute(addFieldsArgs);
+
+        // Try adding a record with too few values
+        String[] addRecordArgs = {"add", "-d", "Apple, 10"};
+
+        // Expect InventraInvalidRecordCountException to be thrown
+        InventraInvalidRecordCountException exception = assertThrows(InventraInvalidRecordCountException.class, () -> {
+            addCommand.execute(addRecordArgs);
+        });
+
+        // Verify the exception message
+        String expectedMessage = "Error: Invalid number of values.\nExpected 3 values, but got 2.";
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
 
     @AfterEach
     public void tearDown() {

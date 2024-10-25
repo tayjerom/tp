@@ -4,6 +4,7 @@ import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraMissingFieldsException;
+import seedu.exceptions.InventraInvalidRecordCountException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -108,18 +109,14 @@ public class AddCommand {
         for (String field : newFields) {
             String[] parts = field.split("/");
             if (parts.length != 2) {
-                ui.showErrorInvalidFieldFormat();
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException("Field format", field, "correct format (type/fieldName)");
             }
 
             String type = parts[0].trim();
             String fieldName = parts[1].trim();
 
             if (!isValidFieldType(type)) {
-                ui.showUnknownTypeMessage(type);
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException(fieldName, type, "valid field type (e.g., 's', 'i', 'f')");
             }
 
             if (inventory.getFields().contains(fieldName)) {
@@ -148,11 +145,9 @@ public class AddCommand {
         }
 
         String[] values = recordData.split(",\\s*");
-        assert values.length == inventory.getFields().size() : "Number of values should match number of fields";
 
         if (values.length != inventory.getFields().size()) {
-            ui.showErrorInvalidRecordCount(inventory.getFields().size());
-            return;
+            throw new InventraInvalidRecordCountException(inventory.getFields().size(), values.length);
         }
 
         Map<String, String> record = new HashMap<>();
