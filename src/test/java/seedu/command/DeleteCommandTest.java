@@ -77,11 +77,10 @@ public class DeleteCommandTest {
             for (int j = 0; j <= 6; ++j) {
                 String input = "delete -r " + i + "-" + j;
                 String[] parts = input.split(" ", 3);
-                if (i == 0 || j==0 || i > inventory.getRecords().size() || j > inventory.getRecords().size()) {
+                if (i == 0 || j == 0 || i > inventory.getRecords().size() || j > inventory.getRecords().size()) {
                     assertThrows(InventraOutOfBoundsException.class,
                             () -> new DeleteCommand(inventory, ui, csv).execute(parts));
-                }
-                else if (i > j) {
+                } else if (i > j) {
                     // No op if they are within bounds but start > end
                     assertDoesNotThrow(() -> new DeleteCommand(inventory, ui, csv).execute(parts));
                 }
@@ -102,7 +101,7 @@ public class DeleteCommandTest {
 
     @Test
     public void execute_emptyArgument_throwsException() {
-        String[] emptyInputs = {"", "      "," -h "," -r ", " -h", " -r"};
+        String[] emptyInputs = {"", "      ", " -h ", " -r ", " -h", " -r"};
         for (String emptyInput : emptyInputs) {
             String input = "delete" + emptyInput;
             String[] parts = input.split(" ", 3);

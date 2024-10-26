@@ -27,21 +27,14 @@ public class ViewCommand {
         // Try to parse it as an ID to view a specific item
         if (flag.isEmpty()) {
             throw new InventraMissingArgsException("Item index");
-        }
-
-        else if(flag.equals("-f")) {
+        } else if (flag.equals("-f")) {
             handleViewByKeyword(args);
-        }
-
-        else{
+        } else {
             if (args.length > 2) {
                 throw new InventraExcessArgsException(2, args.length);
-            }
-            else
-            if (flag.equals("-a")) {// View all items
+            } else if (flag.equals("-a")) {// View all items
                 ui.showFieldsAndRecords(inventory);
-            }
-            else {
+            } else {
                 try {
                     int id = Integer.parseInt(flag);
                     handleViewById(id);
@@ -62,10 +55,10 @@ public class ViewCommand {
         Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
         ui.printSingleRecord(record, id);
     }
-    
+
     private void handleViewByKeyword(String[] args) throws InventraException {
         List<String> fields = inventory.getFields();
-        Map<String,String> fieldtypes = inventory.getFieldTypes();
+        Map<String, String> fieldtypes = inventory.getFieldTypes();
         List<Map<String, String>> records = inventory.getRecords();
         StringBuilder sb = new StringBuilder();
         for (int i = 2; i < args.length; i++) {
@@ -77,14 +70,14 @@ public class ViewCommand {
         String keyword = sb.toString();
         List<Map<String, String>> printedRecords = new ArrayList<>();
         List<Integer> printedRecordsIndexes = new ArrayList<>();
-        for(String field : fields) {
-            if(fieldtypes.get(field).equals("s")) {//check if the field is string type or not
+        for (String field : fields) {
+            if (fieldtypes.get(field).equals("s")) {//check if the field is string type or not
                 for (int i = 0; i < records.size(); i++) {
                     Map<String, String> record = records.get(i);
                     for (Map.Entry<String, String> entry : record.entrySet()) {
                         String key = entry.getKey();
-                        if(field.equals(key)) {
-                            if(entry.getValue().toLowerCase().contains(keyword.toLowerCase())) {
+                        if (field.equals(key)) {
+                            if (entry.getValue().toLowerCase().contains(keyword.toLowerCase())) {
                                 if (!printedRecords.contains(record)) {
                                     printedRecords.add(record);
                                     printedRecordsIndexes.add(i);
@@ -96,16 +89,15 @@ public class ViewCommand {
             }
         }
 
-        if(!printedRecords.isEmpty()) {
+        if (!printedRecords.isEmpty()) {
             ui.printMessage("Here are the records that match the keyword");
             for (int i = 0; i < printedRecords.size(); i++) {
                 Map<String, String> record = printedRecords.get(i);
                 int id = printedRecordsIndexes.get(i);
-                ui.printSingleRecord(record, id+1);
+                ui.printSingleRecord(record, id + 1);
                 ui.printMessage("");
             }
-        }
-        else {
+        } else {
             ui.printMessage("Sorry there are no records that match the keyword");
         }
     }
