@@ -51,7 +51,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testAddMultipleFields_success() throws InventraException {
+    public void execute_addMultipleFields_success() throws InventraException {
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
         addCommand.execute(addFieldsArgs);
@@ -63,7 +63,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testAddMultipleFields_invalidFieldType_throwsException() throws InventraException {
+    public void execute_addMultipleFieldsWithInvalidFieldType_throwsException() throws InventraException {
         String[] addFieldsArgs = {"add", "-h", "x/unknownField"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
 
@@ -73,7 +73,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testAddRecord_success() throws InventraException {
+    public void execute_addRecord_success() throws InventraException {
         // First add the fields
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
@@ -89,7 +89,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testAddRecord_invalidType_throwsException() throws InventraException {
+    public void execute_addRecordOfInvalidType_throwsException() throws InventraException {
         // First add the fields
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
@@ -104,7 +104,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testMissingFields_throwsException() {
+    public void execute_missingFields_throwsException() {
         String[] addFieldsArgs = {"add", "-h", ""};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
 
@@ -114,7 +114,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testInvalidFlag_throwsException() {
+    public void execute_invalidFlag_throwsException() {
         String[] invalidFlagArgs = {"add", "-x", "Some data"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
 
@@ -124,7 +124,7 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_testUpdateFields_success() throws InventraException {
+    public void execute_updateFields_success() throws InventraException {
         String[] updateFieldsArgs = {"add", "-hu", "s/name, i/quantity"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
         addCommand.execute(updateFieldsArgs);
@@ -147,7 +147,7 @@ public class AddCommandTest {
     }*/
 
     @Test
-    public void execute_testAddRecord_mismatchedFields_throwsException() throws InventraException {
+    public void execute_addRecordWithMismatchedFields_throwsException() throws InventraException {
         // Set up: add fields first
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
