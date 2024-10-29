@@ -53,6 +53,46 @@ Separating implementation of "AddCommand", "Inventory", and "Csv" classes ensure
 #### Alternative Considered
 Only when requirements permits, database implementation has been considered for better handling of fields types for inventory storage.
 
+### "Delete" Command Feature
+The "DeleteCommand" is responsible for adding fields and records to the inventory. 
+Concurrently, "delete" command is implemented with behaviour to update CSV file to persist changes made to inventory.
+This command supports the following formats:
+* '\<index>': Delete the record at the specified index (1-based indexing).
+* '-a': Delete all records in the inventory. 
+* '-e': Delete all records and headers in the inventory.
+* '-h \<field_name>': Delete the mentioned field and its column from the inventory.
+* '-r \<start>-\<end>': Delete records from the start index to the end index (both inclusive and 1-based indexing).
+
+#### Architecture Overview
+The 'DeleteCommand' is part of the `command` package, and interacts with the following key components:
+* **Inventory**: Contains the current state of the inventory, including fields and records.
+* **Csv**: Handles reading from and writing to the CSV file for data storage persistence.
+* **Ui**: Handles user interactions component such as message to user during command execution.
+
+Command flow of 'DeleteCommand' can be visualized with the following architecture diagram:
+![Architecture Diagram](link-to-architecture-diagram)
+
+#### Component-Level Design
+"DeleteCommand" Class:
+* processes the input arguments and executes the logic based on if the second argument is a number or flag.
+* fields and records are validated before updating inventory data into the CSV file.
+
+"DeleteCommand" Methods:
+  ![Class Diagram](link-to-class-diagram)
+
+#### Sequence Diagram
+*Illustrates how "DeleteCommand" interacts with "Inventory" and "Csv" classes when adding a record:
+
+![Sequence Diagram](link-to-sequence-diagram)
+
+#### Why Implement "DeleteCommand" in this way?
+Separating implementation of "DeleteCommand", "Inventory", and "Csv" classes ensures:
+* "DeleteCommand" focus only on processing input and delegating task to other specific components.
+* "Csv" class is responsible for updating data into CSV file for storage; ensuring persistence in data control.
+* With this breakdown of implementation, create room for future scalability (e.g. adding more fields types).
+
+#### Alternative Considered
+Only when requirements permits, database implementation has been considered for better handling of fields types for inventory storage.
 
 ## Product scope
 ### Target user profile
