@@ -3,7 +3,7 @@ package seedu.command;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class HelpCommand {
+public class HelpCommand extends Command {
 
     private final Map<String, String> helpMessages;
 

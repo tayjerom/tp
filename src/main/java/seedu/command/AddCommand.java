@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class AddCommand {
+public class AddCommand extends Command {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
 
     private final Inventory inventory;

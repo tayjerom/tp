@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ViewCommand {
+public class ViewCommand extends Command {
     private final Inventory inventory;
     private final Ui ui;
 

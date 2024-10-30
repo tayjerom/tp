@@ -12,7 +12,7 @@ import seedu.storage.Csv;
 import java.util.List;
 import java.util.Map;
 
-public class DeleteCommand {
+public class DeleteCommand extends Command {
     private final Inventory inventory;
     private final Ui ui;
     private final Csv csv;
