@@ -13,14 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public class DeleteCommand extends Command {
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
 
     public DeleteCommand(Inventory inventory, Ui ui, Csv csv) {
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {

@@ -13,12 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ViewCommand extends Command {
-    private final Inventory inventory;
-    private final Ui ui;
 
     public ViewCommand(Inventory inventory, Ui ui) {
-        this.inventory = inventory;
-        this.ui = ui;
+        super(inventory, ui, null);  // Passing `null` for unused dependencies
     }
 
     public void execute(String[] args) throws InventraException {

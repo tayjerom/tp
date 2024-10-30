@@ -18,18 +18,8 @@ import java.util.logging.Logger;
 public class AddCommand extends Command {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
 
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
-
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
-        assert inventory != null : "Inventory should not be null";
-        assert ui != null : "Ui should not be null";
-        assert csv != null : "Csv should not be null";
-
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {
