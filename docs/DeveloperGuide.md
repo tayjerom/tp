@@ -8,6 +8,17 @@
 ## Design & implementation
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 
+Main Components of the architecture
+
+Inventra class is in charge of app launch and shutdown
+
+The majority of the app's work is done by the processes
+* UI: The UI of the App
+* Command: The commands that user inputs
+* CommandParser: A parser to handle said commands
+* Inventory: The mode we are operating in
+* Storage: Reads and writes data to a csv file
+
 ### "Add" Command Feature
 The "AddCommand" is responsible for adding fields and records to the inventory. 
 Concurrently, "add" command is implemented with behaviour to update CSV file to persist changes made to inventory.
