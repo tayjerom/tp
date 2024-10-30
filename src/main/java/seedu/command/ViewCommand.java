@@ -58,29 +58,23 @@ public class ViewCommand extends Command {
 
         String keyword = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)).toLowerCase();
         List<Map<String, String>> records = inventory.getRecords();
-        List<Integer> matchingRecordIndexes = new ArrayList<>();
+        List<Map<String, String>> matchingRecords = new ArrayList<>();
 
-        // Iterate over records to find matches
-        for (int i = 0; i < records.size(); i++) {
-            Map<String, String> record = records.get(i);
+        for (Map<String, String> record : records) {
             for (String field : record.keySet()) {
                 if (inventory.isStringField(field) && record.get(field).toLowerCase().contains(keyword)) {
-                    matchingRecordIndexes.add(i);
+                    matchingRecords.add(record);
                     break;  // Stop checking further fields for this record
                 }
             }
         }
 
-        // Display matching records
-        if (!matchingRecordIndexes.isEmpty()) {
+        // Display the table of matching records if found, otherwise show a "no match" message
+        if (!matchingRecords.isEmpty()) {
             ui.printMessage("Here are the records that match the keyword:");
-            for (int index : matchingRecordIndexes) {
-                ui.printSingleRecord(records.get(index), index + 1);
-                ui.printMessage("");
-            }
+            ui.showFieldsAndRecords(inventory.getFields(), matchingRecords);
         } else {
             ui.printMessage("Sorry, there are no records that match the keyword.");
         }
     }
-
 }
