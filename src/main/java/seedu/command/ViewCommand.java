@@ -19,11 +19,12 @@ public class ViewCommand extends Command {
     }
 
     public void execute(String[] args) throws InventraException {
-        String flag = args[1].trim();
+        if (args.length < 2) {
+            throw new InventraMissingArgsException("Flag or Item index");
+        }
 
-        if (flag.isEmpty()) {
-            throw new InventraMissingArgsException("Item index");
-        } else if (flag.equals("-f")) {
+        String flag = args[1].trim();
+        if (flag.equals("-f")) {
             handleViewByKeyword(args);
         } else if (flag.equals("-a")) {
             if (args.length > 2) {
@@ -69,7 +70,6 @@ public class ViewCommand extends Command {
             }
         }
 
-        // Display the table of matching records if found, otherwise show a "no match" message
         if (!matchingRecords.isEmpty()) {
             ui.printMessage("Here are the records that match the keyword:");
             ui.showFieldsAndRecords(inventory.getFields(), matchingRecords);
