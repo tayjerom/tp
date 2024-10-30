@@ -2,13 +2,14 @@ package seedu.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import seedu.ui.Ui;
 
-public class HelpCommand {
+public class HelpCommand extends Command {
 
     private final Map<String, String> helpMessages;
 
-    public HelpCommand() {
-        // Initialize the help messages map
+    public HelpCommand(Ui ui) {
+        super(null, ui, null); // Inventory and Csv are not needed here
         helpMessages = new LinkedHashMap<>();
 
         // Add help messages for each command

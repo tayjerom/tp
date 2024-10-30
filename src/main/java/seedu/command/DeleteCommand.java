@@ -12,15 +12,10 @@ import seedu.storage.Csv;
 import java.util.List;
 import java.util.Map;
 
-public class DeleteCommand {
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
+public class DeleteCommand extends Command {
 
     public DeleteCommand(Inventory inventory, Ui ui, Csv csv) {
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {

@@ -47,23 +47,30 @@ public class Ui {
         printMessage("Use [view -a] to view all records, or [view <ID>] to view individual record");
     }
 
-    // Show fields and records in table format
+
+    // Show fields and records in table format for the full inventory
     public void showFieldsAndRecords(Inventory inventory) {
         List<String> fields = inventory.getFields();
         List<Map<String, String>> records = inventory.getRecords();
+        showFieldsAndRecords(fields, records);
+    }
 
+    // Show fields and specific records in table format
+    public void showFieldsAndRecords(List<String> fields, List<Map<String, String>> records) {
         if (fields.isEmpty()) {
             printMessage("    No fields have been added yet.");
-        } else {
-            printTableHeader(fields);
+            return;
+        }
 
-            if (records.isEmpty()) {
-                printMessage("    No records have been added yet.");
-            } else {
-                printTableRecords(fields, records);
-            }
+        printTableHeader(fields);
+
+        if (records.isEmpty()) {
+            printMessage("    No records have been added yet.");
+        } else {
+            printTableRecords(fields, records);
         }
     }
+
 
     // Prints table header with fields
     private void printTableHeader(List<String> fields) {

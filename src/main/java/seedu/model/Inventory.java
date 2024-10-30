@@ -39,4 +39,8 @@ public class Inventory {
     public void setFieldTypes(Map<String, String> newFieldTypes) {
         this.fieldTypes = newFieldTypes;
     }
+
+    public boolean isStringField(String fieldName) {
+        return "s".equals(fieldTypes.get(fieldName));  // "s" denotes a String type field
+    }
 }

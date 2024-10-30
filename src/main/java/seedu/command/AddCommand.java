@@ -15,29 +15,15 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class AddCommand {
+public class AddCommand extends Command {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
 
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
-
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
-        assert inventory != null : "Inventory should not be null";
-        assert ui != null : "Ui should not be null";
-        assert csv != null : "Csv should not be null";
-
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {
-        assert args != null && args.length >= 2 : "Arguments should contain at least a command and a flag";
-
         String flag = args[1];
-        assert flag != null && !flag.isEmpty() : "Flag should not be null or empty";
-
         switch (flag) {
         case "-h":
             assert args.length >= 3 : "Expected additional field data for flag -h";
@@ -46,7 +32,6 @@ public class AddCommand {
             break;
 
         case "-hu":
-            assert args.length >= 3 : "Expected additional field data for flag -hu";
             handleUpdateFields(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
@@ -74,8 +59,7 @@ public class AddCommand {
         for (String field : fieldsToUpdate) {
             String[] parts = field.split("/");
             if (parts.length != 2) {
-                ui.showErrorInvalidFieldFormat();
-                return;
+                throw new InventraInvalidTypeException("Field format", field, "correct format (type/fieldName)");
             }
 
             String type = parts[0].trim();
@@ -97,6 +81,7 @@ public class AddCommand {
         csv.updateCsvHeaders(inventory);
         ui.showFieldsAndRecords(inventory);
     }
+
 
     private void handleAddMultipleFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
@@ -120,20 +105,13 @@ public class AddCommand {
             }
 
             if (inventory.getFields().contains(fieldName)) {
-                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException(fieldName, "duplicate field", "Field already exists");
             }
 
             inventory.addField(fieldName, type);
         }
 
-        if (success) {
-            ui.showSuccessFieldsAdded();
-        } else {
-            ui.printMessage("Failed to add one or more fields due to errors.");
-        }
-
+        ui.showSuccessFieldsAdded();
         ui.showFieldsAndRecords(inventory);
     }
 
@@ -172,7 +150,7 @@ public class AddCommand {
         ui.showSuccessRecordAdded();
     }
 
-    private String validateValue(String value, String type, String field) throws InventraException {
+    public String validateValue(String value, String type, String field) throws InventraException {
         assert value != null && !value.isEmpty() : "Value should not be null or empty";
         assert type != null && !type.isEmpty() : "Field type should not be null or empty";
         assert field != null && !field.isEmpty() : "Field name should not be null or empty";
