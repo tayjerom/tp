@@ -1,5 +1,17 @@
 # Developer Guide
 
+- [Acknowledgements](#ackowledgements)
+- [Design & implementation](#design-&-implementation)
+  - [Main Components of the architecture](#main-components-of-the-architecture)  
+    - ["Add" Command Feature](#"add"-command-feature)
+    - ["Delete" Command Feature](#"delete"-command-feature)
+    - ["View" Command Feature](#"view"-command-feature)
+  - [Product scope](#product-scope)
+  - [User Stories](#user-stories)
+  - [Non-Functional Requirements](#non-functional-requirements)
+  - [Glossary](#glossary)
+  - [Instructions for manual testing](#instructions-for-manual-testing)
+
 ## Acknowledgements
 The following resources and libraries were referenced or adapted in this project:
 * Java Coding Standard (Basic): [Official Documentation](https://se-education.org/guides/conventions/java/basic.html)
