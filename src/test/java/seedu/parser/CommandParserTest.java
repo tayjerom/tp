@@ -2,12 +2,6 @@ package seedu.parser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import seedu.command.AddCommand;
-import seedu.command.DeleteCommand;
-import seedu.command.HelpCommand;
-import seedu.command.ViewCommand;
-import seedu.exceptions.InventraException;
-import seedu.exceptions.InventraInvalidCommandException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -15,7 +9,8 @@ import seedu.ui.Ui;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommandParserTest {
 
@@ -74,7 +69,8 @@ class CommandParserTest {
 
         // Assert
         String output = outputStream.toString();
-        assertTrue(output.contains("Error: The command 'invalidCommand' is invalid. Type help to receive valid commands"));
+        assertTrue(output.contains("Error: The command 'invalidCommand' is invalid. " +
+                "Type help to receive valid commands"));
 
         // Reset the standard output
         System.setOut(System.out);
@@ -86,7 +82,5 @@ class CommandParserTest {
 
         // Mock or capture UI output if necessary
         CommandParser.parseCommand(input, inventory, ui, csv);
-
-        // Add assertion for Ui output if necessary
     }
 }

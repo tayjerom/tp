@@ -1,10 +1,23 @@
 package seedu.command;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import seedu.exceptions.*;
+
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidTypeException;
+import seedu.exceptions.InventraMissingFieldsException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidRecordCountException;
+
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -303,13 +316,14 @@ public class AddCommandTest {
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
         assertNull(addCommand.validateValue("null", type, field));
     }
-//condition testing
-@Test
-public void testArgsNotNullAndLength() {
-    String[] args = {"command", "flag"};
-    assertNotNull(args);
-    assertTrue(args.length >= 2, "Arguments should contain at least a command and a flag");
-}
+
+    //condition testing
+    @Test
+    public void testArgsNotNullAndLength() {
+        String[] args = {"command", "flag"};
+        assertNotNull(args);
+        assertTrue(args.length >= 2, "Arguments should contain at least a command and a flag");
+    }
 
     @Test
     public void testFlagNotNullOrEmpty() {
@@ -366,7 +380,7 @@ public void testArgsNotNullAndLength() {
     }
 
     @Test
-    public void testExecute_HFlagWithoutAdditionalFieldData_AssertionError() {
+    public void testHFlagNoAdditionalDataError() {
         // Test case where args is less than 3 for flag -h
         String[] args = new String[]{"add", "-h"}; // Only two arguments
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
@@ -378,19 +392,21 @@ public void testArgsNotNullAndLength() {
     }
 
     @Test
-    public void testExecute_HFlagWithInsufficientData_AssertionError() {
+    public void testHFlagInsufficientDataError() {
         // Test case with insufficient data for flag -h
         String[] args = new String[]{"add", "-h", "field1"}; // Only three arguments, modify as needed
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        AssertionError thrown = assertThrows(AssertionError.class, () -> {
+        InventraInvalidTypeException thrown = assertThrows(InventraInvalidTypeException.class, () -> {
             addCommand.execute(args);
         });
 
-        assertEquals("Expected additional field data for flag -h", thrown.getMessage());
+        assertEquals("Error: Invalid type for field 'Field format'\n"
+                + "Expected value of type 'correct format (type/fieldName)'"
+                + ", got: 'field1'", thrown.getMessage());
     }
 
     @Test
-    public void testExecute_DFlagWithoutAdditionalRecordData_AssertionError() {
+    public void testDFlagNoRecordDataError() {
         // Test case where args is less than 3 for flag -d
         String[] args = new String[]{"add", "-d"}; // Only two arguments
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
@@ -402,19 +418,20 @@ public void testArgsNotNullAndLength() {
     }
 
     @Test
-    public void testExecute_DFlagWithInsufficientData_AssertionError() {
+    public void testDFlagInsufficientDataError() {
         // Test case with insufficient data for flag -d
         String[] args = new String[]{"add", "-d", "value1"}; // Only three arguments
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        AssertionError thrown = assertThrows(AssertionError.class, () -> {
+        InventraMissingFieldsException thrown = assertThrows(InventraMissingFieldsException.class, () -> {
             addCommand.execute(args);
         });
 
-        assertEquals("Expected record data for flag -d", thrown.getMessage());
+        assertEquals("Error: Inventory is missing fields\n"
+                + "Use 'add -h <s/pname, i/quantity, ...>' to add fields.", thrown.getMessage());
     }
 
     @Test
-    public void testValidateValue_DateWithNegativeDay_ThrowsException() {
+    public void testDateWithNegativeDayError() {
         String field = "dateField";
         String value = "-1/5/2024"; // Invalid day
         String type = "d";
@@ -425,7 +442,7 @@ public void testArgsNotNullAndLength() {
     }
 
     @Test
-    public void testValidateValue_DateWithNegativeMonth_ThrowsException() {
+    public void testDateWithNegativeMonthError() {
         String field = "dateField";
         String value = "15/-1/2024"; // Invalid month
         String type = "d";
@@ -436,7 +453,7 @@ public void testArgsNotNullAndLength() {
     }
 
     @Test
-    public void testValidateValue_DateWithMonthGreaterThanTwelve_ThrowsException() {
+    public void testDateMonthGreaterThanTwelveError() {
         String field = "dateField";
         String value = "15/13/2024"; // Invalid month (greater than 12)
         String type = "d";

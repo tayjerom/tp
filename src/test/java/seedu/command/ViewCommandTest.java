@@ -1,15 +1,22 @@
 package seedu.command;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import seedu.exceptions.*;
+import seedu.exceptions.InventraExcessArgsException;
+import seedu.exceptions.InventraInvalidNumberException;
+import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class ViewCommandTest {
     private Inventory inventory;

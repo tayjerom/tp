@@ -10,9 +10,7 @@ import seedu.storage.Csv;
 import seedu.ui.Ui;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class AddCommand extends Command {
@@ -41,7 +39,7 @@ public class AddCommand extends Command {
             throw new InventraInvalidFlagException("Use 'add -h <fields>' 'add -l', or 'add -d <values>'");
         }
     }
-    
+
     private void handleAddMultipleFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
             throw new InventraMissingFieldsException();
