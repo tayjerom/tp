@@ -96,6 +96,23 @@ class InventraTest {
         assertTrue(output.contains("| Apple") && output.contains("| 10") && output.contains("| 1.50"));
     }
 
+    // Test for starting Inventra without Inventory file
+    @Test
+    public void startWithoutCsvFile_initializesEmptyInventory() {
+        String newCsvPath = "data/new_inventory.csv";
+        File newFile = new File(newCsvPath);
+        if (newFile.exists()) {
+            newFile.delete();
+        }
+
+        Csv newCsv = new Csv(newCsvPath);
+        Inventory newInventory = new Inventory();
+        newCsv.loadInventoryFromCsv(newInventory);
+
+        assertTrue(newInventory.getFields().isEmpty());
+        assertTrue(newInventory.getRecords().isEmpty());
+    }
+
     @AfterEach
     public void tearDown() {
         File testFile = new File(testCsvFilePath);

@@ -53,19 +53,21 @@ public class ViewCommand extends Command {
     }
 
     private void handleViewByKeyword(String[] args) throws InventraException {
-        if (args.length < 3) {
+        if (args.length < 3 || args[2].trim().isEmpty()) {
             throw new InventraMissingArgsException("Keyword for filtering");
         }
 
-        String keyword = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)).toLowerCase();
+        String keyword = String.join(" ",
+                java.util.Arrays.copyOfRange(args, 2, args.length)).toLowerCase();
         List<Map<String, String>> records = inventory.getRecords();
         List<Map<String, String>> matchingRecords = new ArrayList<>();
 
         for (Map<String, String> record : records) {
             for (String field : record.keySet()) {
-                if (inventory.isStringField(field) && record.get(field).toLowerCase().contains(keyword)) {
+                if (inventory.isStringField(field) &&
+                        record.get(field).toLowerCase().contains(keyword)) {
                     matchingRecords.add(record);
-                    break;  // Stop checking further fields for this record
+                    break;
                 }
             }
         }
