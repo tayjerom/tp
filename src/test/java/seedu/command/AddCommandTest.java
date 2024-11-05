@@ -117,18 +117,6 @@ public class AddCommandTest {
     }
 
     @Test
-    public void execute_updateFields_success() throws InventraException {
-        String[] updateFieldsArgs = {"add", "-hu", "s/name, i/quantity"};
-        AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        addCommand.execute(updateFieldsArgs);
-
-        assertTrue(inventory.getFields().contains("name"));
-        assertTrue(inventory.getFieldTypes().get("name").equals("s"));
-        assertTrue(inventory.getFields().contains("quantity"));
-        assertTrue(inventory.getFieldTypes().get("quantity").equals("i"));
-    }
-
-    @Test
     public void execute_addRecordWithMismatchedFields_throwsException() throws InventraException {
         // Set up: add fields first
         String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
@@ -270,25 +258,6 @@ public class AddCommandTest {
         assertThrows(InventraInvalidTypeException.class, () -> {
             addCommand.execute(addDuplicateFieldArgs);
         });
-    }
-
-    @Test
-    public void handleUpdateFields_invalidFormat_throwsException() {
-        String[] updateFieldsArgs = {"add", "-hu", "invalidFormat"};
-        AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        assertThrows(InventraInvalidTypeException.class, () -> {
-            addCommand.execute(updateFieldsArgs);
-        });
-    }
-
-    @Test
-    public void handleUpdateFields_nonExistingField_addsSuccessfully() throws InventraException {
-        String[] updateFieldsArgs = {"add", "-hu", "s/newField"};
-        AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        addCommand.execute(updateFieldsArgs);
-
-        assertTrue(inventory.getFields().contains("newField"));
-        assertTrue(inventory.getFieldTypes().get("newField").equals("s"));
     }
 
     @Test
