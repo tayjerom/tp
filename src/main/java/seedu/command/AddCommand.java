@@ -31,11 +31,6 @@ public class AddCommand extends Command {
             csv.updateCsvHeaders(inventory);
             break;
 
-        case "-hu":
-            handleUpdateFields(args[2]);
-            csv.updateCsvHeaders(inventory);
-            break;
-
         case "-d":
             assert args.length >= 3 : "Expected record data for flag -d";
             handleAddRecord(args[2]);
@@ -46,43 +41,7 @@ public class AddCommand extends Command {
             throw new InventraInvalidFlagException("Use 'add -h <fields>' 'add -l', or 'add -d <values>'");
         }
     }
-
-    private void handleUpdateFields(String fieldData) throws InventraException {
-        if (fieldData.isEmpty()) {
-            throw new InventraMissingFieldsException();
-        }
-
-        String[] fieldsToUpdate = fieldData.split(",\\s*");
-        List<String> updatedFields = new ArrayList<>();
-        Map<String, String> updatedFieldTypes = new HashMap<>();
-
-        for (String field : fieldsToUpdate) {
-            String[] parts = field.split("/");
-            if (parts.length != 2) {
-                throw new InventraInvalidTypeException("Field format", field, "correct format (type/fieldName)");
-            }
-
-            String type = parts[0].trim();
-            String fieldName = parts[1].trim();
-
-            if (inventory.getFields().contains(fieldName)) {
-                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
-            } else {
-                ui.printMessage("    Field '" + fieldName + "' added successfully.");
-            }
-
-            updatedFields.add(fieldName);
-            updatedFieldTypes.put(fieldName, type);
-        }
-
-        inventory.setFields(updatedFields);
-        inventory.setFieldTypes(updatedFieldTypes);
-
-        csv.updateCsvHeaders(inventory);
-        ui.showFieldsAndRecords(inventory);
-    }
-
-
+    
     private void handleAddMultipleFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
             throw new InventraMissingFieldsException();
