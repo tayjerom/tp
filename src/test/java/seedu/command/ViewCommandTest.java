@@ -99,6 +99,29 @@ public class ViewCommandTest {
         }
     }
 
+    // Test for view by non-numeric ID:
+    @Test
+    public void execute_viewByNonNumericID_throwsException() {
+        String[] args = {"view", "nonNumericID"};
+        assertThrows(InventraInvalidNumberException.class, ()
+                -> new ViewCommand(inventory, ui).execute(args));
+    }
+
+    // Test for view with empty keyword:
+    @Test
+    public void execute_viewWithEmptyKeyword_throwsException() {
+        String[] argsWithEmptyKeyword = {"view", "-f", ""};
+        String[] argsWithWhitespaceKeyword = {"view", "-f", "   "};
+        ViewCommand viewCommand = new ViewCommand(inventory, ui);
+
+        // Test empty keyword
+        assertThrows(InventraMissingArgsException.class, ()
+                -> viewCommand.execute(argsWithEmptyKeyword));
+
+        // Test whitespace-only keyword
+        assertThrows(InventraMissingArgsException.class, ()
+                -> viewCommand.execute(argsWithWhitespaceKeyword));
+    }
 
     @AfterEach
     public void tearDown() {

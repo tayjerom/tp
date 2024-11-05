@@ -83,7 +83,8 @@ public class DeleteCommand extends Command {
             throw new InventraOutOfBoundsException(end, 1, records.size());
         }
         if (end >= start) {
-            inventory.getRecords().subList(start, end + 1).clear();
+            inventory.getRecords().subList(start - 1, end).clear();
+            csv.updateCsvAfterDeletion(inventory);
         }
     }
 
@@ -92,7 +93,11 @@ public class DeleteCommand extends Command {
         csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty records
     }
 
-    private void deleteHeaderAndColumn(String fieldName) {
+    private void deleteHeaderAndColumn(String fieldName) throws InventraInvalidFlagException {
+        if (!inventory.getFields().contains(fieldName)) {
+            throw new InventraInvalidFlagException("Header '"
+                    + fieldName + "' does not exist.");
+        }
         inventory.getFields().remove(fieldName);
         inventory.getFieldTypes().remove(fieldName);
         for (Map<String, String> record : inventory.getRecords()) {
@@ -100,11 +105,16 @@ public class DeleteCommand extends Command {
         }
     }
 
-    private int parseIndex(String indexString) throws InventraInvalidNumberException {
+    private int parseIndex(String indexString) throws InventraInvalidNumberException, InventraInvalidFlagException {
+        if (indexString.contains(",") || indexString.contains("-")) {
+            throw new InventraInvalidFlagException("Invalid flag or range format: "
+                    + indexString);
+        }
         try {
             return Integer.parseInt(indexString);
         } catch (NumberFormatException e) {
-            throw new InventraInvalidNumberException(indexString);
+            throw new InventraInvalidNumberException("Error: The input "
+                    + indexString + " could not be parsed as an integer.");
         }
     }
 
