@@ -109,6 +109,18 @@ Example of usage:
 - `delete -h price`
 - `delete -r 1-5`
 
+
+#### Update Fields
+* Command: `update -h CURRENTFIELDNAME, NEWFIELDNAME`
+    * Example:
+      ``` update -h name, item ID ```
+
+#### Update Records
+* Command: `add -d RECORD_ID, FIELD_NAME, NEW_VALUE`
+    * Note: The new value can only be of the previously declared data type of the field
+    * Example:
+      ``` update -d 3, quantity, 32 ```
+
 ### Exiting the Program: `exit`
 Closes the program.
     * Command: `exit`
@@ -132,29 +144,33 @@ Ensure that the file remains in the same directory as `inventra.jar` file when r
 
 ## Command Summary
 
-| Action             | Format & Example                              |
-|--------------------|-----------------------------------------------|
-| **Add Field**      | `add -h TYPE/FIELD1, TYPE/FIELD2,...`         |
-|                    | Example: `add -h s/name, i/quantity, d/expiry`|
-| **Add Record**     | `add -d VALUE1, VALUE2,...`                   |
-|                    | Example: `add -d Apple, 100, 01/10/2024`      |
-| **List Fields**    | `add -l`                                      |
-|                    | Example: `add -l`                             |
-| **View All Records** | `view -a`                                   |
-|                    | Example: `view -a`                            |
-| **View Specific**  | `view RECORD_ID`                              |
-|                    | Example: `view 1`                             |
-| **View Range**     | `view -r START-END`                           |
-|                    | Example: `view -r 1-3`                        |
-| **Delete Specific** | `delete RECORD_ID`                           |
-|                    | Example: `delete 1`                           |
-| **Delete All**     | `delete -a`                                   |
-|                    | Example: `delete -a`                          |
-| **Delete Table**   | `delete -e`                                   |
-|                    | Example: `delete -e`                          |
-| **Delete Field**   | `delete -h FIELD_NAME`                        |
-|                    | Example: `delete -h price`                    |
-| **Delete Range**   | `delete -r START-END`                         |
-|                    | Example: `delete -r 1-5`                      |
-| **Exit**           | `exit`                                        |
-|                    | Example: `exit`                               |
+| Action               | Format & Example                               |
+|----------------------|------------------------------------------------|
+| **Add Field**        | `add -h TYPE/FIELD1, TYPE/FIELD2,...`          |
+|                      | Example: `add -h s/name, i/quantity, d/expiry` |
+| **Add Record**       | `add -d VALUE1, VALUE2,...`                    |
+|                      | Example: `add -d Apple, 100, 01/10/2024`       |
+| **List Fields**      | `add -l`                                       |
+|                      | Example: `add -l`                              |
+| **View All Records** | `view -a`                                      |
+|                      | Example: `view -a`                             |
+| **View Specific**    | `view RECORD_ID`                               |
+|                      | Example: `view 1`                              |
+| **View Range**       | `view -r START-END`                            |
+|                      | Example: `view -r 1-3`                         |
+| **Delete Specific**  | `delete RECORD_ID`                             |
+|                      | Example: `delete 1`                            |
+| **Delete All**       | `delete -a`                                    |
+|                      | Example: `delete -a`                           |
+| **Delete Table**     | `delete -e`                                    |
+|                      | Example: `delete -e`                           |
+| **Delete Field**     | `delete -h FIELD_NAME`                         |
+|                      | Example: `delete -h price`                     |
+| **Delete Range**     | `delete -r START-END`                          |
+|                      | Example: `delete -r 1-5`                       |
+| **Update Field**     | `update -h CURRENT_FIELD_NAME, NEW_FIELD_NAME` |
+|                      | Example: `update -h quantity, number of items` |
+| **Update Record**    | `update -d RECORD_ID, FIELD_NAME, NEW_VALUE`   |
+|                      | Example:     `update -d 4, price, 200.50`       |
+| **Exit**             | `exit`                                         |
+|                      | Example: `exit`                                |
