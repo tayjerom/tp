@@ -27,7 +27,7 @@ public class CommandParser {
                 new ViewCommand(inventory, ui).execute(parts);
                 break;
             case "help":
-                new HelpCommand().execute(parts);
+                new HelpCommand(ui).execute(parts);
                 break;
             case "exit":
                 ui.printMessage("Program exit successfully.");

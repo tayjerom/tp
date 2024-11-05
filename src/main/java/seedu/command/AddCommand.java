@@ -4,49 +4,28 @@ import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraMissingFieldsException;
+import seedu.exceptions.InventraInvalidRecordCountException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class AddCommand {
+public class AddCommand extends Command {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
 
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
-
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
-        assert inventory != null : "Inventory should not be null";
-        assert ui != null : "Ui should not be null";
-        assert csv != null : "Csv should not be null";
-
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {
-        assert args != null && args.length >= 2 : "Arguments should " +
-                "contain at least a command and a flag";
-
         String flag = args[1];
-
         switch (flag) {
         case "-h":
             assert args.length >= 3 : "Expected additional field data for flag -h";
             handleAddMultipleFields(args[2]);
-            csv.updateCsvHeaders(inventory);
-            break;
-
-        case "-hu":
-            assert args.length >= 3 : "Expected additional field data for flag -hu";
-            handleUpdateFields(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
 
@@ -61,49 +40,6 @@ public class AddCommand {
         }
     }
 
-    private void handleUpdateFields(String fieldData) throws InventraException {
-        if (fieldData.isEmpty()) {
-            throw new InventraMissingFieldsException();
-        }
-
-        String[] fieldsToUpdate = fieldData.split(",\\s*");
-        List<String> updatedFields = new ArrayList<>();
-        Map<String, String> updatedFieldTypes = new HashMap<>();
-
-        // Process each field in the -hu command
-        for (String field : fieldsToUpdate) {
-            String[] parts = field.split("/");
-            if (parts.length != 2) {
-                ui.showErrorInvalidFieldFormat();
-                return;
-            }
-
-            String type = parts[0].trim();
-            String fieldName = parts[1].trim();
-
-            if (inventory.getFields().contains(fieldName)) {
-                // Update existing field
-                ui.printMessage("    Field '" + fieldName + "' updated successfully with new type '" + type + "'.");
-            } else {
-                // Add new field if it doesn't exist
-                ui.printMessage("    Field '" + fieldName + "' added successfully.");
-            }
-            // Add or update field in the new list of fields
-            updatedFields.add(fieldName);
-            updatedFieldTypes.put(fieldName, type);
-        }
-
-        // Replace inventory fields and types with the updated ones
-        inventory.setFields(updatedFields);
-        inventory.setFieldTypes(updatedFieldTypes);
-
-        // Update the CSV headers to match the new field list
-        csv.updateCsvHeaders(inventory);
-
-        // Display the updated fields
-        ui.showFieldsAndRecords(inventory);
-    }
-
     private void handleAddMultipleFields(String fieldData) throws InventraException {
         if (fieldData.isEmpty()) {
             throw new InventraMissingFieldsException();
@@ -115,39 +51,25 @@ public class AddCommand {
         for (String field : newFields) {
             String[] parts = field.split("/");
             if (parts.length != 2) {
-                ui.showErrorInvalidFieldFormat();
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException("Field format", field, "correct format (type/fieldName)");
             }
 
             String type = parts[0].trim();
             String fieldName = parts[1].trim();
 
-            // Check for valid type
             if (!isValidFieldType(type)) {
-                ui.showUnknownTypeMessage(type);
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException(fieldName, type, "valid field type (e.g., 's', 'i', 'f')");
             }
 
-            // Check for duplicate fields
             if (inventory.getFields().contains(fieldName)) {
-                ui.printMessage("Field '" + fieldName + "' already exists. Cannot add duplicate headers.");
-                success = false;
-                continue;
+                throw new InventraInvalidTypeException(fieldName, "duplicate field", "Field already exists");
             }
 
-            // Add field if all checks pass
             inventory.addField(fieldName, type);
         }
 
-        if (success) {
-            ui.showSuccessFieldsAdded();
-        } else {
-            ui.printMessage("Failed to add one or more fields due to errors.");
-        }
-
-        ui.showFieldsAndRecords(inventory);  // Show fields after attempting to add
+        ui.showSuccessFieldsAdded();
+        ui.showFieldsAndRecords(inventory);
     }
 
     private void handleAddRecord(String recordData) throws InventraException {
@@ -158,9 +80,9 @@ public class AddCommand {
         }
 
         String[] values = recordData.split(",\\s*");
+
         if (values.length != inventory.getFields().size()) {
-            ui.showErrorInvalidRecordCount(inventory.getFields().size());
-            return;
+            throw new InventraInvalidRecordCountException(inventory.getFields().size(), values.length);
         }
 
         Map<String, String> record = new HashMap<>();
@@ -168,16 +90,9 @@ public class AddCommand {
             String field = inventory.getFields().get(i);
             String type = inventory.getFieldTypes().get(field);
 
-            assert type != null : "Type for field '" + field + "' should not be null.";
-
-            if (type == null) {
-                LOGGER.severe("Type for field '" + field + "' is null.");
-                ui.printMessage("Error: Field '" + field + "' has no type defined.");
-                return;
-            }
+            assert type != null : "Type for field '" + field + "' should not be null";
 
             String value = values[i].trim();
-            LOGGER.info("Processing field: " + field + ", Type: " + type + ", Value: " + value);
 
             String validationMessage = validateValue(value, type, field);
             if (validationMessage != null) {
@@ -192,7 +107,11 @@ public class AddCommand {
         ui.showSuccessRecordAdded();
     }
 
-    private String validateValue(String value, String type, String field) throws InventraException {
+    public String validateValue(String value, String type, String field) throws InventraException {
+        assert value != null && !value.isEmpty() : "Value should not be null or empty";
+        assert type != null && !type.isEmpty() : "Field type should not be null or empty";
+        assert field != null && !field.isEmpty() : "Field name should not be null or empty";
+
         switch (type) {
         case "s": // String
             return null; // Any string is valid
@@ -211,7 +130,6 @@ public class AddCommand {
                 throw new InventraInvalidTypeException(field, value, type);
             }
         case "d": // Date
-            // Simple date validation, assuming the format is "dd/MM/yyyy"
             String[] parts = value.split("/");
             if (parts.length != 3) {
                 throw new InventraInvalidTypeException(field, value, type);

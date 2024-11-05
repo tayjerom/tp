@@ -12,15 +12,10 @@ import seedu.storage.Csv;
 import java.util.List;
 import java.util.Map;
 
-public class DeleteCommand {
-    private final Inventory inventory;
-    private final Ui ui;
-    private final Csv csv;
+public class DeleteCommand extends Command {
 
     public DeleteCommand(Inventory inventory, Ui ui, Csv csv) {
-        this.inventory = inventory;
-        this.ui = ui;
-        this.csv = csv;
+        super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {
@@ -61,8 +56,8 @@ public class DeleteCommand {
                 deleteRangeRecords(parseIndex(numbers[0]), parseIndex(numbers[1]));
                 break;
             default:
-                throw new InventraInvalidFlagException("use delete -a to delete all records," +
-                        "delete -e to delete entire table");
+                throw new InventraInvalidFlagException("use 'help delete' to receive details about all " +
+                        "available flags and their functions");
             }
         }
 
@@ -73,6 +68,10 @@ public class DeleteCommand {
         inventory.getFieldTypes().clear();
         deleteAllRecords();
         csv.updateCsvAfterDeletion(inventory); // Update the CSV file to reflect the empty table
+    }
+
+    private boolean isWithinBounds(int index, int size) {
+        return (index > 0 && index <= size);
     }
 
     private void deleteRangeRecords(int start, int end) throws InventraOutOfBoundsException {
@@ -107,10 +106,6 @@ public class DeleteCommand {
         } catch (NumberFormatException e) {
             throw new InventraInvalidNumberException(indexString);
         }
-    }
-
-    private boolean isWithinBounds(int index, int size) {
-        return (index > 0 && index <= size);
     }
 
     private void deleteSingleRecord(int recordIndex) throws InventraOutOfBoundsException {
