@@ -1,9 +1,6 @@
 package seedu.parser;
 
-import seedu.command.AddCommand;
-import seedu.command.DeleteCommand;
-import seedu.command.HelpCommand;
-import seedu.command.ViewCommand;
+import seedu.command.*;
 import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidCommandException;
 import seedu.model.Inventory;
@@ -22,6 +19,9 @@ public class CommandParser {
                 break;
             case "delete":
                 new DeleteCommand(inventory, ui, csv).execute(parts);
+                break;
+            case "update":
+                new UpdateCommand(inventory, ui, csv).execute(parts);
                 break;
             case "view":
                 new ViewCommand(inventory, ui).execute(parts);

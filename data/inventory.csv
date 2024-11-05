@@ -1,0 +1,4 @@
+#item:s,number:i,price:f
+item,number,price
+chair,50,200.40
+pillow,15,5000
