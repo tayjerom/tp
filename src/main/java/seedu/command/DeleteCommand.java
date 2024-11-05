@@ -100,9 +100,11 @@ public class DeleteCommand extends Command {
         }
         inventory.getFields().remove(fieldName);
         inventory.getFieldTypes().remove(fieldName);
+
         for (Map<String, String> record : inventory.getRecords()) {
             record.remove(fieldName);
         }
+        csv.updateCsvAfterDeletion(inventory);
     }
 
     private int parseIndex(String indexString) throws InventraInvalidNumberException, InventraInvalidFlagException {
