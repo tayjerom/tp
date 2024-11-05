@@ -1,10 +1,16 @@
 package seedu.command;
 
-import seedu.exceptions.*;
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidTypeException;
+import seedu.exceptions.InventraInvalidNumberException;
+import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.InventraExcessArgsException;
+import seedu.exceptions.InventraLessArgsException;
+import seedu.exceptions.InventraInvalidHeaderException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,23 +24,24 @@ public class UpdateCommand extends Command {
     public void execute(String[] args) throws InventraException {
         String flag = args[1];
         switch (flag) {
-            case "-d":
-                assert args.length >= 3 : "Expected additional field data for flag -d";
-                handleUpdateRecord(args[2]);
-                csv.updateCsv(inventory);
-                break;
-            case "-h":
-                assert args.length >= 3 : "Expected additional field data for flag -h";
-                handleUpdateField(args[2]);
-                csv.updateCsvHeaders(inventory);
-                break;
-            default:
-                throw new InventraInvalidFlagException("Use 'update -d <index_number> <field_name>' " +
-                        "<new value>' or 'update -h <old header name> <new header name'");
+        case "-d":
+            assert args.length >= 3 : "Expected additional field data for flag -d";
+            handleUpdateRecord(args[2]);
+            csv.updateCsv(inventory);
+            break;
+        case "-h":
+            assert args.length >= 3 : "Expected additional field data for flag -h";
+            handleUpdateField(args[2]);
+            csv.updateCsvHeaders(inventory);
+            break;
+        default:
+            throw new InventraInvalidFlagException("Use 'update -d <index_number> <field_name>' " +
+                    "<new value>' or 'update -h <old header name> <new header name'");
         }
     }
 
-    private void handleUpdateField(String fieldData) throws InventraInvalidHeaderException, InventraExcessArgsException, InventraLessArgsException {
+    private void handleUpdateField(String fieldData)
+            throws InventraInvalidHeaderException, InventraExcessArgsException, InventraLessArgsException {
         String[] fields = fieldData.split(" ");
 
         if (fields.length > 2) {
@@ -154,7 +161,8 @@ public class UpdateCommand extends Command {
         this.inventory.setRecords(updatedRecords);
     }
 
-    private List<Map<String, String>> updateRecords(int indexNumber, String fieldName, String newValue) throws InventraOutOfBoundsException {
+    private List<Map<String, String>> updateRecords(int indexNumber,
+        String fieldName, String newValue) throws InventraOutOfBoundsException {
         List<Map<String, String>> oldRecords = this.inventory.getRecords();
         List<Map<String, String>> updatedRecords = new ArrayList<>();
 
@@ -189,45 +197,45 @@ public class UpdateCommand extends Command {
         assert field != null && !field.isEmpty() : "Field name should not be null or empty";
 
         switch (type) {
-            case "s": // String
-                return null; // Any string is valid
-            case "i": // Integer
-                try {
-                    Integer.parseInt(value);
-                    return null; // Valid integer
-                } catch (NumberFormatException e) {
+        case "s": // String
+            return null; // Any string is valid
+        case "i": // Integer
+            try {
+                Integer.parseInt(value);
+                return null; // Valid integer
+            } catch (NumberFormatException e) {
+                throw new InventraInvalidTypeException(field, value, type);
+            }
+        case "f": // Float
+            try {
+                Float.parseFloat(value);
+                return null; // Valid float
+            } catch (NumberFormatException e) {
+                throw new InventraInvalidTypeException(field, value, type);
+            }
+        case "d": // Date
+            String[] parts = value.split("/");
+            if (parts.length != 3) {
+                throw new InventraInvalidTypeException(field, value, type);
+            }
+            try {
+                int day = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int year = Integer.parseInt(parts[2]);
+                if (day <= 0 || month <= 0 || month > 12) {
                     throw new InventraInvalidTypeException(field, value, type);
                 }
-            case "f": // Float
-                try {
-                    Float.parseFloat(value);
-                    return null; // Valid float
-                } catch (NumberFormatException e) {
-                    throw new InventraInvalidTypeException(field, value, type);
-                }
-            case "d": // Date
-                String[] parts = value.split("/");
-                if (parts.length != 3) {
-                    throw new InventraInvalidTypeException(field, value, type);
-                }
-                try {
-                    int day = Integer.parseInt(parts[0]);
-                    int month = Integer.parseInt(parts[1]);
-                    int year = Integer.parseInt(parts[2]);
-                    if (day <= 0 || month <= 0 || month > 12) {
-                        throw new InventraInvalidTypeException(field, value, type);
-                    }
-                    return null; // Valid date
-                } catch (NumberFormatException e) {
-                    throw new InventraInvalidTypeException(field, value, type);
-                }
-            case "n": // Null
-                if (!value.equalsIgnoreCase("null")) {
-                    throw new InventraInvalidTypeException(field, value, type);
-                }
-                return null; // Valid null
-            default:
-                return ui.getUnknownTypeMessage(field);
+                return null; // Valid date
+            } catch (NumberFormatException e) {
+                throw new InventraInvalidTypeException(field, value, type);
+            }
+        case "n": // Null
+            if (!value.equalsIgnoreCase("null")) {
+                throw new InventraInvalidTypeException(field, value, type);
+            }
+            return null; // Valid null
+        default:
+            return ui.getUnknownTypeMessage(field);
         }
     }
 

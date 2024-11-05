@@ -1,6 +1,10 @@
 package seedu.parser;
 
-import seedu.command.*;
+import seedu.command.ViewCommand;
+import seedu.command.HelpCommand;
+import seedu.command.AddCommand;
+import seedu.command.DeleteCommand;
+import seedu.command.UpdateCommand;
 import seedu.exceptions.InventraException;
 import seedu.exceptions.InventraInvalidCommandException;
 import seedu.model.Inventory;
