@@ -1,4 +1,4 @@
-#item:s,number:i,price:f
-item,number,price
-chair,50,200.40
+#item name:s,number:i,price:f
+item name,number,price
+chair,0,200.40
 pillow,15,5000

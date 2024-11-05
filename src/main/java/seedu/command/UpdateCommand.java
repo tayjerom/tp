@@ -42,7 +42,7 @@ public class UpdateCommand extends Command {
 
     private void handleUpdateField(String fieldData)
             throws InventraInvalidHeaderException, InventraExcessArgsException, InventraLessArgsException {
-        String[] fields = fieldData.split(" ");
+        String[] fields = fieldData.split(",\\s*");
 
         if (fields.length > 2) {
             throw new InventraExcessArgsException(2, fields.length);
@@ -52,6 +52,7 @@ public class UpdateCommand extends Command {
 
         String oldFieldName = fields[0];
         String newFieldName = fields[1];
+
         if (!isFieldValid(oldFieldName)) {
             throw new InventraInvalidHeaderException(oldFieldName);
         }
@@ -60,6 +61,7 @@ public class UpdateCommand extends Command {
         Map<String, String> updatedFieldTypes = updateFieldTypes(oldFieldName, newFieldName);
         List<Map<String, String>> updatedRecordsForHeaderChange =
                 updateRecordsForHeaderChange(oldFieldName, newFieldName);
+
         inventory.setFields(updatedFields);
         inventory.setFieldTypes(updatedFieldTypes);
         inventory.setRecords(updatedRecordsForHeaderChange);
@@ -69,6 +71,7 @@ public class UpdateCommand extends Command {
     private List<String> updateFields(String oldFieldName, String newFieldName) {
         List<String> updatedFields = new ArrayList<>();
         List<String> oldFields = inventory.getFields();
+
         for (String field : oldFields) {
             if (field.equals(oldFieldName)) {
                 updatedFields.add(newFieldName);
@@ -76,6 +79,7 @@ public class UpdateCommand extends Command {
                 updatedFields.add(field);
             }
         }
+
         return updatedFields;
     }
 
@@ -90,6 +94,7 @@ public class UpdateCommand extends Command {
                 updatedFieldTypes.put(entry.getKey(), entry.getValue());
             }
         }
+
         return updatedFieldTypes;
     }
 
@@ -110,7 +115,6 @@ public class UpdateCommand extends Command {
             }
 
             updatedRecords.add(newRecordMap);
-
         }
         return updatedRecords;
     }
@@ -118,18 +122,21 @@ public class UpdateCommand extends Command {
     private boolean isFieldValid(String oldFieldName) {
         boolean isFieldPresent = false;
         List<String> fields = inventory.getFields();
+
         for (String field : fields) {
             if (field.equals(oldFieldName)) {
                 isFieldPresent = true;
                 break;
             }
         }
+
         return isFieldPresent;
     }
 
 
     private void handleUpdateRecord(String enteredString) throws InventraException {
-        String[] userInputs = enteredString.split(" ");
+        String[] userInputs = enteredString.split(",\\s*");
+
         if (userInputs.length != 3) {
             if (userInputs.length < 3) {
                 throw new InventraLessArgsException(3, userInputs.length);
@@ -149,14 +156,11 @@ public class UpdateCommand extends Command {
 
         String type = inventory.getFieldTypes().get(fieldName);
         String validationMessage = validateValue(newValue, type, fieldName);
-
         if (validationMessage != null) {
             ui.showValidationError(validationMessage);
         }
 
         List<Map<String, String>> updatedRecords = updateRecords(indexNumber, fieldName, newValue);
-        //Inventory newInventory = new Inventory(this.inventory.getFields(),
-        //        this.inventory.getFieldTypes(), updatedRecords);
 
         this.inventory.setRecords(updatedRecords);
     }
@@ -173,6 +177,7 @@ public class UpdateCommand extends Command {
         for (int l = 0; l < oldRecords.size(); l++) {
             Map<String, String> newRecordMap = new HashMap<>();
             Map<String, String> oldRecordMap = oldRecords.get(l);
+
             if (l == (indexNumber - 1)) { //adjusting for user input index and stored index
                 for (Map.Entry<String,String> entry : oldRecordMap.entrySet()) {
                     if (fieldName.equals(entry.getKey())) {
@@ -186,12 +191,11 @@ public class UpdateCommand extends Command {
             }
 
             updatedRecords.add(newRecordMap);
-
         }
         return updatedRecords;
     }
 
-    public String validateValue(String value, String type, String field) throws InventraException {
+    private String validateValue(String value, String type, String field) throws InventraException {
         assert value != null && !value.isEmpty() : "Value should not be null or empty";
         assert type != null && !type.isEmpty() : "Field type should not be null or empty";
         assert field != null && !field.isEmpty() : "Field name should not be null or empty";
