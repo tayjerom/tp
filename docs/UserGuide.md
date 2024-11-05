@@ -2,41 +2,159 @@
 
 ## Introduction
 
-{Give a product intro}
+Inventra is a command-driven logistics and inventory management system design for small to
+medium-sized businesses including but not limited to: warehouses, online shops, retail
+businesses. Optimized for usage via Command Line Interface (CLI), Inventra aims to provide
+precise inventory management, real-time tracking and automation of tasks.
 
 ## Quick Start
 
-{Give steps to get started quickly}
-
-1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `Duke` from [here](http://link.to/duke).
+1. Prerequisites: Ensure Java 17 or above is installed in your Computer.
+2. Download: the latest [.jar] file from this link.
+3. Setup:
+*  Copy [.jar] file to the folder you would like to store your program to. 
+*  Open command terminal, [cd] into directory [.jar] is stored, use the following command to
+4. Run the application:
+   ``` java -jar inventra.jar ```
+5. Getting Started:
+*  Once launched the program, the user manual will be displayed for ease of use. 
+Refer to the Features below for details of each command.
 
 ## Features 
 
-{Give detailed description of each feature}
+Notes about commands' convention:
+1. **Program function keywords are `add`, `view`, `delete` and `exit`
+2. Flags defined for each function via a dash, an alphabet followed by valid input
+   e.g view [FLAG] [VALID INPUT}
+3. Items in square brackets are optional. But using keywords by themselves would print
+   out the man page for the particular function. e.g add => add man page
+4. Words in UPPER_CASE are parameters to be supplied by the user.
+   e.g in add -h FIELD1, FIELD2…
+5. Items with “...” after them can be used multiple times
+   e.g in add -d DATA1, DATA2…
+6. Any extra parameters defined after the following commands: add -l, view -a, exit will be
+   ignored.
 
-### Adding a todo: `todo`
-Adds a new item to the list of todo items.
+### Adding New Fields and Records: `add`
+Add new fields or records to the inventory.
 
-Format: `todo n/TODO_NAME d/DEADLINE`
+General format: add [FLAG] [VALID INPUT]
 
-* The `DEADLINE` can be in a natural language format.
-* The `TODO_NAME` cannot contain punctuation.  
+#### Add Fields
+* Command: `add -h TYPE/FIELD1, TYPE/FIELD2, ...`
+    * Types: Supported data types:
+        * `s`: String
+        * `i`: Integer
+        * `f`: Float
+        * `d`: Date
+    * Example:
+    ``` add -h s/name, i/quantity, f/price, d/expiry ```
+
+#### Add Records
+* Command: `add -d VALUE1, VALUE2, ...`
+    * Note: The orders of values should match fields defined using `add -h`
+    * Example:
+    ``` add -d Apple, 100, 1.50, 01/10/2024 ```
+
+#### List Fields added
+* Command: `add -l`
+    * Displays all currently defined fields names 
+    * Example:
+    ``` add -l ```
+
+### Viewing Records: `view`
+Displays all or specific records
+
+General Format: `view [FLAG] [INPUT]`
+
+#### View All Records
+* Command: `view -a`
+    * List all items in the inventory.
+    * Example:
+    ``` view -a ```
+
+#### View a Specific Record by ID
+* Command: `view RECORD_ID`
+    * Display details for the item with the specific ID.
+    * Example:
+    ``` view 1 ```
+
+#### View Records in a Range 
+* Command: `view -r START-END`
+    * Views records in a specified range.
+    * Example:
+    ``` view -r 1-3 ```
+
+### Deleting a record : `delete`
+Deletes a record from the inventory.
+
+Format: 
+- `delete <index>`
+- `delete -a`
+- `delete -e`
+- `delete -h <field_name>`
+- `delete -r <start>-<end>`
+
+* `delete <index>` deletes the record at the specified index (1-based indexing).
+* `delete -a` deletes all records in the inventory.
+* `delete -e` deletes all records and headers in the inventory.
+* `delete -h <field_name>` deletes the mentioned field and its column from the inventory.
+* `delete -r <start>-<end>` deletes records from the start index to the end index (both inclusive and 1-based indexing).
 
 Example of usage: 
 
-`todo n/Write the rest of the User Guide d/next week`
+- `delete 1`
+- `delete -a`
+- `delete -e`
+- `delete -h price`
+- `delete -r 1-5`
 
-`todo n/Refactor the User Guide to remove passive voice d/13/04/2020`
+### Exiting the Program: `exit`
+Closes the program.
+    * Command: `exit`
+        * Exit Inventra.
+        * Example:
+        ``` exit ```
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
+**Q**: How do I transfer my data to another computer?
+**A**: Copy `data/inventory.csv` file to its new desired location. 
+Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.
 
-**A**: {your answer here}
+
+## Known Issues
+
+1. Extra Input: Additional values provided after expected inputs for commands like `add -l`, `view -a`, `exit` will be ignored.
+2. Case Sensitivity: Ensure correct lowercase input as commands are case-sensitive.
+3. Pending Features: ...
+
 
 ## Command Summary
 
-{Give a 'cheat sheet' of commands here}
-
-* Add todo `todo n/TODO_NAME d/DEADLINE`
+| Action             | Format & Example                              |
+|--------------------|-----------------------------------------------|
+| **Add Field**      | `add -h TYPE/FIELD1, TYPE/FIELD2,...`         |
+|                    | Example: `add -h s/name, i/quantity, d/expiry`|
+| **Add Record**     | `add -d VALUE1, VALUE2,...`                   |
+|                    | Example: `add -d Apple, 100, 01/10/2024`      |
+| **List Fields**    | `add -l`                                      |
+|                    | Example: `add -l`                             |
+| **View All Records** | `view -a`                                   |
+|                    | Example: `view -a`                            |
+| **View Specific**  | `view RECORD_ID`                              |
+|                    | Example: `view 1`                             |
+| **View Range**     | `view -r START-END`                           |
+|                    | Example: `view -r 1-3`                        |
+| **Delete Specific** | `delete RECORD_ID`                           |
+|                    | Example: `delete 1`                           |
+| **Delete All**     | `delete -a`                                   |
+|                    | Example: `delete -a`                          |
+| **Delete Table**   | `delete -e`                                   |
+|                    | Example: `delete -e`                          |
+| **Delete Field**   | `delete -h FIELD_NAME`                        |
+|                    | Example: `delete -h price`                    |
+| **Delete Range**   | `delete -r START-END`                         |
+|                    | Example: `delete -r 1-5`                      |
+| **Exit**           | `exit`                                        |
+|                    | Example: `exit`                               |

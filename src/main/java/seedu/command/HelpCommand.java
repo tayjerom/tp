@@ -2,13 +2,14 @@ package seedu.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import seedu.ui.Ui;
 
-public class HelpCommand {
+public class HelpCommand extends Command {
 
     private final Map<String, String> helpMessages;
 
-    public HelpCommand() {
-        // Initialize the help messages map
+    public HelpCommand(Ui ui) {
+        super(null, ui, null); // Inventory and Csv are not needed here
         helpMessages = new LinkedHashMap<>();
 
         // Add help messages for each command
@@ -41,6 +42,14 @@ public class HelpCommand {
         helpMessages.put("delete -e",
                 "Delete Entire Table:\n" +
                         "   - Command: delete -e\n");
+
+        helpMessages.put("delete -h",
+                "Delete a header it's corresponding column:\n"+
+                        "   - Command: delete -h <header_name>\n");
+
+        helpMessages.put("delete -r",
+                "Delete a range of records using index range:\n"+
+                        "   - Command: delete -r <start_index>-<end_index>\n");
 
         helpMessages.put("exit",
                 "Exit program:\n" +
@@ -78,9 +87,13 @@ public class HelpCommand {
         case "delete":
         case "delete -a":
         case "delete -e":
+        case "delete -h":
+        case "delete -r":
             System.out.println(helpMessages.get("delete"));
             System.out.println(helpMessages.get("delete -a"));
             System.out.println(helpMessages.get("delete -e"));
+            System.out.println(helpMessages.get("delete -h"));
+            System.out.println(helpMessages.get("delete -r"));
             break;
 
         case "exit":

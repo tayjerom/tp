@@ -12,101 +12,69 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ViewCommand {
-    private final Inventory inventory;
-    private final Ui ui;
+public class ViewCommand extends Command {
 
     public ViewCommand(Inventory inventory, Ui ui) {
-        this.inventory = inventory;
-        this.ui = ui;
+        super(inventory, ui, null);  // Passing `null` for unused dependencies
     }
 
     public void execute(String[] args) throws InventraException {
+        if (args.length < 2) {
+            throw new InventraMissingArgsException("Flag or Item index");
+        }
 
         String flag = args[1].trim();
-        // Try to parse it as an ID to view a specific item
-        if (flag.isEmpty()) {
-            throw new InventraMissingArgsException("Item index");
-        }
-
-        else if(flag.equals("-f")) {
+        if (flag.equals("-f")) {
             handleViewByKeyword(args);
-        }
-
-        else{
+        } else if (flag.equals("-a")) {
             if (args.length > 2) {
                 throw new InventraExcessArgsException(2, args.length);
             }
-            else
-            if (flag.equals("-a")) {// View all items
-                ui.showFieldsAndRecords(inventory);
-            }
-            else {
-                try {
-                    int id = Integer.parseInt(flag);
-                    handleViewById(id);
-                } catch (NumberFormatException e) {
-                    throw new InventraInvalidNumberException(flag);
+            ui.showFieldsAndRecords(inventory); // View all items
+        } else {
+            try {
+                int id = Integer.parseInt(flag);
+                if (args.length > 2) {
+                    throw new InventraExcessArgsException(2, args.length);
                 }
-                // Out of bounds is not caught, will be directly thrown to commandParser to be handled.
+                handleViewById(id);
+            } catch (NumberFormatException e) {
+                throw new InventraInvalidNumberException(flag);
             }
         }
-
     }
 
     private void handleViewById(int id) throws InventraException {
         List<Map<String, String>> records = inventory.getRecords();
-        if (id <= 0 || id >= records.size()) {
+        if (id <= 0 || id > records.size()) {
             throw new InventraOutOfBoundsException(id, 1, records.size());
         }
-        Map<String, String> record = records.get(id - 1); // Adjust for 0-based index
-        ui.printSingleRecord(record, id);
+        ui.printSingleRecord(records.get(id - 1), id); // Adjust for 0-based index
     }
-    
+
     private void handleViewByKeyword(String[] args) throws InventraException {
-        List<String> fields = inventory.getFields();
-        Map<String,String> fieldtypes = inventory.getFieldTypes();
-        List<Map<String, String>> records = inventory.getRecords();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 2; i < args.length; i++) {
-            sb.append(args[i]);
-            if (i != args.length - 1) { // Add a delimiter if it's not the last element
-                sb.append(" ");
-            }
+        if (args.length < 3) {
+            throw new InventraMissingArgsException("Keyword for filtering");
         }
-        String keyword = sb.toString();
-        List<Map<String, String>> printedRecords = new ArrayList<>();
-        List<Integer> printedRecordsIndexes = new ArrayList<>();
-        for(String field : fields) {
-            if(fieldtypes.get(field).equals("s")) {//check if the field is string type or not
-                for (int i = 0; i < records.size(); i++) {
-                    Map<String, String> record = records.get(i);
-                    for (Map.Entry<String, String> entry : record.entrySet()) {
-                        String key = entry.getKey();
-                        if(field.equals(key)) {
-                            if(entry.getValue().toLowerCase().contains(keyword.toLowerCase())) {
-                                if (!printedRecords.contains(record)) {
-                                    printedRecords.add(record);
-                                    printedRecordsIndexes.add(i);
-                                }
-                            }
-                        }
-                    }
+
+        String keyword = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)).toLowerCase();
+        List<Map<String, String>> records = inventory.getRecords();
+        List<Map<String, String>> matchingRecords = new ArrayList<>();
+
+        for (Map<String, String> record : records) {
+            for (String field : record.keySet()) {
+                if (inventory.isStringField(field) && record.get(field).toLowerCase().contains(keyword)) {
+                    matchingRecords.add(record);
+                    break;  // Stop checking further fields for this record
                 }
             }
         }
 
-        if(!printedRecords.isEmpty()) {
-            ui.printMessage("Here are the records that match the keyword");
-            for (int i = 0; i < printedRecords.size(); i++) {
-                Map<String, String> record = printedRecords.get(i);
-                int id = printedRecordsIndexes.get(i);
-                ui.printSingleRecord(record, id+1);
-                ui.printMessage("");
-            }
-        }
-        else {
-            ui.printMessage("Sorry there are no records that match the keyword");
+        if (!matchingRecords.isEmpty()) {
+            ui.printMessage("Here are the records that match the keyword:");
+            ui.showFieldsAndRecords(inventory.getFields(), matchingRecords);
+        } else {
+            ui.printMessage("Sorry, there are no records that match the keyword.");
         }
     }
 }
