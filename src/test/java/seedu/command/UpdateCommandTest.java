@@ -18,7 +18,9 @@ import seedu.ui.Ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -41,19 +43,16 @@ public class UpdateCommandTest {
         csv = new Csv(testCsvFilePath);
 
         File file = new File(testCsvFilePath);
-        if (!file.exists()) {
-            try (PrintStream writer = new PrintStream(file)) {
-                writer.println("#name:s,quantity:i,price:f");
-                writer.println("Apple,10,1.50");
-                writer.println("Banana,5,0.75");
-            } catch (Exception e) {
-                System.err.println("Error creating test CSV file: " + e.getMessage());
-            }
+        try (FileWriter writer = new FileWriter(file)) { // Opens the file in overwrite mode by default
+            writer.write("#name:s,quantity:i,price:f\n"); // Metadata header
+            writer.write("name,quantity,price\n");         // Column headers
+            writer.write("Apple,100,1.5\n");
+            writer.write("Banana,300,3.5\n");
+            writer.write("DragonFruit,200,5.0\n");
+        } catch (IOException e) {
+            System.err.println("Error creating test CSV file: " + e.getMessage());
         }
-
         csv.loadInventoryFromCsv(inventory);
-        outputStream = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStream));
     }
 
     @Test
@@ -119,7 +118,7 @@ public class UpdateCommandTest {
 
     @Test
     public void execute_updateRecordWithInvalidField_throwsException() {
-        String[] updateRecordArgs = {"update", "-d", "1,invalidField,20"};
+        String[] updateRecordArgs = {"update", "-d", "1, nonExistentField, 20"};
         UpdateCommand updateCommand = new UpdateCommand(inventory, ui, csv);
 
         assertThrows(InventraInvalidHeaderException.class, () -> {
@@ -129,7 +128,7 @@ public class UpdateCommandTest {
 
     @Test
     public void execute_updateRecordWithInvalidIndex_throwsException() {
-        String[] updateRecordArgs = {"update", "-d", "0,quantity,20"};
+        String[] updateRecordArgs = {"update", "-d", "0, price, 20"};
         UpdateCommand updateCommand = new UpdateCommand(inventory, ui, csv);
 
         assertThrows(InventraOutOfBoundsException.class, () -> {

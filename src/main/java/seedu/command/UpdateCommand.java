@@ -150,6 +150,10 @@ public class UpdateCommand extends Command {
         String newValue = userInputs[2];
         int indexNumber = parseIndex(indexNumberString);
 
+        if (indexNumber <= 0 || indexNumber > inventory.getRecords().size()) {
+            throw new InventraOutOfBoundsException(indexNumber, 1, inventory.getRecords().size());
+        }
+
         if (!isFieldValid(fieldName)) {
             throw new InventraInvalidHeaderException(fieldName);
         }
@@ -170,9 +174,7 @@ public class UpdateCommand extends Command {
         List<Map<String, String>> oldRecords = this.inventory.getRecords();
         List<Map<String, String>> updatedRecords = new ArrayList<>();
 
-        if (indexNumber <= 0 || indexNumber > oldRecords.size()) {
-            throw new InventraOutOfBoundsException(indexNumber, 1, oldRecords.size());
-        }
+
 
         for (int l = 0; l < oldRecords.size(); l++) {
             Map<String, String> newRecordMap = new HashMap<>();
