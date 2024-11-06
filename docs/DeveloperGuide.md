@@ -102,28 +102,19 @@ Only when requirements permits, database implementation has been considered for 
 ### "Delete" Command Feature
 The "DeleteCommand" is responsible for deleting fields and records from the inventory. 
 Concurrently, "delete" command is implemented with behaviour to update CSV file to persist changes made to inventory.
-This command supports the following formats:
-* '\<index>': Delete the record at the specified index (1-based indexing).
-* '-a': Delete all records in the inventory. 
-* '-e': Delete all records and headers in the inventory.
-* '-h \<field_name>': Delete the mentioned field and its column from the inventory.
-* '-r \<start>-\<end>': Delete records from the start index to the end index (both inclusive and 1-based indexing).
-
-Shown below is the class diagram:
-
-
 
 The 'DeleteCommand' is part of the `command` package and inherits from the Command class. It interacts with the following key components:
 * **Inventory**: Contains the current state of the inventory, including fields and records.
-* **Csv**: Handles reading from and writing to the CSV file for data storage persistence.
-* **Ui**: Handles user interactions component such as message to user during command execution.
+* **Csv**: Handles updating CSV file after deletion is performed on inventory.
+* **Ui**: Handles output to user upon deletion success.
 
-Command flow of 'DeleteCommand' can be visualized with the following architecture diagram:
-![Architecture Diagram](docs/diagrams/DeleteCommandArchitectureDiagram.png)
+Shown below is the class diagram:
+
+![DeleteClassDiagram.png](DeleteClassDiagram.png)
+
 * **Description**: The `DeleteCommand` modifies `Inventory` by removing fields or records that are specified by the user.
 The `Csv` components updates the CSV file to reflect changes made during deletion, as well as `Ui` provide response to the user.
 
-#### Component-Level Design
 "DeleteCommand" Class:
 * processes the input arguments and executes the logic based on if the second argument is a number or flag.
 * fields and records are validated before updating inventory data into the CSV file.
@@ -137,10 +128,19 @@ The `Csv` components updates the CSV file to reflect changes made during deletio
 ![Class Diagram](docs/diagrams/DeleteCommandClassDiagram.png)
 * **Description**: The class diagram above shows the core methods of `DeleteCommand` and its interactions with `Inventory`, `Csv`, and `Ui`.
 
+This command supports the following formats:
+* '\<index>': Delete the record at the specified index (1-based indexing).
+* '-a': Delete all records in the inventory.
+* '-e': Delete all records and headers in the inventory.
+* '-h \<field_name>': Delete the mentioned field and its column from the inventory.
+* '-r \<start>-\<end>': Delete records from the start index to the end index (both inclusive and 1-based indexing).
+
 #### Sequence Diagram
 *Illustrates how "DeleteCommand" interacts with "Inventory" and "Csv" classes when deleting a record:
 
-![Sequence Diagram](docs/diagrams/DeleteCommandSequenceDiagram.png)
+![DeleteSequenceDiagram.png](DeleteSequenceDiagram.png)
+
+We have ommited the case for delete -a as it is essentially a subset of delete -e and adds unecessary complexity to the sequence diagram.
 
 #### Why Implement "DeleteCommand" in this way?
 Separating implementation of "DeleteCommand", "Inventory", and "Csv" classes ensures:
@@ -152,24 +152,20 @@ Separating implementation of "DeleteCommand", "Inventory", and "Csv" classes ens
 As with `AddCommand`, database implementation has been considered for better handling of fields types for inventory storage.
 
 ### "Update" Command Feature
-The "UpdateCommand" is responsible for editing fields and records to the inventory.
-Concurrently, "update" command is implemented with behaviour to update CSV file to persist changes made to inventory.
-This command supports the following formats:
-* '-d': Update the record for the specified field at the specified index (1-based indexing).
-* '-h': Update the specified field name to a new field name.
-
-#### Architecture Overview
-The 'UpdateCommand' is part of the `command` package, and interacts with the following key components:
+The "UpdateCommand" is responsible for editing fields and records to the inventory. The 'UpdateCommand' is part of the `command` package and inherits from the Command class, and interacts with the following key components:
 * **Inventory**: Contains the current state of the inventory, including fields and records.
 * **Csv**: Handles reading from and writing to the CSV file for data storage persistence.
 * **Ui**: Handles user interactions component such as message to user during command execution.
 
-Command flow of 'UpdateCommand' can be visualized with the following architecture diagram:
-![Architecture Diagram](docs/diagrams/UpdateCommandArchitectureDiagram.png)
-* **Description**: The `UpdateCommand` modifies `Inventory` by modifying fields or records that are specified by the user.
-  The `Csv` components updates the CSV file to reflect changes made during updation, as well as `Ui` provide response to the user.
+![UpdateClassDiagram.png](UpdateClassDiagram.png)
 
-#### Component-Level Design
+* **Description**: The class diagram above shows the core methods of `UpdateCommand` and its interactions with `Inventory`, `Csv`, and `Ui`. The `UpdateCommand` modifies `Inventory` by modifying fields or records that are specified by the user.
+  The `Csv` components updates the CSV file to reflect changes made during updation, as well as `Ui` provide response to the user. 
+
+This command supports the following formats:
+* '-d': Update the record for the specified field at the specified index (1-based indexing).
+* '-h': Update the specified field name to a new field name.
+
 "UpdateCommand" Class:
 * processes the input arguments and executes the logic based on the flag.
 * fields are validated before updating inventory data into the CSV file.
@@ -178,13 +174,10 @@ Command flow of 'UpdateCommand' can be visualized with the following architectur
 * `handleUpdateField()`: Updates a specific field.
 * `handleUpdateRecord()`: Updates a particular record of the given index and field name.
 
-![Class Diagram](docs/diagrams/UpdateCommandClassDiagram.png)
-* **Description**: The class diagram above shows the core methods of `UpdateCommand` and its interactions with `Inventory`, `Csv`, and `Ui`.
-
 #### Sequence Diagram
 *Illustrates how "UpdateCommand" interacts with "Inventory" and "Csv" classes when updating a record:
 
-![Sequence Diagram](docs/diagrams/UpdateCommandSequenceDiagram.png)
+![UpdateSequenceDiagram.png](UpdateSequenceDiagram.png)
 
 #### Why Implement "UpdateCommand" in this way?
 Separating implementation of "UpdateCommand", "Inventory", and "Csv" classes ensures:
@@ -195,21 +188,16 @@ Separating implementation of "UpdateCommand", "Inventory", and "Csv" classes ens
 ### "View" Command Feature
 The `ViewCommand` allows users to view records in the inventory, either displaying all records or specific ones based on user's defined filters.
 
-This command supports the following formats:
-* `-a`: View all records.
-* `<ID>`: View a specific record by defined ID.
-* `-f <keyword>`: View records containing a keyword.
-
-#### Architecture Overview
-
 The `ViewCommand` interacts with:
 * **Inventory**: Accessing data to retrieve and display records
 * **Ui**: Displays records to the user.
 
-![ViewCommand Architecture Diagram](docs/diagrams/ViewCommandArchitectureDiagram.png)
-* **Description**: The `ViewCommand` retrieve data from `Inventory` based on user's input and leverage on `Ui` to display records.
+Shown below is a class diagram
 
-#### Component-Level Design
+![ViewClassDiagram.png](ViewClassDiagram.png)
+
+* **Description**: The class diagram above shows the main methods used by `ViewCommand` and its connection to `Inventory` and `Ui`. The `ViewCommand` retrieve data from `Inventory` based on user's input and leverage on `Ui` to display records.
+
 
 The `ViewCommand` class processes input arguments and execute respective logic based on flags or IDs provided.
 
@@ -217,13 +205,17 @@ The `ViewCommand` class processes input arguments and execute respective logic b
 * `handleViewById()`: Displays a specific record by ID
 * `handleViewByKeyword()`: Filters and displays records based on defined keyword.
 
-![ViewCommand Class Diagram](docs/diagrams/ViewCommandClassDiagram.png)
-* **Description**: The class diagram above shows the main methods used by `ViewCommand` and its connection to `Inventory` and `Ui`.
+This command supports the following formats:
+* `-a`: View all records.
+* `<ID>`: View a specific record by defined ID.
+* `-f <keyword>`: View records containing a keyword.
+
 
 #### Sequence Diagram
 The following sequence diagram shows how `ViewCommand` interacts with `Inventory` and `Ui` when displaying a specific records:
 
-![ViewCommand Sequence Diagram](docs/diagrams/ViewCommandSequenceDiagram.png)
+![ViewSequenceDiagram.png](ViewSequenceDiagram.png)
+
 
 #### Why Implement `ViewCommand` in this way:
 Approach was adopted to ensure efficient access to `Inventory` for data retrieval and provide overall user-friendliness for user viewing records through `Ui`.
