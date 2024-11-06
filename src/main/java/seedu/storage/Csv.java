@@ -115,6 +115,7 @@ public class Csv {
                 writer.write(String.join(",", values));
                 writer.newLine();
             }
+            System.out.println("CSV file header updated.");
         } catch (IOException e) {
             e.printStackTrace();
         }
