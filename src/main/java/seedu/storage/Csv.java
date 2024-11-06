@@ -204,4 +204,43 @@ public class Csv {
             e.printStackTrace();
         }
     }
+
+    public void updateCsv(Inventory inventory) {
+        List<String> fields = inventory.getFields();
+        Map<String, String> fieldTypes = inventory.getFieldTypes();
+
+        // Create the metadata line from field types
+        List<String> metadata = new ArrayList<>();
+        for (String field : fields) {
+            String type = fieldTypes.get(field);
+            metadata.add(field + ":" + type);
+        }
+        String metadataLine = "#" + String.join(",", metadata);
+
+        try (FileWriter writer = new FileWriter(csvFilePath, false)) {
+            // Write the metadata line first
+            writer.append(metadataLine).append("\n");
+
+            // Write field names (headers)
+            if (!fields.isEmpty()) {
+                writer.append(String.join(",", fields)).append("\n");
+            }
+
+            // Handle records
+            for (Map<String, String> record : inventory.getRecords()) {
+                for (int i = 0; i < fields.size(); i++) {
+                    String field = fields.get(i);
+                    String value = record.getOrDefault(field, "null");
+                    writer.append(value != null ? value : "null");
+                    if (i < fields.size() - 1) {
+                        writer.append(",");
+                    }
+                }
+                writer.append("\n");
+            }
+            System.out.println("CSV file updated.");
+        } catch (IOException e) {
+            System.err.println("Error updating CSV: " + e.getMessage());
+        }
+    }
 }

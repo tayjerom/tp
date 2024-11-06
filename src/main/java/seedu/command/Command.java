@@ -16,5 +16,17 @@ public abstract class Command {
         this.csv = csv;
     }
 
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public Ui getUi() {
+        return ui;
+    }
+
+    public Csv getCsv() {
+        return csv;
+    }
+
     public abstract void execute(String[] args) throws InventraException;
 }

@@ -6,10 +6,22 @@ import java.util.List;
 import java.util.Map;
 
 public class Inventory {
-    private List<String> fields = new ArrayList<>();
-    private Map<String, String> fieldTypes = new HashMap<>(); // Map field <-> type
-    private final List<Map<String, String>> records = new ArrayList<>(); // List of mapped field <-> record
+    private List<String> fields;
+    private Map<String, String> fieldTypes; // Map field <-> type
+    private List<Map<String, String>> records; // List of mapped field <-> record
 
+
+    public Inventory() {
+        this.fields = new ArrayList<>();
+        this.fieldTypes = new HashMap<>();
+        this.records = new ArrayList<>();
+    }
+
+    public Inventory(List<String> fields, Map<String, String> fieldTypes, List<Map<String, String>> records) {
+        this.fields = fields;
+        this.fieldTypes = fieldTypes;
+        this.records = records;
+    }
     public void addField(String field, String type) {
         fields.add(field);
         fieldTypes.put(field, type);
@@ -29,6 +41,10 @@ public class Inventory {
 
     public List<Map<String, String>> getRecords() {
         return records;
+    }
+
+    public void setRecords(List<Map<String, String>> records) {
+        this.records = records;
     }
 
     // Method to set fields (for loading from CSV)
