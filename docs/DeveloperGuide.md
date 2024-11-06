@@ -6,6 +6,7 @@
   - [Architecture](#architecture)  
     - ["Add" Command Feature](#"add"-command-feature)
     - ["Delete" Command Feature](#"delete"-command-feature)
+    - ["Update" Command Feature](#"update"-command-feature)
     - ["View" Command Feature](#"view"-command-feature)
   - [Product scope](#product-scope)
   - [User Stories](#user-stories)
@@ -150,6 +151,46 @@ Separating implementation of "DeleteCommand", "Inventory", and "Csv" classes ens
 #### Alternative Considered
 As with `AddCommand`, database implementation has been considered for better handling of fields types for inventory storage.
 
+### "Update" Command Feature
+The "UpdateCommand" is responsible for editing fields and records to the inventory.
+Concurrently, "update" command is implemented with behaviour to update CSV file to persist changes made to inventory.
+This command supports the following formats:
+* '-d': Update the record for the specified field at the specified index (1-based indexing).
+* '-h': Update the specified field name to a new field name.
+
+#### Architecture Overview
+The 'UpdateCommand' is part of the `command` package, and interacts with the following key components:
+* **Inventory**: Contains the current state of the inventory, including fields and records.
+* **Csv**: Handles reading from and writing to the CSV file for data storage persistence.
+* **Ui**: Handles user interactions component such as message to user during command execution.
+
+Command flow of 'UpdateCommand' can be visualized with the following architecture diagram:
+![Architecture Diagram](docs/diagrams/UpdateCommandArchitectureDiagram.png)
+* **Description**: The `UpdateCommand` modifies `Inventory` by modifying fields or records that are specified by the user.
+  The `Csv` components updates the CSV file to reflect changes made during updation, as well as `Ui` provide response to the user.
+
+#### Component-Level Design
+"UpdateCommand" Class:
+* processes the input arguments and executes the logic based on the flag.
+* fields are validated before updating inventory data into the CSV file.
+
+"Update Command" key methods include:
+* `handleUpdateField()`: Updates a specific field.
+* `handleUpdateRecord()`: Updates a particular record of the given index and field name.
+
+![Class Diagram](docs/diagrams/UpdateCommandClassDiagram.png)
+* **Description**: The class diagram above shows the core methods of `UpdateCommand` and its interactions with `Inventory`, `Csv`, and `Ui`.
+
+#### Sequence Diagram
+*Illustrates how "UpdateCommand" interacts with "Inventory" and "Csv" classes when updating a record:
+
+![Sequence Diagram](docs/diagrams/UpdateCommandSequenceDiagram.png)
+
+#### Why Implement "UpdateCommand" in this way?
+Separating implementation of "UpdateCommand", "Inventory", and "Csv" classes ensures:
+* "UpdateCommand" focus only on processing input and delegating task to other specific components.
+* "Csv" class is responsible for updating data into CSV file for storage; ensuring persistence in data control.
+* With this breakdown of implementation, create room for future scalability (e.g. updating multiple values at once).
 
 ### "View" Command Feature
 The `ViewCommand` allows users to view records in the inventory, either displaying all records or specific ones based on user's defined filters.

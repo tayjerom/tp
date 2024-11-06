@@ -76,6 +76,20 @@ class CommandParserTest {
         System.setOut(System.out);
     }
 
+    // Test for empty command:
+    @Test
+    void parseCommand_emptyCommand_noExceptionThrown() {
+        String input = "";
+        assertDoesNotThrow(() -> CommandParser.parseCommand(input, inventory, ui, csv));
+    }
+
+    // Test for case-insensitive commands:
+    @Test
+    void parseCommand_caseInsensitiveCommand_executesSuccessfully() {
+        String input = "HeLp";
+        assertDoesNotThrow(() -> CommandParser.parseCommand(input, inventory, ui, csv));
+    }
+
     @Test
     void parseCommand_exitCommand_printsExitMessage() {
         String input = "exit";

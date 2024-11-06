@@ -171,6 +171,35 @@ public class DeleteCommandTest {
         }
     }
 
+    // Test for deleting header when it does exist:
+    @Test
+    public void execute_deleteNonExistentHeader_throwsException() {
+        String input = "delete -h nonExistentField";
+        String[] parts = input.split(" ", 3);
+        assertThrows(InventraInvalidFlagException.class, ()
+                -> new DeleteCommand(inventory, ui, csv).execute(parts));
+    }
+
+    // Test delete record from empty inventory:
+    @Test
+    public void execute_deleteRecordFromEmptyInventory_throwsException() {
+        // Clear inventory records for testing
+        inventory.getRecords().clear();
+        String input = "delete 1";
+        String[] parts = input.split(" ", 3);
+        assertThrows(InventraOutOfBoundsException.class, ()
+                -> new DeleteCommand(inventory, ui, csv).execute(parts));
+    }
+
+    // Test for invalid range format for deletion:
+    @Test
+    public void execute_invalidRangeFormat_throwsException() {
+        String input = "delete -r 1,2"; // Incorrect format (comma instead of dash)
+        String[] parts = input.split(" ", 3);
+        assertThrows(InventraInvalidFlagException.class, ()
+                -> new DeleteCommand(inventory, ui, csv).execute(parts));
+    }
+
     @AfterEach
     public void tearDown() {
         File testFile = new File(testCsvFilePath);

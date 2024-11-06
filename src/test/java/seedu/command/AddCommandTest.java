@@ -220,16 +220,6 @@ public class AddCommandTest {
         });
     }
 
-    /*@Test
-    public void validateValue_invalidDayInDate_throwsException() {
-        String type = "d";
-        String field = "date";
-        AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        assertThrows(InventraInvalidTypeException.class, () -> {
-            addCommand.validateValue("32/01/2020", type, field);
-        });
-    }*/
-
     @Test
     public void validateValue_invalidMonthInDate_throwsException() {
         String type = "d";
@@ -463,7 +453,58 @@ public class AddCommandTest {
         });
     }
 
+    // Test invalid date formats with different separators or missing components:
+    @Test
+    public void validateValue_incompleteDateFormat_throwsException() {
+        String type = "d";
+        String field = "date";
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        assertThrows(InventraInvalidTypeException.class, () -> {
+            addCommand.validateValue("12/2020", type, field);
+        });
+    }
 
+    // Test Duplicate field handling:
+    @Test
+    public void execute_addRecordWithExtraValues_throwsException() throws InventraException {
+        // First add the fields
+        String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        addCommand.execute(addFieldsArgs);
+
+        // Then try adding a record with more values than fields
+        String[] addRecordArgs = {"add", "-d", "Apple, 10, 1.50, extraValue"};
+
+        assertThrows(InventraInvalidRecordCountException.class, () -> {
+            addCommand.execute(addRecordArgs);
+        });
+    }
+
+    // Test invalid date separators
+    @Test
+    public void validateValue_invalidDateSeparator_throwsException() {
+        String type = "d";
+        String field = "date";
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        assertThrows(InventraInvalidTypeException.class, () -> {
+            addCommand.validateValue("12-31-2020", type, field); // Wrong separator
+        });
+    }
+
+    // Add Record with special characters in name
+    @Test
+    public void execute_addRecordWithSpecialCharactersInName_success() throws InventraException {
+        // Add fields first
+        String[] addFieldsArgs = {"add", "-h", "s/name, i/quantity, f/price"};
+        AddCommand addCommand = new AddCommand(inventory, ui, csv);
+        addCommand.execute(addFieldsArgs);
+
+        // Add record with special characters in the name
+        String[] addRecordArgs = {"add", "-d", "Apple@!, 20, 2.99"};
+        addCommand.execute(addRecordArgs);
+
+        assertEquals("Apple@!", inventory.getRecords().get(0).get("name"));
+    }
 
     @AfterEach
     public void tearDown() {
