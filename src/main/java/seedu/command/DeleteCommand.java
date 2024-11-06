@@ -53,6 +53,9 @@ public class DeleteCommand extends Command {
                     throw new InventraMissingArgsException("Range");
                 }
                 String[] numbers = args[2].trim().split("-");
+                if (numbers.length != 2) {
+                    throw new InventraMissingArgsException("Range");
+                }
                 deleteRangeRecords(parseIndex(numbers[0]), parseIndex(numbers[1]));
                 break;
             default:

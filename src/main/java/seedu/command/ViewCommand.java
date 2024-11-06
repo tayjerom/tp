@@ -49,8 +49,17 @@ public class ViewCommand extends Command {
         if (id <= 0 || id > records.size()) {
             throw new InventraOutOfBoundsException(id, 1, records.size());
         }
-        ui.printSingleRecord(records.get(id - 1), id); // Adjust for 0-based index
+
+        // Get the specific record for the given ID (adjusting for 0-based index)
+        Map<String, String> record = records.get(id - 1);
+
+        // Get the fields (column names) from the inventory
+        List<String> fields = inventory.getFields();
+
+        // Show the record in table format using the existing method
+        ui.showFieldsAndRecords(fields, List.of(record)); // Pass the record as a single-element list
     }
+
 
     private void handleViewByKeyword(String[] args) throws InventraException {
         if (args.length < 3 || args[2].trim().isEmpty()) {

@@ -72,13 +72,19 @@ public class Ui {
     }
 
 
-    // Prints table header with fields
+    // Prints table header with fields and adds the "ID" column
     private void printTableHeader(List<String> fields) {
         StringBuilder header = new StringBuilder("    | ");
         StringBuilder separator = new StringBuilder("    +");
 
+        // Add the "ID" column header
+        int idColumnWidth = 5;  // Fixed width for ID column
+        header.append(String.format("%-" + idColumnWidth + "s | ", "ID"));
+        separator.append("-".repeat(idColumnWidth + 2)).append("+");
+
+        // Add the other field headers
         for (String field : fields) {
-            int columnWidth = Math.max(field.length(), 10);  // Ensure minimum column width of 10
+            int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
             header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
             separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
         }
@@ -88,33 +94,42 @@ public class Ui {
         printMessage(separator.toString());
     }
 
-    // Prints table rows with records
+
+    // Prints table rows with records and adds the "ID" column
     private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
         StringBuilder separator = new StringBuilder("    +");
+
+        // Fixed width for ID column
+        int idColumnWidth = 5;
+        separator.append("-".repeat(idColumnWidth + 2)).append("+");
+
+        // Add the separator for the other fields
         for (String field : fields) {
-            int columnWidth = Math.max(field.length(), 10);
+            int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
             separator.append("-".repeat(columnWidth + 2)).append("+");
         }
 
+        // Print the rows
+        int id = 1;  // Start ID at 1
         for (Map<String, String> record : records) {
             StringBuilder row = new StringBuilder("    | ");
+
+            // Print ID (fixed width of 5 characters)
+            row.append(String.format("%-" + idColumnWidth + "d | ", id));
+            id++;  // Increment ID for the next row
+
+            // Print the other field values
             for (String field : fields) {
-                int columnWidth = Math.max(field.length(), 10);
+                int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
                 String value = record.getOrDefault(field, "null");  // Handle missing values
                 row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
             }
+
             printMessage(row.toString());
             printMessage(separator.toString());
         }
     }
 
-    public void showErrorInvalidFieldFormat() {
-        printMessage("    Invalid field format. Use '<type>/<field>' for each field.");
-    }
-
-    public void showErrorInvalidRecordCount(int expected) {
-        printMessage("    Invalid number of values. Expected " + expected + " values.");
-    }
 
     public void showSuccessFieldsAdded() {
         printMessage("    Fields added successfully.");
