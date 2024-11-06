@@ -44,12 +44,19 @@ public class HelpCommand extends Command {
                         "   - Command: delete -e\n");
 
         helpMessages.put("delete -h",
-                "Delete a header it's corresponding column:\n"+
+                "Delete a header and its corresponding column:\n" +
                         "   - Command: delete -h <header_name>\n");
 
         helpMessages.put("delete -r",
-                "Delete a range of records using index range:\n"+
+                "Delete a range of records using index range:\n" +
                         "   - Command: delete -r <start_index>-<end_index>\n");
+
+        helpMessages.put("update",
+                "Update Records or Fields:\n" +
+                        "   - Update a record: update -d <index_number>,<field_name>,<new_value>\n" +
+                        "   - Example: update -d 1,name,Orange\n" +
+                        "   - Update a header: update -h <old_header_name>,<new_header_name>\n" +
+                        "   - Example: update -h name,product_name\n");
 
         helpMessages.put("exit",
                 "Exit program:\n" +
@@ -94,6 +101,10 @@ public class HelpCommand extends Command {
             System.out.println(helpMessages.get("delete -e"));
             System.out.println(helpMessages.get("delete -h"));
             System.out.println(helpMessages.get("delete -r"));
+            break;
+
+        case "update":
+            System.out.println(helpMessages.get("update"));
             break;
 
         case "exit":

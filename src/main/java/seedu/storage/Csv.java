@@ -160,15 +160,15 @@ public class Csv {
                         fields.add(fieldName);
                         fieldTypes.put(fieldName, type);
                     } else {
-                        System.out.println("Invalid field type definition: " + fieldType);
+                        //System.out.println("Invalid field type definition: " + fieldType);
                         return;
                     }
                 }
 
                 inventory.setFields(fields);
                 inventory.setFieldTypes(fieldTypes);
-                System.out.println("Fields loaded from CSV: " + fields);
-                System.out.println("Field types loaded from CSV: " + fieldTypes);
+                //System.out.println("Fields loaded from CSV: " + fields);
+                //System.out.println("Field types loaded from CSV: " + fieldTypes);
             } else {
                 System.out.println("CSV file format error: Missing metadata header.");
                 return;
@@ -177,7 +177,7 @@ public class Csv {
             // Read headers (second line)
             if ((line = reader.readLine()) != null) {
                 String[] headers = line.split(",");
-                System.out.println("Column headers: " + String.join(", ", headers));
+                //System.out.println("Column headers: " + String.join(", ", headers));
             }
 
             // Read records (remaining lines)
@@ -195,7 +195,7 @@ public class Csv {
                 }
 
                 inventory.addRecord(record);
-                System.out.println("Record added: " + record);
+                //System.out.println("Record added: " + record);
             }
 
             System.out.println("Finished loading CSV file.");

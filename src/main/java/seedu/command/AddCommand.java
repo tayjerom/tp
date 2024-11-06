@@ -1,26 +1,44 @@
 package seedu.command;
 
-import seedu.exceptions.InventraException;
-import seedu.exceptions.InventraInvalidFlagException;
-import seedu.exceptions.InventraInvalidTypeException;
-import seedu.exceptions.InventraMissingFieldsException;
-import seedu.exceptions.InventraInvalidRecordCountException;
+import seedu.exceptions.*;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class AddCommand extends Command {
     private static final Logger LOGGER = Logger.getLogger(AddCommand.class.getName());
+
+    static {
+        try {
+            // Set up FileHandler to log messages to "app.log"
+            FileHandler fileHandler = new FileHandler("app.log", true); // Appends to "app.log"
+            fileHandler.setFormatter(new SimpleFormatter()); // Simple text formatter
+
+            // Add FileHandler to the logger
+            LOGGER.addHandler(fileHandler);
+
+            // Disable logging to the console
+            LOGGER.setUseParentHandlers(false);
+        } catch (IOException e) {
+            e.printStackTrace(); // Print exception if file handler fails to set up
+        }
+    }
 
     public AddCommand(Inventory inventory, Ui ui, Csv csv) {
         super(inventory, ui, csv);
     }
 
     public void execute(String[] args) throws InventraException {
+        if (args.length < 2) {
+            throw new InventraMissingArgsException("flag");
+        }
         String flag = args[1];
         switch (flag) {
         case "-h":
@@ -46,7 +64,6 @@ public class AddCommand extends Command {
         }
 
         String[] newFields = fieldData.split(",\\s*");
-        boolean success = true;
 
         for (String field : newFields) {
             String[] parts = field.split("/");
@@ -56,6 +73,15 @@ public class AddCommand extends Command {
 
             String type = parts[0].trim();
             String fieldName = parts[1].trim();
+
+            // Check if the field name is empty or contains only spaces
+            if (fieldName.isEmpty()) {
+                throw new InventraInvalidTypeException(fieldName, "cannot be empty or just spaces", "provide a valid field name");
+            }
+
+            if (fieldName.length() > 20) {
+                throw new InventraInvalidTypeException(fieldName, "length exceeds 20 characters", "shorter name");
+            }
 
             if (!isValidFieldType(type)) {
                 throw new InventraInvalidTypeException(fieldName, type, "valid field type (e.g., 's', 'i', 'f')");
@@ -71,6 +97,7 @@ public class AddCommand extends Command {
         ui.showSuccessFieldsAdded();
         ui.showFieldsAndRecords(inventory);
     }
+
 
     private void handleAddRecord(String recordData) throws InventraException {
         LOGGER.info("Handling add record: " + recordData);
@@ -94,6 +121,15 @@ public class AddCommand extends Command {
 
             String value = values[i].trim();
 
+            // Check if the value is empty or contains only spaces
+            if (value.isEmpty()) {
+                throw new InventraInvalidTypeException(field, "cannot be empty or just spaces", "provide a valid value for the record");
+            }
+
+            if (value.length() > 20) {
+                throw new InventraInvalidTypeException(field, value, "length exceeds 20 characters");
+            }
+
             String validationMessage = validateValue(value, type, field);
             if (validationMessage != null) {
                 ui.showValidationError(validationMessage);
@@ -106,6 +142,7 @@ public class AddCommand extends Command {
         inventory.addRecord(record);
         ui.showSuccessRecordAdded();
     }
+
 
     public String validateValue(String value, String type, String field) throws InventraException {
         assert value != null && !value.isEmpty() : "Value should not be null or empty";
@@ -138,7 +175,9 @@ public class AddCommand extends Command {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
-                if (day <= 0 || month <= 0 || month > 12) {
+
+                // Check if the day and month are within valid ranges
+                if (day <= 0 || day > 31 || month <= 0 || month > 12 || year < 0) {
                     throw new InventraInvalidTypeException(field, value, type);
                 }
                 return null; // Valid date

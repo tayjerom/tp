@@ -1,13 +1,6 @@
 package seedu.command;
 
-import seedu.exceptions.InventraException;
-import seedu.exceptions.InventraInvalidFlagException;
-import seedu.exceptions.InventraInvalidTypeException;
-import seedu.exceptions.InventraInvalidNumberException;
-import seedu.exceptions.InventraOutOfBoundsException;
-import seedu.exceptions.InventraExcessArgsException;
-import seedu.exceptions.InventraLessArgsException;
-import seedu.exceptions.InventraInvalidHeaderException;
+import seedu.exceptions.*;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -22,15 +15,22 @@ public class UpdateCommand extends Command {
     }
 
     public void execute(String[] args) throws InventraException {
+        if (args.length < 2) {
+            throw new InventraMissingArgsException("flag");
+        }
         String flag = args[1];
         switch (flag) {
         case "-d":
-            assert args.length >= 3 : "Expected additional field data for flag -d";
+            if (args.length < 3) {
+                throw new InventraMissingArgsException("update -d <fieldname>, <id>, <newvalue>");
+            }
             handleUpdateRecord(args[2]);
             csv.updateCsv(inventory);
             break;
         case "-h":
-            assert args.length >= 3 : "Expected additional field data for flag -h";
+            if (args.length < 3) {
+                throw new InventraMissingArgsException("update -h <old>, <new>");
+            }
             handleUpdateField(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
