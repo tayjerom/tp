@@ -17,6 +17,7 @@ import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraMissingFieldsException;
 import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidRecordCountException;
+import seedu.exceptions.InventraMissingArgsException;
 
 import seedu.model.Inventory;
 import seedu.storage.Csv;
@@ -371,14 +372,14 @@ public class AddCommandTest {
 
     @Test
     public void testHFlagNoAdditionalDataError() {
-        // Test case where args is less than 3 for flag -h
-        String[] args = new String[]{"add", "-h"}; // Only two arguments
+        String[] args = {"add", "-h"};  // Missing additional field data
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        AssertionError thrown = assertThrows(AssertionError.class, () -> {
+
+        InventraMissingArgsException thrown = assertThrows(InventraMissingArgsException.class, () -> {
             addCommand.execute(args);
         });
 
-        assertEquals("Expected additional field data for flag -h", thrown.getMessage());
+        assertEquals("Error: Missing the following arguments: field data for flag -h", thrown.getMessage());
     }
 
     @Test

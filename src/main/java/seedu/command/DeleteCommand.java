@@ -54,7 +54,7 @@ public class DeleteCommand extends Command {
                 }
                 String[] numbers = args[2].trim().split("-");
                 if (numbers.length != 2) {
-                    throw new InventraMissingArgsException("Range");
+                    throw new InventraInvalidFlagException("Invalid range format. Expected format: <start>-<end>");
                 }
                 deleteRangeRecords(parseIndex(numbers[0]), parseIndex(numbers[1]));
                 break;

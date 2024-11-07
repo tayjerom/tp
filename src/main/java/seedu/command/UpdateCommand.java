@@ -1,9 +1,18 @@
 package seedu.command;
 
-import seedu.exceptions.*;
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraExcessArgsException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidHeaderException;
+import seedu.exceptions.InventraInvalidNumberException;
+import seedu.exceptions.InventraInvalidTypeException;
+import seedu.exceptions.InventraLessArgsException;
+import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +31,8 @@ public class UpdateCommand extends Command {
         switch (flag) {
         case "-d":
             if (args.length < 3) {
-                throw new InventraMissingArgsException("update -d <id>, <fieldname>, <newvalue>");
+                throw new InventraMissingArgsException("update " +
+                        "-d <id>, <fieldname>, <newvalue>");
             }
             handleUpdateRecord(args[2]);
             csv.updateCsv(inventory);
@@ -35,7 +45,8 @@ public class UpdateCommand extends Command {
             csv.updateCsvHeaders(inventory);
             break;
         default:
-            throw new InventraInvalidFlagException("Use 'update -d <id>, <field_name>, <new value>' or 'update -h <old header name> <new header name>'");
+            throw new InventraInvalidFlagException("Use 'update -d <id>, " +
+                    "<field_name>, <new value>' or 'update -h <old header name> <new header name>'");
         }
     }
 
@@ -52,11 +63,13 @@ public class UpdateCommand extends Command {
         String newFieldName = fields[1].trim();
 
         if (oldFieldName.isEmpty() || newFieldName.isEmpty()) {
-            throw new InventraInvalidTypeException("Field names", "cannot be empty or just spaces", "provide valid field names");
+            throw new InventraInvalidTypeException("Field names",
+                    "cannot be empty or just spaces", "provide valid field names");
         }
 
         if (oldFieldName.length() > 20 || newFieldName.length() > 20) {
-            throw new InventraInvalidTypeException("Field name length", "exceeds 20 characters", "use shorter names");
+            throw new InventraInvalidTypeException("Field name length",
+                    "exceeds 20 characters", "use shorter names");
         }
 
         if (!isFieldValid(oldFieldName)) {
@@ -133,7 +146,7 @@ public class UpdateCommand extends Command {
 
         if (userInputs.length != 3) {
             if (userInputs.length < 3) {
-                throw new InventraMissingArgsException("update -d <id>, <fieldname>, <newvalue>");
+                throw new InventraLessArgsException(3, userInputs.length);  // Use InventraLessArgsException
             } else {
                 throw new InventraExcessArgsException(3, userInputs.length);
             }
@@ -144,7 +157,8 @@ public class UpdateCommand extends Command {
         String newValue = userInputs[2].trim();
 
         if (indexNumberString.isEmpty() || fieldName.isEmpty() || newValue.isEmpty()) {
-            throw new InventraInvalidTypeException("Inputs", "cannot be empty or just spaces", "provide valid inputs");
+            throw new InventraInvalidTypeException("Inputs",
+                    "cannot be empty or just spaces", "provide valid inputs");
         }
 
         int indexNumber = parseIndex(indexNumberString);
@@ -168,7 +182,11 @@ public class UpdateCommand extends Command {
         this.inventory.setRecords(updatedRecords);
     }
 
-    private List<Map<String, String>> updateRecords(int indexNumber, String fieldName, String newValue) throws InventraOutOfBoundsException {
+    private List<Map<String, String>> updateRecords(
+            int indexNumber,
+            String fieldName,
+            String newValue
+    ) throws InventraOutOfBoundsException {
         List<Map<String, String>> oldRecords = this.inventory.getRecords();
         List<Map<String, String>> updatedRecords = new ArrayList<>();
 
