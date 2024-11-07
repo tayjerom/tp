@@ -28,10 +28,11 @@ Inventra uses the following tools for development:
 ### Architecture
 A high-level overview of the system is shown in the Architecture Diagram below.
 
-![img_2.png](img_2.png)
+![ArchitectureDiagram.png](./uml/ArchitectureDiagram.png)
+
 
 The core components are:
-1. **Inventra** class: The class that contains main. Only responsible for initializing program
+1. **Inventra** class: The class that contains main. Only responsible for initializing program.
 2. **UI** class: Handles user input and the display of output.
 3. **Command** classes: Different command logic based on arguments that user inputs.
 4. **CommandParser** class: A parser to handle different commands.
@@ -44,15 +45,25 @@ The Command class is as an abstract class, adding a layer of abstraction and als
 
 Shown below is a very high level overview of the Command class diagram and its child classes
 
-![AbstractCommandClass.png](AbstractCommandClass.png)
+![AbstractCommandClass.png](./uml/AbstractCommandClass.png)
 
 Shown below is a sequence diagram that shows the high level overview of how the CommandParser class operates in conjunction with Commands. Using example command "delete 1".
 
-![AbstractCommandSequence.png](AbstractCommandSequence.png)
+![AbstractCommandSequence.png](./uml/AbstractCommandSequence.png)
+
+The general intended execution path is:
+1. As user runs the program, `Inventra` will create a `Ui`, `Inventory` and `Csv` instance and passes control to `Ui` class.
+2. `Ui` class will then start the while loop and wait for user next line input
+3. User inputs a command for example `delete 1` which is then passed to the `CommandParser`
+4. `CommandParser` will process input and pass it to the appropriate `Command` class. In this case the `DeleteCommand` class).
+5. `DeleteCommand` will process the input further and execute the specific type of delete operation based on the command arguments given.
+6. Lastly control is returned to `Ui` and prints success or error message.
+
 
 A more detailed class diagram is shown below on how **UI, CommandParser and Commands** interact with other classes in Inventra.
 
-![CommandParserClassDiagram.png](CommandParserClassDiagram.png)
+![CommandParserClassDiagram.png](./uml/CommandParserClassDiagram.png)
+
 
 ### "Add" Command Feature
 `AddCommand` class is responsible for adding fields and records to the inventory. It is part of the `command` package, and inherits from Command class. The associated classes are the following:
@@ -62,32 +73,29 @@ A more detailed class diagram is shown below on how **UI, CommandParser and Comm
 
 Shown below is a class diagram
 
-![AddClassDiagram.png](AddClassDiagram.png)
+![AddClassDiagram](./uml/AddClassDiagram.png)
+
 
 **Description**: The `AddCommand` class modifies the `Inventory` by adding new fields or records based on user's inputs.
-  It interacts with `Csv` to update the CSV file accordingly to maintain data persistence.
+  After modifying the inventory successfully, it interacts with `Csv` to update the CSV file accordingly to maintain data persistence.
   The `Ui` components then displays feedback to the user.
 
 "AddCommand" Class:
 * Processes the input arguments and executes the logic based on flags (-h, -d) respectively.
 * Fields and records are validated before updating inventory data into the CSV file.
 
-"AddCommand" Methods:
+"AddCommand" Key Methods:
 * handleAddMultipleFields(): processes input fields, validate fields, and update the inventory accordingly.
-* handleAddRecord(): handles logic for adding and validating records into the inventory. If successfully add records, data will be appended into the CSV file.
-
-
+* handleAddRecord(): handles logic for adding and validating records into the inventory. If records successfully added to inventory, will invoke Csv function to append into the CSV file.
 
 This command supports the following flags:
 * '-h': Add custom fields to the inventory.
 * '-d': Add records to the inventory corresponding to user defined fields.
 
-
-
 #### Sequence Diagram
-*Illustrates how "AddCommand" interacts with "Inventory" and "Csv" classes when adding a record:
+*Illustrates how "AddCommand" interacts with "Inventory" and "Csv" classes when adding a record based on specified flags from user input:
 
-![AddSequenceDiagram.png](AddSequenceDiagram.png)
+![AddSequenceDiagram.png](./uml/AddSequenceDiagram.png)
 
 #### Why Implement "AddCommand" in this way?
 Separating implementation of "AddCommand", "Inventory", and "Csv" classes ensures:
@@ -101,19 +109,19 @@ Only when requirements permits, database implementation has been considered for 
 
 ### "Delete" Command Feature
 The "DeleteCommand" is responsible for deleting fields and records from the inventory. 
-Concurrently, "delete" command is implemented with behaviour to update CSV file to persist changes made to inventory.
+Upon successful deletion from inventory, "delete" command is implemented with behaviour to update CSV file to persist changes made to inventory.
 
 The 'DeleteCommand' is part of the `command` package and inherits from the Command class. It interacts with the following key components:
 * **Inventory**: Contains the current state of the inventory, including fields and records.
 * **Csv**: Handles updating CSV file after deletion is performed on inventory.
 * **Ui**: Handles output to user upon deletion success.
 
-Shown below is the class diagram:
 
-![DeleteClassDiagram.png](DeleteClassDiagram.png)
 
-* **Description**: The `DeleteCommand` modifies `Inventory` by removing fields or records that are specified by the user.
-The `Csv` components updates the CSV file to reflect changes made during deletion, as well as `Ui` provide response to the user.
+![DeleteClassDiagram.png](./uml/DeleteClassDiagram.png)
+
+* **Description**: The class diagram above shows the core methods of `DeleteCommand` and its interactions with `Inventory`, `Csv`, and `Ui`. The `DeleteCommand` modifies `Inventory` by removing fields or records that are specified by the user.
+The `Csv` components updates the CSV file to reflect changes made during deletion, and then `Ui` will provide a response to the user.
 
 "DeleteCommand" Class:
 * processes the input arguments and executes the logic based on if the second argument is a number or flag.
@@ -123,10 +131,7 @@ The `Csv` components updates the CSV file to reflect changes made during deletio
 * `deleteSingleRecord()`: Deletes a specific record by defined index.
 * `deleteAllRecords()`: Deletes all records from the inventory.
 * `deleteHeaderAndColumn()`: Deletes a specific field.
-* `deleteRangeRecords()`: Deletes a range of records. 
-
-![Class Diagram](docs/diagrams/DeleteCommandClassDiagram.png)
-* **Description**: The class diagram above shows the core methods of `DeleteCommand` and its interactions with `Inventory`, `Csv`, and `Ui`.
+* `deleteRangeRecords()`: Deletes a range of records.
 
 This command supports the following formats:
 * '\<index>': Delete the record at the specified index (1-based indexing).
@@ -136,9 +141,9 @@ This command supports the following formats:
 * '-r \<start>-\<end>': Delete records from the start index to the end index (both inclusive and 1-based indexing).
 
 #### Sequence Diagram
-*Illustrates how "DeleteCommand" interacts with "Inventory" and "Csv" classes when deleting a record:
+*Illustrates how "DeleteCommand" interacts with "Inventory" and "Csv" classes when deleting a record based on specified flags from user input:
 
-![DeleteSequenceDiagram.png](DeleteSequenceDiagram.png)
+![DeleteSequenceDiagram.png](./uml/DeleteSequenceDiagram.png)
 
 We have ommited the case for delete -a as it is essentially a subset of delete -e and adds unecessary complexity to the sequence diagram.
 
@@ -157,7 +162,7 @@ The "UpdateCommand" is responsible for editing fields and records to the invento
 * **Csv**: Handles reading from and writing to the CSV file for data storage persistence.
 * **Ui**: Handles user interactions component such as message to user during command execution.
 
-![UpdateClassDiagram.png](UpdateClassDiagram.png)
+![UpdateClassDiagram.png](./uml/UpdateClassDiagram.png)
 
 * **Description**: The class diagram above shows the core methods of `UpdateCommand` and its interactions with `Inventory`, `Csv`, and `Ui`. The `UpdateCommand` modifies `Inventory` by modifying fields or records that are specified by the user.
   The `Csv` components updates the CSV file to reflect changes made during updation, as well as `Ui` provide response to the user. 
@@ -175,9 +180,9 @@ This command supports the following formats:
 * `handleUpdateRecord()`: Updates a particular record of the given index and field name.
 
 #### Sequence Diagram
-*Illustrates how "UpdateCommand" interacts with "Inventory" and "Csv" classes when updating a record:
+*Illustrates how "UpdateCommand" interacts with "Inventory" and "Csv" classes when updating a record based on specified flags from user input:
 
-![UpdateSequenceDiagram.png](UpdateSequenceDiagram.png)
+![UpdateSequenceDiagram.png](./uml/UpdateSequenceDiagram.png)
 
 #### Why Implement "UpdateCommand" in this way?
 Separating implementation of "UpdateCommand", "Inventory", and "Csv" classes ensures:
@@ -192,9 +197,8 @@ The `ViewCommand` interacts with:
 * **Inventory**: Accessing data to retrieve and display records
 * **Ui**: Displays records to the user.
 
-Shown below is a class diagram
 
-![ViewClassDiagram.png](ViewClassDiagram.png)
+![ViewClassDiagram.png](./uml/ViewClassDiagram.png)
 
 * **Description**: The class diagram above shows the main methods used by `ViewCommand` and its connection to `Inventory` and `Ui`. The `ViewCommand` retrieve data from `Inventory` based on user's input and leverage on `Ui` to display records.
 
@@ -212,9 +216,9 @@ This command supports the following formats:
 
 
 #### Sequence Diagram
-The following sequence diagram shows how `ViewCommand` interacts with `Inventory` and `Ui` when displaying a specific records:
+The following sequence diagram shows how `ViewCommand` interacts with `Inventory` and `Ui` when displaying a specific records based on specified flags from user input:
 
-![ViewSequenceDiagram.png](ViewSequenceDiagram.png)
+![ViewSequenceDiagram.png](./uml/ViewSequenceDiagram.png)
 
 
 #### Why Implement `ViewCommand` in this way:

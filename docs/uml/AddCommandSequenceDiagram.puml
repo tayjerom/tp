@@ -1,7 +1,0 @@
-@startuml
-actor User
-User -> AddCommand : execute(args)
-AddCommand -> Inventory : validateField()
-AddCommand -> Csv : appendRecord()
-AddCommand -> Ui : showMessage("Record added")
-@enduml
