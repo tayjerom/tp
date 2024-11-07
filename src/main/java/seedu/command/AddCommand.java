@@ -1,6 +1,11 @@
 package seedu.command;
 
-import seedu.exceptions.*;
+import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraInvalidFlagException;
+import seedu.exceptions.InventraInvalidRecordCountException;
+import seedu.exceptions.InventraInvalidTypeException;
+import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraMissingFieldsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -42,7 +47,9 @@ public class AddCommand extends Command {
         String flag = args[1];
         switch (flag) {
         case "-h":
-            assert args.length >= 3 : "Expected additional field data for flag -h";
+            if (args.length < 3) {
+                throw new InventraMissingArgsException("field data for flag -h");
+            }
             handleAddMultipleFields(args[2]);
             csv.updateCsvHeaders(inventory);
             break;
@@ -76,7 +83,8 @@ public class AddCommand extends Command {
 
             // Check if the field name is empty or contains only spaces
             if (fieldName.isEmpty()) {
-                throw new InventraInvalidTypeException(fieldName, "cannot be empty or just spaces", "provide a valid field name");
+                throw new InventraInvalidTypeException(fieldName, "cannot " +
+                        "be empty or just spaces", "provide a valid field name");
             }
 
             if (fieldName.length() > 20) {
@@ -123,11 +131,13 @@ public class AddCommand extends Command {
 
             // Check if the value is empty or contains only spaces
             if (value.isEmpty()) {
-                throw new InventraInvalidTypeException(field, "cannot be empty or just spaces", "provide a valid value for the record");
+                throw new InventraInvalidTypeException(field, "cannot " +
+                        "be empty or just spaces", "provide a valid value for the record");
             }
 
             if (value.length() > 20) {
-                throw new InventraInvalidTypeException(field, value, "length exceeds 20 characters");
+                throw new InventraInvalidTypeException(field, value, "length " +
+                        "exceeds 20 characters");
             }
 
             String validationMessage = validateValue(value, type, field);

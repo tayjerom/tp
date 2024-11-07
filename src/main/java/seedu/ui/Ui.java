@@ -25,7 +25,10 @@ public class Ui {
         printGreeting();
         String input;
         do {
-            input = in.nextLine();
+            input = in.nextLine().trim();  // Trim input to handle accidental spaces
+            if (input.isEmpty()) {
+                continue;  // Skip empty input lines
+            }
             System.out.println("_____________________________________________");
             CommandParser.parseCommand(input, inventory, this, csv);
             System.out.println("_____________________________________________");
