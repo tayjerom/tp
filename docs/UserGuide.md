@@ -110,16 +110,29 @@ Example of usage:
 - `delete -r 1-5`
 
 
-#### Update Fields
-* Command: `update -h CURRENTFIELDNAME, NEWFIELDNAME`
-    * Example:
-      ``` update -h name, item ID ```
+### Update Fields and Records: `update`
+Modify field names or update specific records in the inventory.
 
-#### Update Records
-* Command: `add -d RECORD_ID, FIELD_NAME, NEW_VALUE`
-    * Note: The new value can only be of the previously declared data type of the field
+General Format: `update [FLAG] [VALID INPUT]`
+
+#### Update Field Names
+* Command: `update -h CURRENT_FIELD_NAME, NEW_FIELD_NAME`
+    * Updates the name of an existing field to new field name.
+    * Constraints:
+      - Both fields names must be non-empty and no longer than 20 characters.
+      - Current field name must exist in the inventory.
     * Example:
-      ``` update -d 3, quantity, 32 ```
+    ``` update -h name, product_name ```
+
+#### Update Record Values
+* Command: `update -h RECORD_ID, FIELD_NAME, NEW_VALUE`
+    * Updates a specific value in a record for given field.
+    * Constraints:
+      - `RECORD_ID` must be valud (between 1 and total number of records).
+      - `FIELD_NAME` must exist
+      - `NEW_VALUE` must adhere to predefined data type of the field
+    * Example:
+    ``` update -d 3, quantity, 150 ```
 
 ### Exiting the Program: `exit`
 Closes the program.
