@@ -1,7 +1,0 @@
-@startuml
-actor User
-User -> DeleteCommand : execute(args)
-DeleteCommand -> Inventory : deleteRecord(recordIndex)
-DeleteCommand -> Csv : updateCsvAfterDeletion()
-DeleteCommand -> Ui : showMessage("Record deleted")
-@enduml

@@ -1,7 +1,0 @@
-@startuml
-actor User
-User -> UpdateCommand : execute(args)
-UpdateCommand -> Inventory : UpdateRecord()
-UpdateCommand -> Csv : updateCsv()
-UpdateCommand -> Ui : showMessage("Record file updated")
-@enduml

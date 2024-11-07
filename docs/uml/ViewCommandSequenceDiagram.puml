@@ -1,6 +1,0 @@
-@startuml
-actor User
-User -> ViewCommand : execute(args)
-ViewCommand -> Inventory : getRecordsByKeyword(keyword)
-ViewCommand -> Ui : showRecords(records)
-@enduml
