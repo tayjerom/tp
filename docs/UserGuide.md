@@ -133,13 +133,14 @@ Closes the program.
 **Q**: How do I transfer my data to another computer?
 **A**: Copy `data/inventory.csv` file to its new desired location. 
 Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.
-
+**Q**: Why can't I input more than 20 characters when adding a field or record?
+**A**: This is to ensure efficient use of space and to ensure that output table format is preserved.
 
 ## Known Issues
 
 1. Extra Input: Additional values provided after expected inputs for commands like `add -l`, `view -a`, `exit` will be ignored.
 2. Case Sensitivity: Ensure correct lowercase input as commands are case-sensitive.
-3. Pending Features: ...
+3. Pending Features: Increasing limitations of 20 character fields and records with dynamic output table Ui.
 
 
 ## Command Summary
