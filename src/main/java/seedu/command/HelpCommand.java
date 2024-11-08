@@ -19,7 +19,7 @@ public class HelpCommand extends Command {
                         "   - Command to view specific item by ID: view <ID>\n" +
                         "   - Example: view 1\n" +
                         "   - Command to find specific item by string: view -f <STRING>\n" +
-                        "   - Example: delete -f Apple\n");
+                        "   - Example: view -f Apple\n");
 
         helpMessages.put("add -h",
                 "Add custom fields with specific types:\n" +
