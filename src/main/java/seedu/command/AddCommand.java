@@ -92,7 +92,7 @@ public class AddCommand extends Command {
             }
 
             if (!isValidFieldType(type)) {
-                throw new InventraInvalidTypeException(fieldName, type, "valid field type (e.g., 's', 'i', 'f')");
+                throw new InventraInvalidTypeException(fieldName, type, "valid field type (e.g., 's', 'i', 'f', 'd')");
             }
 
             if (inventory.getFields().contains(fieldName)) {

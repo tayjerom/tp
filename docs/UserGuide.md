@@ -115,6 +115,10 @@ General Format: `view [FLAG] [INPUT]`
     * Example:
     ``` view 1 ```
 
+#### View Records related to Keyword
+* Command: `view -f KEYWORD`
+    * Display records that contains the keyword
+    * Example: ``` view -f apple ```
       
 ### Updating Fields and Records: `update`
 Update fields or records in the inventory.
