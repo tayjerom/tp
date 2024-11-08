@@ -1,20 +1,22 @@
 # Inventra Developer Guide
 
-## Table of Contents
-- [Acknowledgements](#ackowledgements)
-- [Design & implementation](#design-&-implementation)
-  - [Architecture](#architecture)  
-    - ["Add" Command Feature](#"add"-command-feature)
-    - ["Delete" Command Feature](#"delete"-command-feature)
-    - ["Update" Command Feature](#"update"-command-feature)
-    - ["View" Command Feature](#"view"-command-feature)
-  - [Product scope](#product-scope)
-  - [User Stories](#user-stories)
-  - [Non-Functional Requirements](#non-functional-requirements)
-  - [Glossary](#glossary)
-  - [Instructions for manual testing](#instructions-for-manual-testing)
+[View on GitHub](https://github.com/AY2425S1-CS2113-T11-4/tp)
 
-## Acknowledgements
+## Table of Contents
+- [Acknowledgements](#acknowledgements)
+- [Design & Implementation](#design--implementation)
+  - [Architecture](#architecture)
+  - ["Add" Command Feature](#add-command-feature)
+  - ["Delete" Command Feature](#delete-command-feature)
+  - ["Update" Command Feature](#update-command-feature)
+  - ["View" Command Feature](#view-command-feature)
+- [Product Scope](#product-scope)
+- [User Stories](#user-stories)
+- [Non-Functional Requirements](#non-functional-requirements)
+- [Glossary](#glossary)
+- [Instructions for Manual Testing](#instructions-for-manual-testing)
+
+### Acknowledgements
 The following resources and libraries were referenced or adapted in this project:
 * Java Coding Standard (Basic): [Official Documentation](https://se-education.org/guides/conventions/java/basic.html)
 * Code Quality (Guide): (https://nus-cs2113-ay2425s1.github.io/website/se-book-adapted/chapters/codeQuality.html)
