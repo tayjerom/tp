@@ -62,6 +62,7 @@ Notes about commands' convention:
    e.g in add -d DATA1, DATA2…
 5. Any extra parameters defined after the following commands: add -l, view -a, delete -a, delete -e, exit will be
    ignored.
+6. All inputs to inventory is limited to 20 characters, this is to save space and preserve table Ui
 
 ### Getting Help `help`
 Get help from manual page for inventra
