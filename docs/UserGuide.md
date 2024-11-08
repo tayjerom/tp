@@ -1,5 +1,7 @@
 # Inventra User Guide
 
+[View on GitHub](https://github.com/AY2425S1-CS2113-T11-4/tp)
+
 # Table of Contents
 
 - [Introduction](#introduction)
