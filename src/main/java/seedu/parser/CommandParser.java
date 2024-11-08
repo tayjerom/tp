@@ -6,6 +6,7 @@ import seedu.command.AddCommand;
 import seedu.command.DeleteCommand;
 import seedu.command.UpdateCommand;
 import seedu.exceptions.InventraException;
+import seedu.exceptions.InventraExcessArgsException;
 import seedu.exceptions.InventraInvalidCommandException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
@@ -34,6 +35,9 @@ public class CommandParser {
                 new HelpCommand(ui).execute(parts);
                 break;
             case "exit":
+                if(parts.length > 1) {
+                    throw new InventraExcessArgsException(1, parts.length);
+                }
                 ui.printMessage("Program exit successfully.");
                 break;
             default:
