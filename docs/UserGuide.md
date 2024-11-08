@@ -119,14 +119,21 @@ Update fields or records in the inventory.
 
 General format: update [FLAG] [VALID INPUT]
 
+
 #### Update Fields
 * Command: `update -h OLDFIELD, NEWFIELD, ...`
+    * Constraints:
+      - Current field name must exist in the inventory.
     * Example:
       ``` update -h name, product_name ```
 
 #### Update Records
 * Note: The new value can only be of the previously declared data type of the field
 * Command: `update -d ID, FIELD, NEWVALUE ...`
+    * Constraints:
+      - `ID` must be valued (between 1 and total number of records).
+      - `FIELD` must exist
+      - `NEWVALUE` must adhere to predefined data type of the field
     * Example:
       ``` update -d 1, price, 1.50 ```
 
