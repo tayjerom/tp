@@ -46,7 +46,7 @@ precise inventory management, real-time tracking and automation of tasks.
 *  Copy [.jar] file to the folder you would like to store your program to. 
 *  Open command terminal, [cd] into directory [.jar] is stored, use the following command to
 4. Run the application:
-   ``` java -jar inventra.jar ```
+   ``` java -jar Inventra.jar ```
 5. Getting Started:
 *  Once launched the program, type `help` for user manual will be displayed. 
 Refer to the Features below for details of each command.
