@@ -1,0 +1,5 @@
+#name:s,quantity:i,price:f,date:d
+name,quantity,price,date
+j,999999999,1,11/11/2024
+apple,123456,9.0,11/11/2024
+apple,123456,9.0,11/11/2024
