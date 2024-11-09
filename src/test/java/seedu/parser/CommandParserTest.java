@@ -2,6 +2,7 @@ package seedu.parser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
