@@ -36,7 +36,7 @@ public class HelpCommand extends Command {
                         "   - Example: add -d Apple, 100, 1.50, 01/10/2024\n");
 
         helpMessages.put("delete",
-                    "Delete Specific Records:\n" +
+                "Delete Specific Records:\n" +
                         "   - Command: delete <record number>\n" +
                         "   - Example: delete 2\n\n" +
                         "Delete All Records:\n" +
@@ -49,11 +49,11 @@ public class HelpCommand extends Command {
                         "   - Command: delete -r <start_index>-<end_index>\n");
 
         helpMessages.put("update",
-        "Update Records or Fields:\n" +
-                "   - Update a record: update -d <index_number>,<field_name>,<new_value>\n" +
-                "   - Example: update -d 1,name,Orange\n" +
-                "   - Update a header: update -h <old_header_name>,<new_header_name>\n" +
-                "   - Example: update -h name,product_name\n");
+                "Update Records or Fields:\n" +
+                        "   - Update a record: update -d <index_number>,<field_name>,<new_value>\n" +
+                        "   - Example: update -d 1,name,Orange\n" +
+                        "   - Update a header: update -h <old_header_name>,<new_header_name>\n" +
+                        "   - Example: update -h name,product_name\n");
 
         helpMessages.put("exit",
                 "Exit program:\n" +
