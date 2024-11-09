@@ -88,7 +88,6 @@ General format: add [FLAG] [VALID INPUT]
         * `i`: Integer
         * `f`: Float
         * `d`: Date
-        * `n`: Null
     * Example:
     ``` add -h s/name, i/quantity, f/price, d/expiry ```
 
