@@ -27,6 +27,15 @@ public class DeleteCommand extends Command {
         if (part.isEmpty()) {
             throw new InventraMissingArgsException("Record Number");
         }
+
+        if (part.contains("-") && !part.startsWith("-")) {
+            // If the input contains a range without the -r flag
+            throw new InventraInvalidFlagException(
+                    "Invalid usage of range. Use 'delete -r <start>-<end>'" +
+                            " for deleting a range of records."
+            );
+        }
+
         if (!part.startsWith("-")) {
             int index = parseIndex(part);
             deleteSingleRecord(index);

@@ -1,4 +1,2 @@
-#item name:s,number:i,price:f
-item name,number,price
-chair,0,200.40
-pillow,15,5000
+#name:s,quantity:i,price:f,date:d
+name,quantity,price,date

@@ -54,7 +54,7 @@ Refer to the Features below for details of each command.
 ## Features 
 
 Notes about commands' convention:
-1. **Program function keywords are `help`, `add`, `view`, `delete` , `update` and `exit`
+1. Program function keywords are `help`, `add`, `view`, `delete` , `update` and `exit`
 2. Most key words will require flags via a dash, an alphabet followed by valid input
    e.g view [FLAG] [VALID INPUT]
 3. Some key words won't require flags: help, delete 1, exit
@@ -62,7 +62,7 @@ Notes about commands' convention:
    e.g in add -h FIELD1, FIELD2…
 4. Items with “...” after them can be used multiple times
    e.g in add -d DATA1, DATA2…
-5. Any extra parameters defined after the following commands: add -l, view -a, delete -a, delete -e, exit will be
+5. Any extra parameters defined after the following commands: view -a, delete -a, delete -e, exit will be
    ignored.
 6. All inputs to inventory is limited to 20 characters, this is to save space and preserve table Ui
 
@@ -125,21 +125,21 @@ General Format: `view [FLAG] [INPUT]`
     * Example: ``` view -f apple ```
       
 ### Updating Fields and Records: `update`
-Update fields or records in the inventory.
+Update field or record in the inventory.
 
 General format: update [FLAG] [VALID INPUT]
 
 
-#### Update Fields
-* Command: `update -h OLDFIELD, NEWFIELD, ...`
+#### Update Field
+* Command: `update -h OLDFIELD, NEWFIELD`
     * Constraints:
       - Current field name must exist in the inventory.
     * Example:
       ``` update -h name, product_name ```
 
-#### Update Records
+#### Update Record
 * Note: The new value can only be of the previously declared data type of the field
-* Command: `update -d ID, FIELD, NEWVALUE ...`
+* Command: `update -d ID, FIELD, NEWVALUE`
     * Constraints:
       - `ID` must be valued (between 1 and total number of records).
       - `FIELD` must exist

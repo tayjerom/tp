@@ -19,7 +19,12 @@
 ### Acknowledgements
 The following resources and libraries were referenced or adapted in this project:
 * Java Coding Standard (Basic): [Official Documentation](https://se-education.org/guides/conventions/java/basic.html)
-* Code Quality (Guide): (https://nus-cs2113-ay2425s1.github.io/website/se-book-adapted/chapters/codeQuality.html)
+* Code Quality (Guide): [Documentation](https://nus-cs2113-ay2425s1.github.io/website/se-book-adapted/chapters/codeQuality.html)
+* Java Standard Library (I/O classes)**: Used for implementing CSV handling.
+  - [BufferedReader](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/BufferedReader.html)
+  - [BufferedWriter](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/BufferedWriter.html)
+  - [FileReader](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/FileReader.html)
+  - [FileWriter](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/FileWriter.html)  
 
 Inventra uses the following tools for development:
 * JUnit - Used for testing.
