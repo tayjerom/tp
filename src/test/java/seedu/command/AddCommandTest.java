@@ -18,6 +18,7 @@ import seedu.exceptions.InventraMissingFieldsException;
 import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidRecordCountException;
 import seedu.exceptions.InventraMissingArgsException;
+import seedu.exceptions.InventraNegativeValueException;
 
 import seedu.model.Inventory;
 import seedu.storage.Csv;
@@ -505,6 +506,26 @@ public class AddCommandTest {
         addCommand.execute(addRecordArgs);
 
         assertEquals("Apple@!", inventory.getRecords().get(0).get("name"));
+    }
+
+    @Test
+    public void validateValue_negativeInteger_throwsInventraNegativeValueException() {
+        AddCommand command = new AddCommand(new Inventory(),
+                new Ui(), new Csv("test.csv"));
+
+        assertThrows(InventraNegativeValueException.class, () -> {
+            command.validateValue("-1", "i", "quantity");
+        });
+    }
+
+    @Test
+    public void validateValue_negativeFloat_throwsInventraNegativeValueException() {
+        AddCommand command = new AddCommand(new Inventory(),
+                new Ui(), new Csv("test.csv"));
+
+        assertThrows(InventraNegativeValueException.class, () -> {
+            command.validateValue("-1.5", "f", "price");
+        });
     }
 
     @AfterEach

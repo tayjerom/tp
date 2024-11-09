@@ -6,6 +6,7 @@ import seedu.exceptions.InventraInvalidRecordCountException;
 import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraMissingArgsException;
 import seedu.exceptions.InventraMissingFieldsException;
+import seedu.exceptions.InventraNegativeValueException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -164,39 +165,47 @@ public class AddCommand extends Command {
             return null; // Any string is valid
         case "i": // Integer
             try {
-                Integer.parseInt(value);
+                int intValue = Integer.parseInt(value);
+                if (intValue < 0) {
+                    throw new InventraNegativeValueException(field, value);
+                }
                 return null; // Valid integer
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "integer");
             }
         case "f": // Float
             try {
-                Float.parseFloat(value);
+                float floatValue = Float.parseFloat(value);
+                if (floatValue < 0) {
+                    throw new InventraNegativeValueException(field, value);
+                }
                 return null; // Valid float
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "float");
             }
         case "d": // Date
             String[] parts = value.split("/");
             if (parts.length != 3) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(
+                        field,
+                        value,
+                        "date (expected format: DD/MM/YYYY or DD/MM/YY)"
+                );
             }
             try {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
-
-                // Check if the day and month are within valid ranges
                 if (day <= 0 || day > 31 || month <= 0 || month > 12 || year < 0) {
-                    throw new InventraInvalidTypeException(field, value, type);
+                    throw new InventraInvalidTypeException(field, value, "valid date in DD/MM/YYYY or DD/MM/YY format");
                 }
                 return null; // Valid date
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "valid date (DD/MM/YYYY or DD/MM/YY)");
             }
         case "n": // Null
             if (!value.equalsIgnoreCase("null")) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "null");
             }
             return null; // Valid null
         default:
