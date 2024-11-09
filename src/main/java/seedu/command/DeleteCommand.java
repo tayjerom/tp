@@ -5,6 +5,7 @@ import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidNumberException;
 import seedu.exceptions.InventraMissingArgsException;
 import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.InventraRangeOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.ui.Ui;
 import seedu.storage.Csv;
@@ -77,18 +78,16 @@ public class DeleteCommand extends Command {
         return (index > 0 && index <= size);
     }
 
-    private void deleteRangeRecords(int start, int end) throws InventraOutOfBoundsException {
+    private void deleteRangeRecords(int start, int end) throws InventraRangeOutOfBoundsException {
         List<Map<String, String>> records = inventory.getRecords();
-        if (!isWithinBounds(start, records.size())) {
-            throw new InventraOutOfBoundsException(start, 1, records.size());
+        if (!isWithinBounds(start, records.size()) || !isWithinBounds(end, records.size())) {
+            throw new InventraRangeOutOfBoundsException(start, end, 1, records.size());
         }
-        if (!isWithinBounds(end, records.size())) {
-            throw new InventraOutOfBoundsException(end, 1, records.size());
+        if (end < start) {
+            throw new InventraRangeOutOfBoundsException(start, end, 1, records.size());
         }
-        if (end >= start) {
-            inventory.getRecords().subList(start - 1, end).clear();
-            csv.updateCsvAfterDeletion(inventory);
-        }
+        inventory.getRecords().subList(start - 1, end).clear();
+        csv.updateCsvAfterDeletion(inventory);
     }
 
     private void deleteAllRecords() {

@@ -7,6 +7,7 @@ import seedu.exceptions.InventraInvalidFlagException;
 import seedu.exceptions.InventraInvalidNumberException;
 import seedu.exceptions.InventraMissingArgsException;
 import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.InventraRangeOutOfBoundsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -77,12 +78,9 @@ public class DeleteCommandTest {
             for (int j = 0; j <= 6; ++j) {
                 String input = "delete -r " + i + "-" + j;
                 String[] parts = input.split(" ", 3);
-                if (i == 0 || j == 0 || i > inventory.getRecords().size() || j > inventory.getRecords().size()) {
-                    assertThrows(InventraOutOfBoundsException.class,
+                if (i == 0 || j == 0 || i > inventory.getRecords().size() || j > inventory.getRecords().size() || i>j) {
+                    assertThrows(InventraRangeOutOfBoundsException.class,
                             () -> new DeleteCommand(inventory, ui, csv).execute(parts));
-                } else if (i > j) {
-                    // No op if they are within bounds but start > end
-                    assertDoesNotThrow(() -> new DeleteCommand(inventory, ui, csv).execute(parts));
                 }
             }
         }
