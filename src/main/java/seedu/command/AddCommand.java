@@ -62,7 +62,7 @@ public class AddCommand extends Command {
             break;
 
         default:
-            throw new InventraInvalidFlagException("Use 'add -h <fields>' 'add -l', or 'add -d <values>'");
+            throw new InventraInvalidFlagException("Use 'add -h <fields>', or 'add -d <values>'");
         }
     }
 
