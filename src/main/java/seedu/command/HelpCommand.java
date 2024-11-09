@@ -30,6 +30,8 @@ public class HelpCommand extends Command {
         helpMessages.put("add -d",
                 "Add Records to custom fields created:\n" +
                         "   - Command: add -d <value1, value2, ...>\n" +
+                        "   - Example: add -d Apple, 100, 1.50, 01/10/2024\n" +
+                        "   - Note: Date format must be DD/MM/YYYY or DD/MM/YY\n" +
                         "   - Example: add -d Apple, 100, 1.50, 01/10/2024\n");
 
         helpMessages.put("delete",

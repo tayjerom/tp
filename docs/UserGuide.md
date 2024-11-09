@@ -41,12 +41,12 @@ precise inventory management, real-time tracking and automation of tasks.
 ## Quick Start
 
 1. Prerequisites: Ensure Java 17 or above is installed in your Computer.
-2. Download: the latest [.jar] file from this link.
+2. Download: the latest [.jar] file from this [link](https://github.com/AY2425S1-CS2113-T11-4/tp/releases/tag/v2.0).
 3. Setup:
 *  Copy [.jar] file to the folder you would like to store your program to. 
-*  Open command terminal, [cd] into directory [.jar] is stored, use the following command to
+*  Open command terminal, [cd] into directory [.jar] is stored
 4. Run the application:
-   ``` java -jar Inventra.jar ```
+   ``` java -jar inventra.jar ```
 5. Getting Started:
 *  Once launched the program, type `help` for user manual will be displayed. 
 Refer to the Features below for details of each command.
@@ -81,7 +81,7 @@ Add new fields or records to the inventory.
 
 General format: add [FLAG] [VALID INPUT]
 
-#### Add Fields
+#### Add Custom Fields with specific types: `add -h`
 * Command: `add -h TYPE/FIELD1, TYPE/FIELD2, ...`
     * Types: Supported data types:
         * `s`: String
@@ -92,11 +92,15 @@ General format: add [FLAG] [VALID INPUT]
     * Example:
     ``` add -h s/name, i/quantity, f/price, d/expiry ```
 
-#### Add Records
+#### Add Records to custom fields created: `add -d`
 * Command: `add -d VALUE1, VALUE2, ...`
-    * Note: The orders of values should match fields defined using `add -h`
+    * Note:
+        - The order of values should match fields defined using `add -h`.
+        - **Supported date formats:** `DD/MM/YYYY` or `DD/MM/YY`.
     * Example:
-    ``` add -d Apple, 100, 1.50, 01/10/2024 ```
+    ``` 
+    add -d Apple, 100, 1.50, 01/10/2024 
+    ```
 
 ### Viewing Records: `view`
 Displays all or specific records
