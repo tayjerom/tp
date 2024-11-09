@@ -172,9 +172,9 @@ General Format: `delete [FLAG] [INPUT]`
     * Example: delete 1
   
 #### Delete Range of Records
-* Command: `delete STARTID-ENDID`
+* Command: `delete -r STARTID-ENDID`
 * Deletes records from the start index to the end index (both inclusive and 1-based indexing).
-    * Example: delete 1-5
+    * Example: delete -r 1-5
 
 ### Exiting the Program: `exit`
 Terminates the program.
@@ -223,8 +223,8 @@ Ensure that the file remains in the same directory as `inventra.jar` file when r
 |                          | Example: `delete -h quantity`                  |
 | **Delete Specific Record**| `delete RECORD_ID`                             |
 |                          | Example: `delete 1`                            |
-| **Delete Range of Records**| `delete STARTID-ENDID`                         |
-|                          | Example: `delete 1-5`                          |
+| **Delete Range of Records**| `delete -r STARTID-ENDID`                      |
+|                          | Example: `delete -r 1-5`                       |
 | **Exit Program**         | `exit`                                         |
 |                          | Example: `exit`                                |
 

@@ -22,6 +22,7 @@ public class Inventory {
         this.fieldTypes = fieldTypes;
         this.records = records;
     }
+
     public void addField(String field, String type) {
         fields.add(field);
         fieldTypes.put(field, type);
