@@ -35,7 +35,7 @@ public class CommandParser {
                 new HelpCommand(ui).execute(parts);
                 break;
             case "exit":
-                if(parts.length > 1) {
+                if (parts.length > 1) {
                     throw new InventraExcessArgsException(1, parts.length);
                 }
                 ui.printMessage("Program exit successfully.");

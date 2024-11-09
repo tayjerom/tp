@@ -80,11 +80,11 @@ public class DeleteCommand extends Command {
 
     private void deleteRangeRecords(int start, int end) throws InventraRangeOutOfBoundsException {
         List<Map<String, String>> records = inventory.getRecords();
-        if (!isWithinBounds(start, records.size()) || !isWithinBounds(end, records.size())){
-            throw new InventraRangeOutOfBoundsException(start,end, 1, records.size());
+        if (!isWithinBounds(start, records.size()) || !isWithinBounds(end, records.size())) {
+            throw new InventraRangeOutOfBoundsException(start, end, 1, records.size());
         }
-        if (end<start){
-            throw new InventraRangeOutOfBoundsException(start,end,1,records.size());
+        if (end < start) {
+            throw new InventraRangeOutOfBoundsException(start, end, 1, records.size());
         }
         inventory.getRecords().subList(start - 1, end).clear();
         csv.updateCsvAfterDeletion(inventory);

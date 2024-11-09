@@ -2,6 +2,7 @@ package seedu.command;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import seedu.ui.Ui;
 
 public class HelpCommand extends Command {

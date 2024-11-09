@@ -18,9 +18,9 @@ public class InventraRangeOutOfBoundsException extends InventraException {
         if (end == 0) {
             return "Error: The inventory is empty.\nUse 'add -d <value1, value2, ...>' to add records.";
         }
-        if (endIndex<startIndex) {
+        if (endIndex < startIndex) {
             return String.format("Error: End index value: %d cannot be smaller than start index value: %d."
-                    ,startIndex,endIndex);
+                    , startIndex, endIndex);
         }
         return String.format("Error: Range %d to %d is outside the bounds %d to %d", startIndex, endIndex, start, end);
     }
