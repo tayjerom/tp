@@ -74,6 +74,20 @@ public class Ui {
         }
     }
 
+    public void showSingleRecordWithOriginalId(List<String> fields, Map<String, String> record, int actualId) {
+        StringBuilder header = new StringBuilder("    +");
+        StringBuilder row = new StringBuilder("    | ");
+        row.append(String.format("%-5d | ", actualId));  // Add correct ID
+
+        for (String field : fields) {
+            header.append("-".repeat(Math.max(field.length(), 20) + 2)).append("+");
+            String value = record.getOrDefault(field, "null");
+            row.append(String.format("%-20s | ", value));
+        }
+        printMessage(header.toString());
+        printMessage(row.toString());
+        printMessage(header.toString());
+    }
 
     // Prints table header with fields and adds the "ID" column
     private void printTableHeader(List<String> fields) {

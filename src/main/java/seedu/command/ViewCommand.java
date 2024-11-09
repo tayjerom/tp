@@ -24,42 +24,44 @@ public class ViewCommand extends Command {
         }
 
         String flag = args[1].trim();
-        if (flag.equals("-f")) {
+        switch (flag) {
+        case "-f":
             handleViewByKeyword(args);
-        } else if (flag.equals("-a")) {
+            break;
+
+        case "-a":
             if (args.length > 2) {
                 throw new InventraExcessArgsException(2, args.length);
             }
             ui.showFieldsAndRecords(inventory); // View all items
-        } else {
-            try {
-                int id = Integer.parseInt(flag);
-                if (args.length > 2) {
-                    throw new InventraExcessArgsException(2, args.length);
-                }
-                handleViewById(id);
-            } catch (NumberFormatException e) {
-                throw new InventraInvalidNumberException(flag);
+            break;
+
+        default:
+            handleViewById(flag, args);
+            break;
+        }
+    }
+
+    private void handleViewById(String input, String[] args) throws InventraException {
+        if (args.length > 2) {
+            throw new InventraExcessArgsException(2, args.length);
+        }
+
+        try {
+            int id = Integer.parseInt(input);
+
+            if (id <= 0 || id > inventory.getRecords().size()) {
+                throw new InventraOutOfBoundsException(id, 1, inventory.getRecords().size());
             }
+
+            // Display the specific record based on the valid ID
+            Map<String, String> record = inventory.getRecords().get(id - 1);
+            ui.showFieldsAndRecords(inventory.getFields(), List.of(record));
+        } catch (NumberFormatException e) {
+            throw new InventraInvalidNumberException("Error: The input '"
+                    + input + "' could not be parsed as an integer.");
         }
     }
-
-    private void handleViewById(int id) throws InventraException {
-        List<Map<String, String>> records = inventory.getRecords();
-        if (id <= 0 || id > records.size()) {
-            throw new InventraOutOfBoundsException(id, 1, records.size());
-        }
-
-        // Get the specific record for the given ID (adjusting for 0-based index)
-        Map<String, String> record = records.get(id - 1);
-
-        // Get the fields (column names) from the inventory
-        List<String> fields = inventory.getFields();
-
-        // Show the record in table format using the existing method
-        ui.showFieldsAndRecords(fields, List.of(record)); // Pass the record as a single-element list
-    }
-
 
     private void handleViewByKeyword(String[] args) throws InventraException {
         if (args.length < 3 || args[2].trim().isEmpty()) {
@@ -68,13 +70,13 @@ public class ViewCommand extends Command {
 
         String keyword = String.join(" ",
                 java.util.Arrays.copyOfRange(args, 2, args.length)).toLowerCase();
+
         List<Map<String, String>> records = inventory.getRecords();
         List<Map<String, String>> matchingRecords = new ArrayList<>();
 
         for (Map<String, String> record : records) {
             for (String field : record.keySet()) {
-                if (inventory.isStringField(field) &&
-                        record.get(field).toLowerCase().contains(keyword)) {
+                if (inventory.isStringField(field) && record.get(field).toLowerCase().contains(keyword)) {
                     matchingRecords.add(record);
                     break;
                 }

@@ -1,21 +1,18 @@
 package seedu.exceptions;
 
 public class InventraOutOfBoundsException extends InventraException {
-    private final int start;
-    private final int end;
-    private final int index;
+    private final int provided;
+    private final int min;
+    private final int max;
 
-    public InventraOutOfBoundsException(int index, int start, int end) {
-        this.index = index;
-        this.start = start;
-        this.end = end;
+    public InventraOutOfBoundsException(int provided, int min, int max) {
+        this.provided = provided;
+        this.min = min;
+        this.max = max;
     }
 
     @Override
     public String getMessage() {
-        if (end == 0) {
-            return "Error: The inventory is empty.\nUse 'add -d <value1, value2, ...>' to add records.";
-        }
-        return String.format("Error: Index %d is outside the bounds %d to %d", index, start, end);
+        return String.format("Error: ID %d is out of bounds. Valid range is between %d and %d.", provided, min, max);
     }
 }
