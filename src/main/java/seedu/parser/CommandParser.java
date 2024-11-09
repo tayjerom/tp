@@ -17,7 +17,7 @@ public class CommandParser {
         // Normalize input by trimming
         input = input.trim().replaceAll("\\s+", " ");
 
-        String[] parts = input.split(" ", 3);
+        String[] parts = input.split("\\s+", 3);
         String command = parts[0];
 
         try {

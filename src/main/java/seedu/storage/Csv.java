@@ -80,7 +80,6 @@ public class Csv {
                 }
                 writer.append("\n");
             }
-            System.out.println("CSV file updated after deletion, including metadata.");
         } catch (IOException e) {
             System.err.println("Error updating CSV after deletion: " + e.getMessage());
         }

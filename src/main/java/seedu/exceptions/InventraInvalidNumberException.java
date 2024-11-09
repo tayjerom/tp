@@ -9,6 +9,6 @@ public class InventraInvalidNumberException extends InventraException {
 
     @Override
     public String getMessage() {
-        return String.format("Error: The input %s could not be parsed as an integer.", invalidNumber);
+        return String.format("Error: The input '%s' could not be parsed as an integer. It might be out of bounds or in an invalid format.", invalidNumber);
     }
 }

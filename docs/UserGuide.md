@@ -88,7 +88,6 @@ General format: add [FLAG] [VALID INPUT]
         * `i`: Integer
         * `f`: Float
         * `d`: Date
-        * `n`: Null
     * Example:
     ``` add -h s/name, i/quantity, f/price, d/expiry ```
 
@@ -172,9 +171,9 @@ General Format: `delete [FLAG] [INPUT]`
     * Example: delete 1
   
 #### Delete Range of Records
-* Command: `delete STARTID-ENDID`
+* Command: `delete -r STARTID-ENDID`
 * Deletes records from the start index to the end index (both inclusive and 1-based indexing).
-    * Example: delete 1-5
+    * Example: delete -r 1-5
 
 ### Exiting the Program: `exit`
 Terminates the program.  
@@ -185,11 +184,12 @@ Terminates the program.
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer?
-**A**: Copy `data/inventory.csv` file to its new desired location. 
-Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.
-**Q**: Why can't I input more than 20 characters when adding a field or record?
-**A**: This is to ensure efficient use of space and to ensure that output table format is preserved.
+**Q**: How do I transfer my data to another computer?  
+**A**: Copy `data/inventory.csv` file to its new desired location.
+Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.  
+
+**Q**: Why can't I input more than 20 characters when adding a field or record?  
+**A**: This is to ensure efficient use of space and to ensure that output table format is preserved.  
 
 ## Known Issues
 
@@ -223,8 +223,8 @@ Ensure that the file remains in the same directory as `inventra.jar` file when r
 |                          | Example: `delete -h quantity`                  |
 | **Delete Specific Record**| `delete RECORD_ID`                             |
 |                          | Example: `delete 1`                            |
-| **Delete Range of Records**| `delete STARTID-ENDID`                         |
-|                          | Example: `delete 1-5`                          |
+| **Delete Range of Records**| `delete -r STARTID-ENDID`                      |
+|                          | Example: `delete -r 1-5`                       |
 | **Exit Program**         | `exit`                                         |
 |                          | Example: `exit`                                |
 
