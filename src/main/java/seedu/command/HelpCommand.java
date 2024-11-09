@@ -36,32 +36,24 @@ public class HelpCommand extends Command {
                         "   - Example: add -d Apple, 100, 1.50, 01/10/2024\n");
 
         helpMessages.put("delete",
-                "Delete Specific Records:\n" +
+                    "Delete Specific Records:\n" +
                         "   - Command: delete <record number>\n" +
-                        "   - Example: delete 2\n");
-
-        helpMessages.put("delete -a",
-                "Delete All Records:\n" +
-                        "   - Command: delete -a\n");
-
-        helpMessages.put("delete -e",
-                "Delete Entire Table:\n" +
-                        "   - Command: delete -e\n");
-
-        helpMessages.put("delete -h",
-                "Delete a header and its corresponding column:\n" +
-                        "   - Command: delete -h <header_name>\n");
-
-        helpMessages.put("delete -r",
-                "Delete a range of records using index range:\n" +
+                        "   - Example: delete 2\n\n" +
+                        "Delete All Records:\n" +
+                        "   - Command: delete -a\n\n" +
+                        "Delete Entire Table:\n" +
+                        "   - Command: delete -e\n\n" +
+                        "Delete a header and its corresponding column:\n" +
+                        "   - Command: delete -h <header_name>\n\n" +
+                        "Delete a range of records using index range:\n" +
                         "   - Command: delete -r <start_index>-<end_index>\n");
 
         helpMessages.put("update",
-                "Update Records or Fields:\n" +
-                        "   - Update a record: update -d <index_number>,<field_name>,<new_value>\n" +
-                        "   - Example: update -d 1,name,Orange\n" +
-                        "   - Update a header: update -h <old_header_name>,<new_header_name>\n" +
-                        "   - Example: update -h name,product_name\n");
+        "Update Records or Fields:\n" +
+                "   - Update a record: update -d <index_number>,<field_name>,<new_value>\n" +
+                "   - Example: update -d 1,name,Orange\n" +
+                "   - Update a header: update -h <old_header_name>,<new_header_name>\n" +
+                "   - Example: update -h name,product_name\n");
 
         helpMessages.put("exit",
                 "Exit program:\n" +
@@ -84,6 +76,7 @@ public class HelpCommand extends Command {
 
         switch (command) {
         case "view":
+        case "view -f":
             System.out.println(helpMessages.get("view"));
             break;
 
@@ -102,10 +95,6 @@ public class HelpCommand extends Command {
         case "delete -h":
         case "delete -r":
             System.out.println(helpMessages.get("delete"));
-            System.out.println(helpMessages.get("delete -a"));
-            System.out.println(helpMessages.get("delete -e"));
-            System.out.println(helpMessages.get("delete -h"));
-            System.out.println(helpMessages.get("delete -r"));
             break;
 
         case "update":
