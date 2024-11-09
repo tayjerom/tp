@@ -126,8 +126,7 @@ public class DeleteCommand extends Command {
         try {
             return Integer.parseInt(indexString);
         } catch (NumberFormatException e) {
-            throw new InventraInvalidNumberException("Error: The input "
-                    + indexString + " could not be parsed as an integer.");
+            throw new InventraInvalidNumberException(indexString);
         }
     }
 
