@@ -1,0 +1,188 @@
+Nov 07, 2024 1:32:43 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:32:53 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 07, 2024 1:32:59 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 07, 2024 1:33:05 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: ,10,1.50
+Nov 07, 2024 1:33:07 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: ,10,1.50
+Nov 07, 2024 1:33:13 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: SuperLongProductName, 10, 1.50
+Nov 07, 2024 1:34:57 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:34:58 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:35:01 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:35:02 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:35:14 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:49:13 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:49:16 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:49:18 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 07, 2024 1:49:20 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 1:28:29 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 1:30:45 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: table, -20, 20000
+Nov 09, 2024 1:31:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: table, -20, -20000
+Nov 09, 2024 1:31:37 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: table, 20, -2000
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:40:06 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:40:07 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:43:39 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:43:39 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:43:39 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:43:39 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:43:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:43:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:43:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:44:00 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:47:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:47:34 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:47:42 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:47:43 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:53:50 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:59:21 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:59:22 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 8:59:33 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 8:59:34 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50, extraValue
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple@!, 20, 2.99
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, ten, 1.50
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: value1
+Nov 09, 2024 9:14:40 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: Apple, 10, 1.50
+Nov 09, 2024 9:16:55 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: apple, 100, 1.5, 01/01/1979
+Nov 09, 2024 10:14:23 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: orange,12,1.45,12-12-2025
+Nov 09, 2024 10:14:49 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: orange,12,1.45,12/12/2025
+Nov 09, 2024 10:38:38 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: orange2, 12, 1.45, 13/12/2025
+Nov 09, 2024 10:38:49 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: orange3, 13, 1.45, 14/12/2024
+Nov 09, 2024 10:39:55 PM seedu.command.AddCommand handleAddRecord
+INFO: Handling add record: orange3, 13, 1.45, 14/12/2024
