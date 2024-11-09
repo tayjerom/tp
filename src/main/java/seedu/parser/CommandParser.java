@@ -14,12 +14,10 @@ import seedu.storage.Csv;
 
 public class CommandParser {
     public static void parseCommand(String input, Inventory inventory, Ui ui, Csv csv) {
-        // Normalize input by trimming
-        input = input.trim().replaceAll("\\s+", " ");
+    input = input.trim().replaceAll("\\s+", " ");
 
-        String[] parts = input.split(" ", 3);
-        String command = parts[0];
-
+    String[] parts = input.split("\\s+", 3);
+    String command = parts[0];
         try {
             switch (command) {
             case "add":
