@@ -9,6 +9,7 @@ import seedu.exceptions.InventraInvalidTypeException;
 import seedu.exceptions.InventraLessArgsException;
 import seedu.exceptions.InventraMissingArgsException;
 import seedu.exceptions.InventraOutOfBoundsException;
+import seedu.exceptions.InventraNegativeValueException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -211,49 +212,76 @@ public class UpdateCommand extends Command {
         return updatedRecords;
     }
 
-    private String validateValue(String value, String type, String field) throws InventraException {
+    public String validateValue(String value, String type, String field) throws InventraException {
         assert value != null && !value.isEmpty() : "Value should not be null or empty";
         assert type != null && !type.isEmpty() : "Field type should not be null or empty";
         assert field != null && !field.isEmpty() : "Field name should not be null or empty";
 
         switch (type) {
         case "s": // String
+            if (value.matches("\\d+")) {
+                throw new InventraInvalidTypeException(field, value, "non-numeric string");
+            }
             return null; // Any string is valid
+
         case "i": // Integer
             try {
-                Integer.parseInt(value);
+                if (value.length() > 9) { // Restrict integer length to 9 digits
+                    throw new InventraInvalidTypeException(
+                            String.format("Error: Invalid type for field " +
+                                            "'%s'%nExpected value of type 'integer (up to 9 digits)', got: '%s'",
+                                    field, value)
+                    );
+                }
+                int intValue = Integer.parseInt(value); // Validates actual integer
+                if (intValue < 0) {
+                    throw new InventraNegativeValueException(field, value);
+                }
                 return null; // Valid integer
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "integer");
             }
+
         case "f": // Float
             try {
-                Float.parseFloat(value);
+                float floatValue = Float.parseFloat(value);
+                if (floatValue < 0) {
+                    throw new InventraNegativeValueException(field, value);
+                }
                 return null; // Valid float
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "float");
             }
+
         case "d": // Date
-            String[] parts = value.split("/");
-            if (parts.length != 3) {
-                throw new InventraInvalidTypeException(field, value, type);
+            if (!value.matches("\\d{2}/\\d{2}/\\d{4}") && !value.matches("\\d{2}/\\d{2}/\\d{2}")) {
+                throw new InventraInvalidTypeException(
+                        field, value, "date (expected format: DD/MM/YYYY or DD/MM/YY)"
+                );
             }
+            String[] parts = value.split("/");
             try {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
-                if (day <= 0 || month <= 0 || month > 12 || year < 0) {
-                    throw new InventraInvalidTypeException(field, value, type);
+                if (day <= 0 || day > 31 || month <= 0 || month > 12 || year < 0) {
+                    throw new InventraInvalidTypeException(
+                            field, value, "valid date in DD/MM/YYYY or DD/MM/YY format"
+                    );
                 }
                 return null; // Valid date
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(
+                        field, value, "valid date (DD/MM/YYYY or DD/MM/YY)"
+                );
             }
+
         case "n": // Null
             if (!value.equalsIgnoreCase("null")) {
-                throw new InventraInvalidTypeException(field, value, type);
+                throw new InventraInvalidTypeException(field, value, "null");
             }
             return null; // Valid null
+
         default:
             return ui.getUnknownTypeMessage(field);
         }
