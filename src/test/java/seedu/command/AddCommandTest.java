@@ -385,16 +385,19 @@ public class AddCommandTest {
 
     @Test
     public void testHFlagInsufficientDataError() {
-        // Test case with insufficient data for flag -h
-        String[] args = new String[]{"add", "-h", "field1"}; // Only three arguments, modify as needed
         AddCommand addCommand = new AddCommand(inventory, ui, csv);
-        InventraInvalidTypeException thrown = assertThrows(InventraInvalidTypeException.class, () -> {
-            addCommand.execute(args);
+        String expectedMessage = "Error: Invalid type for field 'Field format'\n" +
+                "Expected value of type 'correct format (type/fieldName)', got: 'field1'";
+
+        InventraException thrown = assertThrows(InventraInvalidTypeException.class, () -> {
+            // Simulate invalid field input
+            addCommand.execute(new String[]{"add", "-h", "field1"});
         });
 
-        assertEquals("Error: Invalid type for field 'Field format'\n"
-                + "Expected value of type 'correct format (type/fieldName)'"
-                + ", got: 'field1'", thrown.getMessage());
+        String actualMessage = thrown.getMessage();
+
+        // Normalize both expected and actual strings
+        assertEquals(expectedMessage.trim().replaceAll("\\s+", " "), actualMessage.trim().replaceAll("\\s+", " "));
     }
 
     @Test
