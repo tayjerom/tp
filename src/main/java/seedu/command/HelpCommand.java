@@ -25,7 +25,7 @@ public class HelpCommand extends Command {
                 "Add custom fields with specific types:\n" +
                         "Note: Types: s - String, i - Integer, f - Float, d - Date\n" +
                         "   - Command: add -h <type/field, type/field, ...>\n" +
-                        "   - Example: add -h s/name, i/quantity, f/price\n");
+                        "   - Example: add -h s/name, i/quantity, f/price, d/date\n");
 
         helpMessages.put("add -d",
                 "Add Records to custom fields created:\n" +
