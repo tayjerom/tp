@@ -37,29 +37,32 @@ public class ViewCommand extends Command {
             break;
 
         default:
-            handleViewById(flag, args);
+            if (args.length > 2) {
+                throw new InventraExcessArgsException(2, args.length);
+            }
+            handleViewById(flag);
             break;
         }
     }
 
-    private void handleViewById(String input, String[] args) throws InventraException {
-        if (args.length > 2) {
-            throw new InventraExcessArgsException(2, args.length);
+    private void handleViewById(String input) throws InventraException {
+        if (input.trim().isEmpty()) {
+            throw new InventraMissingArgsException("Item index");
         }
 
         try {
             int id = Integer.parseInt(input);
 
+            // Validate the provided ID
             if (id <= 0 || id > inventory.getRecords().size()) {
                 throw new InventraOutOfBoundsException(id, 1, inventory.getRecords().size());
             }
 
-            // Display the specific record based on the valid ID
+            // Extract and display the specific record (adjust 1-based index to 0-based)
             Map<String, String> record = inventory.getRecords().get(id - 1);
-            ui.showFieldsAndRecords(inventory.getFields(), List.of(record));
+            ui.showSingleRecordWithOriginalId(inventory.getFields(), record, id);
         } catch (NumberFormatException e) {
-            throw new InventraInvalidNumberException("Error: The input '"
-                    + input + "' could not be parsed as an integer.");
+            throw new InventraInvalidNumberException(input);
         }
     }
 

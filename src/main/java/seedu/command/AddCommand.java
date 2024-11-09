@@ -162,6 +162,9 @@ public class AddCommand extends Command {
 
         switch (type) {
         case "s": // String
+            if (value.matches("\\d+")) {
+                throw new InventraInvalidTypeException(field, value, "non-numeric string");
+            }
             return null; // Any string is valid
         case "i": // Integer
             try {

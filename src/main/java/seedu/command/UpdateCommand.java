@@ -25,7 +25,7 @@ public class UpdateCommand extends Command {
 
     public void execute(String[] args) throws InventraException {
         if (args.length < 2) {
-            throw new InventraMissingArgsException("flag");
+            throw new InventraMissingArgsException("Flag or update details");
         }
         String flag = args[1];
         switch (flag) {
