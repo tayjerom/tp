@@ -177,9 +177,9 @@ General Format: `delete [FLAG] [INPUT]`
     * Example: delete -r 1-5
 
 ### Exiting the Program: `exit`
-Terminates the program.
-    * Command: `exit`
-        * Exit Inventra.
+Terminates the program.  
+    * Command: `exit`  
+        * Exit Inventra.  
         * Example:
         ``` exit ```
 

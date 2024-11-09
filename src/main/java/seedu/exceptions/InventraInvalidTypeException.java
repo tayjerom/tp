@@ -1,19 +1,21 @@
 package seedu.exceptions;
 
 public class InventraInvalidTypeException extends InventraException {
-    private final String field;
-    private final String input;
-    private final String expectedType;
+    private final String customMessage;
 
     public InventraInvalidTypeException(String field, String input, String expectedType) {
-        this.field = field;
-        this.input = input;
-        this.expectedType = expectedType;
+        this.customMessage = String.format(
+                "Error: Invalid type for field '%s'%nExpected value of type '%s', got: '%s'",
+                field, expectedType, input
+        );
+    }
+
+    public InventraInvalidTypeException(String customMessage) {
+        this.customMessage = customMessage;
     }
 
     @Override
     public String getMessage() {
-        return "Error: Invalid type for field '" + field + "'\n" +
-                "Expected value of type '" + expectedType + "', got: '" + input + "'";
+        return customMessage;
     }
 }

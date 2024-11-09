@@ -166,9 +166,17 @@ public class AddCommand extends Command {
                 throw new InventraInvalidTypeException(field, value, "non-numeric string");
             }
             return null; // Any string is valid
+
         case "i": // Integer
             try {
-                int intValue = Integer.parseInt(value);
+                if (value.length() > 9) { // Restrict integer length to 9 digits
+                    throw new InventraInvalidTypeException(
+                            String.format("Error: Invalid type for field '%s'%n" +
+                                            "Expected value of type 'integer (up to 9 digits)', got: '%s'",
+                                    field, value)
+                    );
+                }
+                int intValue = Integer.parseInt(value); // Validates actual integer
                 if (intValue < 0) {
                     throw new InventraNegativeValueException(field, value);
                 }
@@ -176,6 +184,7 @@ public class AddCommand extends Command {
             } catch (NumberFormatException e) {
                 throw new InventraInvalidTypeException(field, value, "integer");
             }
+
         case "f": // Float
             try {
                 float floatValue = Float.parseFloat(value);
@@ -186,31 +195,36 @@ public class AddCommand extends Command {
             } catch (NumberFormatException e) {
                 throw new InventraInvalidTypeException(field, value, "float");
             }
+
         case "d": // Date
-            String[] parts = value.split("/");
-            if (parts.length != 3) {
+            if (!value.matches("\\d{2}/\\d{2}/\\d{4}") && !value.matches("\\d{2}/\\d{2}/\\d{2}")) {
                 throw new InventraInvalidTypeException(
-                        field,
-                        value,
-                        "date (expected format: DD/MM/YYYY or DD/MM/YY)"
+                        field, value, "date (expected format: DD/MM/YYYY or DD/MM/YY)"
                 );
             }
+            String[] parts = value.split("/");
             try {
                 int day = Integer.parseInt(parts[0]);
                 int month = Integer.parseInt(parts[1]);
                 int year = Integer.parseInt(parts[2]);
                 if (day <= 0 || day > 31 || month <= 0 || month > 12 || year < 0) {
-                    throw new InventraInvalidTypeException(field, value, "valid date in DD/MM/YYYY or DD/MM/YY format");
+                    throw new InventraInvalidTypeException(
+                            field, value, "valid date in DD/MM/YYYY or DD/MM/YY format"
+                    );
                 }
                 return null; // Valid date
             } catch (NumberFormatException e) {
-                throw new InventraInvalidTypeException(field, value, "valid date (DD/MM/YYYY or DD/MM/YY)");
+                throw new InventraInvalidTypeException(
+                        field, value, "valid date (DD/MM/YYYY or DD/MM/YY)"
+                );
             }
+
         case "n": // Null
             if (!value.equalsIgnoreCase("null")) {
                 throw new InventraInvalidTypeException(field, value, "null");
             }
             return null; // Valid null
+
         default:
             return ui.getUnknownTypeMessage(field);
         }
