@@ -185,11 +185,12 @@ Terminates the program.
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer?
-**A**: Copy `data/inventory.csv` file to its new desired location. 
-Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.
-**Q**: Why can't I input more than 20 characters when adding a field or record?
-**A**: This is to ensure efficient use of space and to ensure that output table format is preserved.
+**Q**: How do I transfer my data to another computer?  
+**A**: Copy `data/inventory.csv` file to its new desired location.
+Ensure that the file remains in the same directory as `inventra.jar` file when running the application on the new computer.  
+
+**Q**: Why can't I input more than 20 characters when adding a field or record?  
+**A**: This is to ensure efficient use of space and to ensure that output table format is preserved.  
 
 ## Known Issues
 
