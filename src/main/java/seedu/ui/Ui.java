@@ -4,12 +4,13 @@ import seedu.model.Inventory;
 import seedu.parser.CommandParser;
 import seedu.storage.Csv;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Scanner;
 
 public class Ui {
-
+    private static final int TERMINAL_WIDTH = 80;
     public void printGreeting() {
         String logo = " ___ _   ___     _______ _   _ _____ ____      _    \n"
                 + "|_ _| \\ | \\ \\   / / ____| \\ | |_   _|  _ \\    / \\   \n"
@@ -51,22 +52,19 @@ public class Ui {
     }
 
 
-    // Show fields and records in table format for the full inventory
     public void showFieldsAndRecords(Inventory inventory) {
         List<String> fields = inventory.getFields();
         List<Map<String, String>> records = inventory.getRecords();
         showFieldsAndRecords(fields, records);
     }
 
-    // Show fields and specific records in table format
     public void showFieldsAndRecords(List<String> fields, List<Map<String, String>> records) {
         if (fields.isEmpty()) {
             printMessage("    No fields have been added yet.");
             return;
         }
 
-        printTableHeader(fields);
-
+        printTableHeader(fields, records);  // Pass both fields and records
         if (records.isEmpty()) {
             printMessage("    No records have been added yet.");
         } else {
@@ -90,7 +88,7 @@ public class Ui {
     }
 
     // Prints table header with fields and adds the "ID" column
-    private void printTableHeader(List<String> fields) {
+    private void printTableHeader(List<String> fields, List<Map<String, String>> records) {
         StringBuilder header = new StringBuilder("    | ");
         StringBuilder separator = new StringBuilder("    +");
 
@@ -101,9 +99,12 @@ public class Ui {
 
         // Add the other field headers
         for (String field : fields) {
-            int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
-            header.append(String.format("%-" + columnWidth + "s | ", field));  // Left-align the field names
-            separator.append("-".repeat(columnWidth + 2)).append("+");  // Add separator line below header
+            int maxFieldWidth = Math.max(
+                    field.length(),
+                    getMaxValueWidth(records, field)
+            );
+            header.append(String.format("%-" + maxFieldWidth + "s | ", field));
+            separator.append("-".repeat(maxFieldWidth + 2)).append("+");
         }
 
         printMessage(separator.toString());
@@ -111,8 +112,13 @@ public class Ui {
         printMessage(separator.toString());
     }
 
+    private int getMaxValueWidth(List<Map<String, String>> records, String field) {
+        return records.stream()
+                .map(record -> record.getOrDefault(field, "null").length())
+                .max(Integer::compare)
+                .orElse(20); // Ensure a minimum width of 20
+    }
 
-    // Prints table rows with records and adds the "ID" column
     private void printTableRecords(List<String> fields, List<Map<String, String>> records) {
         StringBuilder separator = new StringBuilder("    +");
 
@@ -120,10 +126,15 @@ public class Ui {
         int idColumnWidth = 5;
         separator.append("-".repeat(idColumnWidth + 2)).append("+");
 
-        // Add the separator for the other fields
+        // Add the separator for the other fields dynamically
+        Map<String, Integer> fieldWidths = new HashMap<>();
         for (String field : fields) {
-            int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
-            separator.append("-".repeat(columnWidth + 2)).append("+");
+            int maxFieldWidth = Math.max(
+                    field.length(),
+                    getMaxValueWidth(records, field)
+            );
+            separator.append("-".repeat(maxFieldWidth + 2)).append("+");
+            fieldWidths.put(field, maxFieldWidth);
         }
 
         // Print the rows
@@ -135,18 +146,16 @@ public class Ui {
             row.append(String.format("%-" + idColumnWidth + "d | ", id));
             id++;  // Increment ID for the next row
 
-            // Print the other field values
+            // Print the other field values dynamically
             for (String field : fields) {
-                int columnWidth = Math.max(field.length(), 20);  // Ensure minimum column width of 20
                 String value = record.getOrDefault(field, "null");  // Handle missing values
-                row.append(String.format("%-" + columnWidth + "s | ", value));  // Left-align values
+                row.append(String.format("%-" + fieldWidths.get(field) + "s | ", value));  // Left-align values
             }
 
             printMessage(row.toString());
             printMessage(separator.toString());
         }
     }
-
 
     public void showSuccessFieldsAdded() {
         printMessage("    Fields added successfully.");
