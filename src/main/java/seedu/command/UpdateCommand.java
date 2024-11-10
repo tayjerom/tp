@@ -52,28 +52,36 @@ public class UpdateCommand extends Command {
     }
 
     private void handleUpdateField(String fieldData) throws InventraException {
+        if (!fieldData.contains(",")) {
+            throw new InventraMissingArgsException(
+                    "Expected format: <old_field>, <new_field>.\n Ensure you separate the old and " +
+                            "new field names with a comma."
+            );
+        }
+
         String[] fields = fieldData.split(",\\s*");
 
-        if (fields.length > 2) {
-            throw new InventraExcessArgsException(2, fields.length);
-        } else if (fields.length < 2) {
+        if (fields.length < 2) {
             throw new InventraLessArgsException(2, fields.length);
+        } else if (fields.length > 2) {
+            throw new InventraExcessArgsException(2, fields.length);
         }
 
         String oldFieldName = fields[0].trim();
         String newFieldName = fields[1].trim();
 
         if (oldFieldName.isEmpty() || newFieldName.isEmpty()) {
-            throw new InventraInvalidTypeException("Field names",
-                    "cannot be empty or just spaces", "provide valid field names");
+            throw new InventraInvalidTypeException("Field names", "cannot be empty", "provide valid field names");
         }
 
-        if (oldFieldName.length() > 20 || newFieldName.length() > 20) {
+        // Allow update if new field name is valid, even if old field name exceeds limit
+        if (newFieldName.length() > 20) {
             throw new InventraInvalidTypeException("Field name length",
                     "exceeds 20 characters", "use shorter names");
         }
 
-        if (!isFieldValid(oldFieldName)) {
+        // Bypass validation for oldFieldName to allow corrective action
+        if (!inventory.getFields().contains(oldFieldName)) {
             throw new InventraInvalidHeaderException(oldFieldName);
         }
 

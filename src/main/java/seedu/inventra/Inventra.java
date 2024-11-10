@@ -10,8 +10,8 @@ public class Inventra {
         Inventory inventory = new Inventory(); // Instantiate Inventory here
         Csv csv = new Csv("data/inventory.csv");
 
-        // Load existing records from CSV
         csv.loadInventoryFromCsv(inventory);
+
         ui.run(inventory, csv);
     }
 }

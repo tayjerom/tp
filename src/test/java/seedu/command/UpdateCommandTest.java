@@ -12,6 +12,7 @@ import seedu.exceptions.InventraOutOfBoundsException;
 import seedu.exceptions.InventraExcessArgsException;
 import seedu.exceptions.InventraLessArgsException;
 import seedu.exceptions.InventraInvalidHeaderException;
+import seedu.exceptions.InventraMissingArgsException;
 import seedu.model.Inventory;
 import seedu.storage.Csv;
 import seedu.ui.Ui;
@@ -77,26 +78,6 @@ public class UpdateCommandTest {
     }
 
     @Test
-    public void execute_updateFieldWithInvalidOldField_throwsException() {
-        String[] updateFieldArgs = {"update", "-h", "invalidField, newName"};
-        UpdateCommand updateCommand = new UpdateCommand(inventory, ui, csv);
-
-        assertThrows(InventraInvalidHeaderException.class, () -> {
-            updateCommand.execute(updateFieldArgs);
-        });
-    }
-
-    @Test
-    public void execute_updateFieldWithLessArgs_throwsException() {
-        String[] updateFieldArgs = {"update", "-h", "name"};
-        UpdateCommand updateCommand = new UpdateCommand(inventory, ui, csv);
-
-        assertThrows(InventraLessArgsException.class, () -> {
-            updateCommand.execute(updateFieldArgs);
-        });
-    }
-
-    @Test
     public void execute_updateFieldWithExcessArgs_throwsException() {
         String[] updateFieldArgs = {"update", "-h", "name,newName,extraArg"};
         UpdateCommand updateCommand = new UpdateCommand(inventory, ui, csv);
@@ -104,6 +85,34 @@ public class UpdateCommandTest {
         assertThrows(InventraExcessArgsException.class, () -> {
             updateCommand.execute(updateFieldArgs);
         });
+    }
+
+    @Test
+    void execute_updateFieldWithInvalidFormat_throwsMissingArgsException() {
+        UpdateCommand command = new UpdateCommand(inventory, ui, csv);
+        String input = "fieldAfieldB";  // Missing comma
+
+        InventraMissingArgsException thrown = assertThrows(
+                InventraMissingArgsException.class,
+                () -> command.execute(new String[] { "update", "-h", input })
+        );
+
+        assertEquals("Error: Missing the following arguments:" +
+                " Expected format: <old_field>, <new_field>.\n Ensure you separate " +
+                "the old and new field names with a comma.", thrown.getMessage());
+    }
+
+    @Test
+    void execute_updateFieldWithLessArgs_throwsLessArgsException() {
+        UpdateCommand command = new UpdateCommand(inventory, ui, csv);
+        String input = "fieldA,";  // Comma included, but missing second argument
+
+        InventraLessArgsException thrown = assertThrows(
+                InventraLessArgsException.class,
+                () -> command.execute(new String[] { "update", "-h", input })
+        );
+
+        assertEquals("Error: Less arguments than required, expected: 2, received: 1", thrown.getMessage());
     }
 
     @Test

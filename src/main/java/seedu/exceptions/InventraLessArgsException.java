@@ -9,7 +9,9 @@ public class InventraLessArgsException extends InventraException {
         this.actual = actual;
     }
 
+    @Override
     public String getMessage() {
-        return "Error: Less arguments than required, expected: " + expected + ", received " + actual;
+        return String.format("Error: Less arguments than required, expected: %d, received: %d", expected, actual);
     }
 }
+

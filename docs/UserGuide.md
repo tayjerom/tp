@@ -75,6 +75,7 @@ Get help from manual page for inventra
 #### Display Help Page For Specific Command
 * Command: `help COMMAND`
 * Example: `help delete`
+* Note: COMMAND works for specific command, excluding `help` command itself!
 
 ### Adding New Fields and Records: `add`
 Add new fields or records to the inventory.
@@ -193,38 +194,38 @@ Ensure that the file remains in the same directory as `inventra.jar` file when r
 
 ## Known Issues
 
-1. Extra Input: Additional values provided after expected inputs for commands like `add -l`, `view -a`, `exit` will be ignored.
+1. Extra Input: Additional values provided after expected inputs for commands like `view -a`, `exit` will be ignored.
 2. Case Sensitivity: Ensure correct lowercase input as commands are case-sensitive.
 3. Pending Features: Increasing limitations of 20 character fields and records with dynamic output table Ui.
 
 ## Command Summary
 
-| Action                   | Format & Example                               |
-|--------------------------|------------------------------------------------|
-| **Get Help**             | `help` / `help [COMMAND]`                      |
-|                          | Example: `help` / `help delete`                |
-| **Add Field**            | `add -h TYPE/FIELD1, TYPE/FIELD2,...`          |
-|                          | Example: `add -h s/name, i/quantity, d/expiry` |
-| **Add Record**           | `add -d VALUE1, VALUE2,...`                    |
-|                          | Example: `add -d Apple, 100, 1.50, 01/10/2024` |
-| **View All Records**     | `view -a`                                      |
-|                          | Example: `view -a`                             |
-| **View Specific Record** | `view RECORD_ID`                               |
-|                          | Example: `view 1`                              |
-| **Update Field**         | `update -h OLDFIELD, NEWFIELD`                 |
-|                          | Example: `update -h name, product_name`        |
-| **Update Record**        | `update -d RECORD_ID, FIELD, NEWVALUE`         |
-|                          | Example: `update -d 1, price, 1.50`            |
-| **Delete All Fields**    | `delete -e`                                    |
-|                          | Example: `delete -e`                           |
-| **Delete All Records**   | `delete -a`                                    |
-|                          | Example: `delete -a`                           |
-| **Delete Field**         | `delete -h FIELD_NAME`                         |
-|                          | Example: `delete -h quantity`                  |
-| **Delete Specific Record**| `delete RECORD_ID`                             |
-|                          | Example: `delete 1`                            |
-| **Delete Range of Records**| `delete -r STARTID-ENDID`                      |
-|                          | Example: `delete -r 1-5`                       |
-| **Exit Program**         | `exit`                                         |
-|                          | Example: `exit`                                |
+| Action                   | Format & Example                                        |
+|--------------------------|---------------------------------------------------------|
+| **Get Help**             | `help` / `help [COMMAND]`                               |
+|                          | Example: `help` / `help delete`                         |
+| **Add Field**            | `add -h TYPE/FIELD1, TYPE/FIELD2,...`                   |
+|                          | Example: `add -h s/name, i/quantity, f/price, d/expiry` |
+| **Add Record**           | `add -d VALUE1, VALUE2,...`                             |
+|                          | Example: `add -d Apple, 100, 1.50, 01/10/2024`          |
+| **View All Records**     | `view -a`                                               |
+|                          | Example: `view -a`                                      |
+| **View Specific Record** | `view RECORD_ID`                                        |
+|                          | Example: `view 1`                                       |
+| **Update Field**         | `update -h OLDFIELD, NEWFIELD`                          |
+|                          | Example: `update -h name, product_name`                 |
+| **Update Record**        | `update -d RECORD_ID, FIELD, NEWVALUE`                  |
+|                          | Example: `update -d 1, price, 1.50`                     |
+| **Delete All Fields**    | `delete -e`                                             |
+|                          | Example: `delete -e`                                    |
+| **Delete All Records**   | `delete -a`                                             |
+|                          | Example: `delete -a`                                    |
+| **Delete Field**         | `delete -h FIELD_NAME`                                  |
+|                          | Example: `delete -h quantity`                           |
+| **Delete Specific Record**| `delete RECORD_ID`                                      |
+|                          | Example: `delete 1`                                     |
+| **Delete Range of Records**| `delete -r STARTID-ENDID`                               |
+|                          | Example: `delete -r 1-5`                                |
+| **Exit Program**         | `exit`                                                  |
+|                          | Example: `exit`                                         |
 
